@@ -1,45 +1,44 @@
 "use client";
 
 import React from "react";
-import { useFormStatus } from "react-dom";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { getAIRecommendationsAction } from "@/app/actions";
+import { getAIRecommendationsClient } from "@/lib/gear-recommendations-client";
 import { Bot, Lightbulb, Loader2, PartyPopper } from "lucide-react";
 
 type GearRecommendationProps = {
   cycleDetails: string;
 };
 
-const initialState = {
+type State = {
+  recommendations?: string;
+  error?: string;
+};
+
+const initialState: State = {
   recommendations: undefined,
   error: undefined,
 };
 
-function SubmitButton() {
-  const { pending } = useFormStatus();
-  return (
-    <Button type="submit" disabled={pending} variant="accent" className="w-full">
-      {pending ? (
-        <>
-          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          Thinking...
-        </>
-      ) : (
-        <>
-          <Lightbulb className="mr-2 h-4 w-4" />
-          Get Recommendations
-        </>
-      )}
-    </Button>
-  );
-}
-
 export default function GearRecommendation({ cycleDetails }: GearRecommendationProps) {
-  const [state, formAction] = React.useActionState(getAIRecommendationsAction, initialState);
+  const [state, setState] = React.useState<State>(initialState);
+  const [isLoading, setIsLoading] = React.useState(false);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setState(initialState);
+
+    const formData = new FormData(e.currentTarget);
+    const ridingPreferences = formData.get("ridingPreferences") as string;
+
+    const result = await getAIRecommendationsClient(cycleDetails, ridingPreferences);
+    setState(result);
+    setIsLoading(false);
+  };
 
   return (
     <Card className="bg-primary/5 border-primary/20">
@@ -53,7 +52,7 @@ export default function GearRecommendation({ cycleDetails }: GearRecommendationP
         </div>
       </CardHeader>
       <CardContent>
-        <form action={formAction} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4">
           <input type="hidden" name="cycleDetails" value={cycleDetails} />
           <div>
             <Label htmlFor="ridingPreferences">Your Riding Style & Preferences</Label>
@@ -66,7 +65,19 @@ export default function GearRecommendation({ cycleDetails }: GearRecommendationP
               className="mt-1"
             />
           </div>
-          <SubmitButton />
+          <Button type="submit" disabled={isLoading} variant="accent" className="w-full">
+            {isLoading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Thinking...
+              </>
+            ) : (
+              <>
+                <Lightbulb className="mr-2 h-4 w-4" />
+                Get Recommendations
+              </>
+            )}
+          </Button>
         </form>
 
         {state.error && (

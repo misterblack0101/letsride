@@ -1,5 +1,4 @@
 // Gear recommendation flow
-'use server';
 
 /**
  * @fileOverview This file defines a Genkit flow for recommending cycling gear based on the selected cycle and user preferences.
@@ -9,8 +8,8 @@
  * - `GearRecommendationOutput`: The output type for the `getGearRecommendations` function.
  */
 
-import {ai} from '@/ai/genkit';
-import {z} from 'genkit';
+import { ai } from '@/ai/genkit';
+import { z } from 'genkit';
 
 // Input schema definition
 const GearRecommendationInputSchema = z.object({
@@ -71,7 +70,7 @@ const gearRecommendationFlow = ai.defineFlow(
     outputSchema: GearRecommendationOutputSchema,
   },
   async input => {
-    const {output} = await gearRecommendationPrompt(input);
+    const { output } = await gearRecommendationPrompt(input);
     return output!;
   }
 );
