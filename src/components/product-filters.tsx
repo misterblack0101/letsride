@@ -79,14 +79,14 @@ export default function ProductFilters({ filters, setFilters }: ProductFiltersPr
           <h3 className="font-semibold mb-3">Price Range</h3>
           <Slider
             min={0}
-            max={1500}
-            step={50}
+            max={120000}
+            step={5000}
             value={filters.price}
             onValueChange={handlePriceChange}
           />
           <div className="flex justify-between text-sm text-muted-foreground mt-2">
-            <span>${filters.price[0]}</span>
-            <span>${filters.price[1]}</span>
+            <span>₹{filters.price[0].toLocaleString('en-IN')}</span>
+            <span>₹{filters.price[1].toLocaleString('en-IN')}</span>
           </div>
         </div>
       </CardContent>

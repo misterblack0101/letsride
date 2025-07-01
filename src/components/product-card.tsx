@@ -37,7 +37,7 @@ export default function ProductCard({ product }: ProductCardProps) {
             </div>
           </div>
           <div className="text-2xl font-bold font-headline text-right mt-4 text-foreground">
-            ${product.price.toFixed(2)}
+            ₹{product.price.toLocaleString('en-IN')}
           </div>
         </CardContent>
       </Card>

@@ -16,7 +16,7 @@ export default function ProductDetails({ product }: { product: Product }) {
     <div className="max-w-6xl mx-auto">
       <h1 className="text-4xl font-bold font-headline text-center mb-12">{product.name}</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
-        <Card className="overflow-hidden">
+        <div className="overflow-hidden rounded-lg border">
           <div className="aspect-square">
             <Image
               src={product.image}
@@ -27,7 +27,7 @@ export default function ProductDetails({ product }: { product: Product }) {
               data-ai-hint={product.dataAiHint}
             />
           </div>
-        </Card>
+        </div>
         
         <div className="flex flex-col gap-6">
           <Card>
@@ -54,8 +54,8 @@ export default function ProductDetails({ product }: { product: Product }) {
               )}
 
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                <div className="text-4xl font-bold font-headline text-primary">${product.price.toFixed(2)}</div>
-                <Button size="lg" variant="accent" className="w-full sm:w-auto" onClick={() => addItem(product)}>
+                <div className="text-4xl font-bold font-headline text-primary">₹{product.price.toLocaleString('en-IN')}</div>
+                <Button size="lg" className="w-full sm:w-auto" variant="accent" onClick={() => addItem(product)}>
                   <ShoppingCart className="mr-2 h-5 w-5" />
                   Add to Cart
                 </Button>

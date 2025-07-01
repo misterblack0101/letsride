@@ -1,10 +1,11 @@
 "use client";
 
 import Link from 'next/link';
-import { Bike, ShoppingCart } from 'lucide-react';
+import { ShoppingCart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { useCart } from '@/context/cart-context';
+import BrandLogo from '@/components/brand-logo';
 
 export default function Header() {
   const { itemCount } = useCart();
@@ -13,9 +14,8 @@ export default function Header() {
     <header className="bg-card shadow-sm sticky top-0 z-50">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
-          <Link href="/" className="flex items-center gap-2">
-            <Bike className="h-8 w-8 text-primary" />
-            <span className="text-2xl font-bold font-headline text-foreground">Let's Ride</span>
+          <Link href="/" className="flex items-center">
+            <BrandLogo size="md" />
           </Link>
           <nav className="hidden md:flex items-center space-x-8">
             <Link href="/" className="text-lg font-medium text-muted-foreground hover:text-primary transition-colors">

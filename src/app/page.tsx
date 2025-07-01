@@ -10,7 +10,7 @@ export default function StorePage() {
   const [filters, setFilters] = useState({
     type: [] as string[],
     brand: [] as string[],
-    price: [0, 1500] as [number, number],
+    price: [0, 120000] as [number, number],
   });
   const [sort, setSort] = useState('popularity');
 
@@ -47,7 +47,8 @@ export default function StorePage() {
           <ProductFilters filters={filters} setFilters={setFilters} />
         </aside>
         <main className="lg:col-span-3">
-          <div className="flex justify-end mb-4">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-2xl font-semibold font-headline">Products</h2>
             <ProductSort sort={sort} setSort={setSort} />
           </div>
           <ProductGrid products={filteredProducts} />
