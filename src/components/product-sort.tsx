@@ -5,6 +5,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 type ProductSortProps = {
   sort: string;
@@ -12,9 +13,11 @@ type ProductSortProps = {
 };
 
 export default function ProductSort({ sort, setSort }: ProductSortProps) {
+  const isMobile = useIsMobile();
+
   return (
     <Select value={sort} onValueChange={setSort}>
-      <SelectTrigger className="w-[200px]">
+      <SelectTrigger className={isMobile ? "w-full" : "w-full sm:w-[200px]"}>
         <SelectValue placeholder="Sort by" />
       </SelectTrigger>
       <SelectContent>

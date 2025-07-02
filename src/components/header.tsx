@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { useCart } from '@/context/cart-context';
 import BrandLogo from '@/components/brand-logo';
+import MobileDrawer from '@/components/mobile-drawer';
 
 export default function Header() {
   const { itemCount } = useCart();
@@ -26,7 +27,12 @@ export default function Header() {
             </Link>
           </nav>
           <div className="flex items-center gap-2">
-            <ThemeToggle />
+            <div className="md:hidden">
+              <MobileDrawer />
+            </div>
+            <div className="hidden md:block">
+              <ThemeToggle />
+            </div>
             <Button asChild variant="ghost" size="icon" className="relative">
               <Link href="/cart">
                 <ShoppingCart className="h-6 w-6" />
