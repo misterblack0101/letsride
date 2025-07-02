@@ -3,18 +3,15 @@ import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
+import { getEnvironmentConfig } from './env';
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
+// Get validated environment configuration
+const config = getEnvironmentConfig();
+
 // Your web app's Firebase configuration
-const firebaseConfig = {
-    apiKey: "AIzaSyAuknyjUo4sjhQ9xzauqgFr_Cqxx6b7Jo8",
-    authDomain: "letsride-web.firebaseapp.com",
-    projectId: "letsride-web",
-    storageBucket: "letsride-web.firebasestorage.app",
-    messagingSenderId: "543830556048",
-    appId: "1:543830556048:web:7e000a327771aeabe14715"
-};
+const firebaseConfig = config.firebase;
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
