@@ -1,12 +1,13 @@
 "use client";
 
-import { useState, useMemo } from 'react';
-import { products } from '@/lib/data';
+import { useState, useMemo, useEffect } from 'react';
+import { fetchProducts } from '@/lib/data';
 import ProductFilters from '@/components/product-filters';
 import ProductGrid from '@/components/product-grid';
 import ProductSort from '@/components/product-sort';
 import ViewToggle from '@/components/view-toggle';
 import { useIsMobile } from '@/hooks/use-mobile';
+import type { Product } from '@/lib/types';
 
 export default function StorePage() {
   const [filters, setFilters] = useState({
@@ -16,7 +17,16 @@ export default function StorePage() {
   });
   const [sort, setSort] = useState('popularity');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [products, setProducts] = useState<Product[]>([]);
   const isMobile = useIsMobile();
+
+  useEffect(() => {
+    async function loadProducts() {
+      const fetchedProducts = await fetchProducts();
+      setProducts(fetchedProducts as Product[]);
+    }
+    loadProducts();
+  }, []);
 
   const filteredProducts = useMemo(() => {
     return products
@@ -39,7 +49,7 @@ export default function StorePage() {
             return b.popularity - a.popularity;
         }
       });
-  }, [filters, sort]);
+  }, [filters, sort, products]);
 
   return (
     <div>
