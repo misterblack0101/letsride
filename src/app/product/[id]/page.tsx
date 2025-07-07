@@ -1,16 +1,14 @@
-import { notFound } from 'next/navigation';
-import { products } from '@/lib/data';
-import ProductDetails from '@/components/product-details';
+import ProductDetails from "@/components/product-details";
+import { getProductById } from "@/lib/data";
+import { notFound } from "next/navigation";
 
-export async function generateStaticParams() {
-  return products.map((product) => ({
-    id: product.id,
-  }))
-}
 
-export default function ProductPage({ params }: { params: { id:string } }) {
-  const { id } = params;
-  const product = products.find(p => p.id === id);
+export default async function ProductPage({ params }: { params: { id: string } }) {
+  // Await the params object before accessing its properties
+  const { id } = await params;
+
+  // Fetch the specific product based on the ID from the URL
+  const product = await getProductById(id);
 
   if (!product) {
     notFound();

@@ -9,6 +9,10 @@ export async function fetchProducts(): Promise<Product[]> {
   return data as Product[];
 }
 
+export async function getProductById(id: string) {
+  return products.find(p => String(p.id) === id);
+}
+
 export const products: Product[] = await fetchProducts();
 
 
