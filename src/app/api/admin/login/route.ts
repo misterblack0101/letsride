@@ -1,22 +1,27 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
+import { serialize } from 'cookie';
 
-// const ADMIN_ID = process.env.ADMIN_ID || 'admin';
-// const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'securepassword';
-const ADMIN_ID = 'babayaga';
-const ADMIN_PASSWORD = 'lala49';
-
-export async function POST(request: Request) {
-    try {
-        const { id, password } = await request.json();
-
-        if (id === ADMIN_ID && password === ADMIN_PASSWORD) {
-            const response = NextResponse.json({ success: true });
-            response.cookies.set('auth', 'true', { httpOnly: true, path: '/', maxAge: 60 * 60 * 240 });
-            return response;
-        } else {
-            return NextResponse.json({ success: false, message: 'Invalid credentials' }, { status: 401 });
-        }
-    } catch (error) {
-        return NextResponse.json({ success: false, message: 'An error occurred' }, { status: 500 });
+export async function POST(req: NextRequest) {
+    if (req.method !== 'POST') {
+        return NextResponse.json({ error: 'Method not allowed' }, { status: 405 });
     }
+
+    const { id, password } = await req.json();
+
+    // Replace this with your actual authentication logic
+    if (id === 'lala' && password === 'lala') {
+        const sessionData = { userId: 1, role: 'admin' };
+        const cookie = serialize('session', JSON.stringify(sessionData), {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            maxAge: 60 * 60 * 24 * 7, // 1 week
+            path: '/',
+        });
+
+        const response = NextResponse.json({ message: 'Login successful' }, { status: 200 });
+        response.headers.set('Set-Cookie', cookie);
+        return response;
+    }
+
+    return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
 }

@@ -1,28 +1,20 @@
 "use client";
 
-import { Dispatch, SetStateAction, FormEvent } from 'react';
+import { FormEvent, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-interface LoginFormProps {
-    id: string;
-    setId: Dispatch<SetStateAction<string>>;
-    password: string;
-    setPassword: Dispatch<SetStateAction<string>>;
-    error: string;
-    setError: Dispatch<SetStateAction<string>>;
-    handleSubmit: (e: FormEvent) => Promise<void>;
-}
 
-export default function LoginForm({
-    id,
-    setId,
-    password,
-    setPassword,
-    error,
-    setError,
-    handleSubmit,
-}: LoginFormProps) {
+export default function LoginForm(
+    {
+        setIsloggedIn
+    }: {
+        setIsloggedIn: (isLoggedIn: boolean) => void;
+    }
+) {
     const router = useRouter();
+    const [id, setId] = useState('');
+    const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
 
     const onSubmit = async (e: FormEvent) => {
         e.preventDefault();
@@ -36,14 +28,20 @@ export default function LoginForm({
             });
 
             if (response.ok) {
-                // Set auth cookie (assume backend sets it via Set-Cookie header)
-                // Refresh the page to update auth state
-                router.refresh();
+                // Redirect to the admin panel after successful login
+                try {
+                    setIsloggedIn(true);
+                } catch (routerError) {
+                    console.error('Router push failed:', routerError);
+                    setError('Redirection failed. Please try again.');
+                }
             } else {
                 const data = await response.json();
+                // Display error message if login fails
                 setError(data.message || 'Invalid credentials');
             }
         } catch (err) {
+            console.error('Login request failed:', err);
             setError('An error occurred. Please try again.');
         }
     };
