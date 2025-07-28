@@ -1,4 +1,4 @@
-import type { Product } from '@/lib/models/types';
+import type { Product } from '@/lib/models/Product';
 import ProductCard from './product-card';
 import { useIsMobile } from '@/hooks/use-mobile';
 

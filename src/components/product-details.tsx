@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import { useCart } from '@/context/cart-context';
-import type { Product } from '@/lib/models/types';
+import type { Product } from '@/lib/models/Product';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';

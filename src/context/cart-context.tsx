@@ -1,7 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import type { Product } from '@/lib/models/types';
+import type { Product } from '@/lib/models/Product';
 import { useToast } from "@/hooks/use-toast";
 
 export type CartItem = Product & {

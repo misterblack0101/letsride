@@ -15,6 +15,9 @@ interface EnvironmentConfig {
     storageBucket: string;
     messagingSenderId: string;
     appId: string;
+    // For server-side Firebase Admin SDK
+    clientEmail?: string;
+    privateKey?: string;
   };
   // Development settings
   nodeEnv: string;
@@ -28,18 +31,18 @@ interface EnvironmentConfig {
 export function getEnvironmentConfig(): EnvironmentConfig {
 
   // Required environment variables for Firebase (client-side)
-  const requiredPublicVars = [
-    'NEXT_PUBLIC_FIREBASE_API_KEY',
-    'NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN',
-    'NEXT_PUBLIC_FIREBASE_PROJECT_ID',
-    'NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET',
-    'NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID',
-    'NEXT_PUBLIC_FIREBASE_APP_ID'
-  ];
+  // const requiredPublicVars = [
+  //   'NEXT_PUBLIC_FIREBASE_API_KEY',
+  //   'NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN',
+  //   'NEXT_PUBLIC_FIREBASE_PROJECT_ID',
+  //   'NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET',
+  //   'NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID',
+  //   'NEXT_PUBLIC_FIREBASE_APP_ID'
+  // ];
   // console.log(process.env);
 
   // Check for missing public environment variables
-  const missingPublicVars = requiredPublicVars.filter(varName => !process.env[varName]);
+  // const missingPublicVars = requiredPublicVars.filter(varName => !process.env[varName]);
 
   // if (missingPublicVars.length > 0) {
   //   throw new Error(
@@ -56,6 +59,9 @@ export function getEnvironmentConfig(): EnvironmentConfig {
       storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET!,
       messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID!,
       appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID!,
+      // For server-side Firebase Admin SDK
+      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+      privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'), // Handle newlines in private key
     },
     nodeEnv: process.env.NODE_ENV || 'development',
     port: parseInt(process.env.PORT || '3000', 10),

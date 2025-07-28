@@ -9,7 +9,6 @@ import { Input } from '@/components/ui/input';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Filter, X } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { brands, types } from '@/lib/services/products';
 
 type ProductFiltersProps = {
   filters: {
@@ -18,9 +17,11 @@ type ProductFiltersProps = {
     price: [number, number];
   };
   setFilters: React.Dispatch<React.SetStateAction<any>>;
+  availableBrands: string[];
+  availableTypes: string[];
 };
 
-export default function ProductFilters({ filters, setFilters }: ProductFiltersProps) {
+export default function ProductFilters({ filters, setFilters, availableBrands, availableTypes }: ProductFiltersProps) {
   const isMobile = useIsMobile();
   const [sliderValue, setSliderValue] = useState<[number, number]>(filters.price);
 
@@ -107,7 +108,7 @@ export default function ProductFilters({ filters, setFilters }: ProductFiltersPr
       <div>
         <h4 className="font-semibold mb-3">Type</h4>
         <div className="space-y-3">
-          {types.map(type => (
+          {availableTypes.map(type => (
             <div key={type} className="flex items-center space-x-2">
               <Checkbox
                 id={`type-${type}`}
@@ -125,7 +126,7 @@ export default function ProductFilters({ filters, setFilters }: ProductFiltersPr
       <div>
         <h4 className="font-semibold mb-3">Brand</h4>
         <div className="space-y-3">
-          {brands.map(brand => (
+          {availableBrands.map(brand => (
             <div key={brand} className="flex items-center space-x-2">
               <Checkbox
                 id={`brand-${brand}`}
