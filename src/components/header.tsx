@@ -3,7 +3,6 @@
 import Link from 'next/link';
 import { ShoppingCart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { ThemeToggle } from '@/components/theme-toggle';
 import { useCart } from '@/context/cart-context';
 import BrandLogo from '@/components/brand-logo';
 import MobileDrawer from '@/components/mobile-drawer';
@@ -19,25 +18,19 @@ export default function Header() {
             <BrandLogo size="md" />
           </Link>
           <nav className="hidden md:flex items-center space-x-8">
-            <Link href="/" className="text-lg font-medium text-muted-foreground hover:text-primary transition-colors">
-              Store
-            </Link>
-            <Link href="/about" className="text-lg font-medium text-muted-foreground hover:text-primary transition-colors">
-              About Us
+            <Link href="/products" className="text-lg font-medium text-muted-foreground hover:text-primary transition-colors">
+              All Products
             </Link>
           </nav>
           <div className="flex items-center gap-2">
             <div className="md:hidden">
               <MobileDrawer />
             </div>
-            <div className="hidden md:block">
-              <ThemeToggle />
-            </div>
             <Button asChild variant="ghost" size="icon" className="relative">
               <Link href="/cart">
                 <ShoppingCart className="h-6 w-6" />
                 {itemCount > 0 && (
-                   <div className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
+                  <div className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
                     {itemCount > 9 ? '9+' : itemCount}
                   </div>
                 )}
