@@ -2,7 +2,8 @@ import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   /* config options here */
-  output: 'standalone',
+  // Remove standalone output for Vercel deployment
+  // output: 'standalone',
   trailingSlash: true,
   distDir: 'dist',
   typescript: {

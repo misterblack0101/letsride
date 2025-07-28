@@ -1,4 +1,4 @@
-import { db } from './firebase';
+import { db } from '../firebase/server';
 import { collection, doc, getDoc, getDocs } from 'firebase/firestore';
 import { ProductSchema, Product } from '../models/Product';
 

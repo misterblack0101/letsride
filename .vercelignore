@@ -1,0 +1,37 @@
+# Vercel ignore file
+# These directories should not be uploaded to Vercel
+
+# Dependencies
+node_modules/
+
+# Build directories
+.next/
+dist/
+build/
+
+# Cache directories
+.cache/
+
+# Environment files (should be set in Vercel dashboard)
+.env*
+!.env.example
+
+# Large files
+*.log
+*.tgz
+*.tar.gz
+
+# Firebase
+.firebase/
+firebase-debug.log
+firestore-debug.log
+
+# Development files
+.genkit/
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Scripts with sensitive data
+scripts/upload_data/env.json
