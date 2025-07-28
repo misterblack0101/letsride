@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Filter, X } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { brands, types } from '@/lib/data';
+import { brands, types } from '@/lib/services/products';
 
 type ProductFiltersProps = {
   filters: {
@@ -60,18 +60,18 @@ export default function ProductFilters({ filters, setFilters }: ProductFiltersPr
   const handleMinPriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     // Allow any input while typing, validate on blur
-    setFilters((prev: any) => ({ 
-      ...prev, 
-      price: [value === '' ? 0 : Math.max(0, parseInt(value) || 0), prev.price[1]] 
+    setFilters((prev: any) => ({
+      ...prev,
+      price: [value === '' ? 0 : Math.max(0, parseInt(value) || 0), prev.price[1]]
     }));
   };
 
   const handleMaxPriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     // Allow any input while typing, validate on blur
-    setFilters((prev: any) => ({ 
-      ...prev, 
-      price: [prev.price[0], value === '' ? 120000 : Math.max(0, parseInt(value) || 120000)] 
+    setFilters((prev: any) => ({
+      ...prev,
+      price: [prev.price[0], value === '' ? 120000 : Math.max(0, parseInt(value) || 120000)]
     }));
   };
 
@@ -103,7 +103,7 @@ export default function ProductFilters({ filters, setFilters }: ProductFiltersPr
           Clear All
         </Button>
       </div>
-      
+
       <div>
         <h4 className="font-semibold mb-3">Type</h4>
         <div className="space-y-3">
@@ -119,9 +119,9 @@ export default function ProductFilters({ filters, setFilters }: ProductFiltersPr
           ))}
         </div>
       </div>
-      
+
       <Separator />
-      
+
       <div>
         <h4 className="font-semibold mb-3">Brand</h4>
         <div className="space-y-3">
@@ -137,9 +137,9 @@ export default function ProductFilters({ filters, setFilters }: ProductFiltersPr
           ))}
         </div>
       </div>
-      
+
       <Separator />
-      
+
       <div>
         <h4 className="font-headline font-semibold mb-3">Price Range (₹)</h4>
         <div className="space-y-4">

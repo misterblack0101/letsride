@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import { useCart } from '@/context/cart-context';
-import type { Product } from '@/lib/types';
+import type { Product } from '@/lib/models/types';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -28,7 +28,7 @@ export default function ProductDetails({ product }: { product: Product }) {
             />
           </div>
         </div>
-        
+
         <div className="flex flex-col gap-6">
           <Card>
             <CardHeader>
@@ -45,7 +45,7 @@ export default function ProductDetails({ product }: { product: Product }) {
             </CardHeader>
             <CardContent>
               <p className="text-muted-foreground mb-6">{product.description}</p>
-              
+
               {product.details && (
                 <div className="mb-6">
                   <h3 className="font-semibold mb-2">Specifications:</h3>

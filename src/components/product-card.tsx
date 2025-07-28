@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Star } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
-import type { Product } from '@/lib/types';
+import type { Product } from '@/lib/models/types';
 
 type ProductCardProps = {
   product: Product;
@@ -13,7 +13,7 @@ type ProductCardProps = {
 
 export default function ProductCard({ product, viewMode = 'grid' }: ProductCardProps) {
   const isMobile = useIsMobile();
-  
+
   if (viewMode === 'list') {
     return (
       <Link href={`/product/${product.id}`} className="block group">

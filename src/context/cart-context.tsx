@@ -1,7 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import type { Product } from '@/lib/types';
+import type { Product } from '@/lib/models/types';
 import { useToast } from "@/hooks/use-toast";
 
 export type CartItem = Product & {
@@ -42,7 +42,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       console.error("Failed to save cart to localStorage", error);
     }
   }, [cartItems]);
-  
+
   const addItem = (item: Product, quantity = 1) => {
     setCartItems(prevItems => {
       const existingItem = prevItems.find(i => i.id === item.id);
