@@ -11,9 +11,7 @@ type ProductCardProps = {
 
 export default function ProductCard({ product, viewMode = 'grid' }: ProductCardProps) {
   const isMobile = useIsMobile();
-  const discountedPrice = product.discountPercentage
-    ? product.price * (1 - product.discountPercentage / 100)
-    : product.price;
+
 
   if (viewMode === 'list') {
     return (
@@ -78,7 +76,7 @@ export default function ProductCard({ product, viewMode = 'grid' }: ProductCardP
                   </span>
                 )}
                 <span className="text-xl font-bold text-primary font-currency">
-                  ₹{discountedPrice.toLocaleString('en-IN')}
+                  ₹{product.discountedPrice.toLocaleString('en-IN')}
                 </span>
                 {product.discountPercentage && (
                   <span className="text-green-600 text-sm font-semibold">
@@ -159,7 +157,7 @@ export default function ProductCard({ product, viewMode = 'grid' }: ProductCardP
                 </span>
               )}
               <span className="text-xl font-bold text-primary font-currency">
-                ₹{discountedPrice.toLocaleString('en-IN')}
+                ₹{product.discountedPrice.toLocaleString('en-IN')}
               </span>
               {product.discountPercentage && (
                 <span className="text-green-600 text-sm font-semibold">

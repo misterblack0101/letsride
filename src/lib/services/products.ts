@@ -72,10 +72,24 @@ export async function getProductById(id: string): Promise<Product | null> {
 
 
 export async function getFilteredProductsViaCategory(category: string, subcategory: string): Promise<Product[]> {
-  const allDocs = await db.collection('products').get();
-  const allProducts = allDocs.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  const productsRef = db.collection('products') as CollectionReference;
+  // the category/subcategory might have haracters like %20... so pares it before checking
+  category = decodeURIComponent(category);
+  subcategory = decodeURIComponent(subcategory);
+  const querySnapshot = await productsRef
+    .where('category', '==', category)
+    .where('subCategory', '==', subcategory)
+    .get();
 
-  return allProducts.filter((product: any) =>
-    product.category === category && product.subcategory === subcategory
-  ) as Product[];
+  const products = querySnapshot.docs.map(doc => {
+    const raw = { id: doc.id, ...doc.data() };
+    const parsed = ProductSchema.safeParse(raw);
+    if (!parsed.success) {
+      console.warn('Invalid product skipped:', parsed.error.format());
+      return null;
+    }
+    return parsed.data;
+  });
+
+  return products.filter(Boolean) as Product[];
 }

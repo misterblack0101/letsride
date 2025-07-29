@@ -1,6 +1,6 @@
 const { db } = require('./firebase.js');
 const { collection, setDoc, doc } = require('firebase/firestore');
-const dummyProducts = require('./products-backup.json');
+const dummyProducts = require('./dummy_products.json');
 const { exit } = require('process');
 
 async function uploadProducts() {
