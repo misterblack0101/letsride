@@ -93,3 +93,24 @@ export async function getFilteredProductsViaCategory(category: string, subcatego
 
   return products.filter(Boolean) as Product[];
 }
+
+export async function fetchRecommendedProducts(): Promise<Product[]> {
+  return retryOperation(async () => {
+    const productsCollection = db.collection('products') as CollectionReference;
+    // Example: fetch products ordered by a 'popularity' field, descending
+    const snapshot = await productsCollection
+      .where('isRecommended', '==', true)
+      .get();
+
+    const products = snapshot.docs.map(doc => {
+      const raw = { id: doc.id, ...doc.data() };
+      const parsed = ProductSchema.safeParse(raw);
+      if (!parsed.success) {
+        console.warn('Invalid product skipped:', parsed.error.format());
+        return null;
+      }
+      return parsed.data;
+    });
+    return products.filter(Boolean) as Product[];
+  });
+}

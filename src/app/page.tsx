@@ -2,6 +2,7 @@
 import React from 'react'
 import Link from 'next/link'
 import { ArrowRight, Star, Shield, Truck } from 'lucide-react'
+import RecommendedProducts from '@/components/recommended-products/RecommendedProducts'
 
 const HomePage = async () => {
 
@@ -88,6 +89,12 @@ const HomePage = async () => {
           </div>
         </div>
       </div>
+
+      <div className="space-y-12">
+        <RecommendedProducts />
+      </div>
+
+
 
       {/* CTA Section */}
       <div className="card bg-base-200">

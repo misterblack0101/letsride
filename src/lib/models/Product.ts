@@ -14,6 +14,7 @@ export const ProductSchema = z.object({
   shortDescription: z.string().optional(),
   details: z.string().optional(),
   images: z.array(z.string()).optional(),
+  isRecommended: z.boolean().default(false),
 }).transform(product => {
   const discountedPrice = product.discountPercentage != null
     ? product.price * (1 - product.discountPercentage / 100)
