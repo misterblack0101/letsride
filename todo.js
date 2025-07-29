@@ -3,3 +3,12 @@
 // - add domain to firebase hosting
 // - checkout firebase admin sdk
 // - Create admin UI for uploading products
+
+// Structure:
+
+// brandFilters/
+//   laptops/
+//     macbook-series/
+//       { brands: ['apple', 'hp', 'dell'] }
+
+// Use a Cloud Function that triggers on products onCreate/onDelete

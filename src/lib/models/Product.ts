@@ -1,18 +1,24 @@
 import { z } from 'zod';
 
+const baseBrandLogoUrl = 'https://yourcdn.com/brands';
+
 export const ProductSchema = z.object({
   id: z.string(),
   name: z.string(),
-  type: z.enum(['Cycle', 'Accessory', 'Gear', 'Toy']),
   category: z.string(),
-  brand: z.string(),
+  subCategory: z.string(),
+  brand: z.string().optional(),
   price: z.number(),
+  discountPercentage: z.number().optional(),
   rating: z.number(),
-  popularity: z.number(),
-  image: z.string(),
-  description: z.string(),
+  shortDescription: z.string().optional(),
   details: z.string().optional(),
-  dataAiHint: z.string().optional(),
-});
+  images: z.array(z.string()).optional(),
+}).transform(product => ({
+  ...product,
+  brandLogo: product.brand
+    ? `${baseBrandLogoUrl}/${product.brand.toLowerCase().replace(/\s+/g, '-')}.png`
+    : `${baseBrandLogoUrl}/default.png`,
+}));
 
 export type Product = z.infer<typeof ProductSchema>;

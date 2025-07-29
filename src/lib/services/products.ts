@@ -1,7 +1,5 @@
 import { adminDb as db } from '../firebase/admin';
-// import { collection, doc, getDoc, getDocs } from 'firebase-admin/firestore';
 import { CollectionReference } from 'firebase-admin/firestore';
-
 import { ProductSchema, Product } from '../models/Product';
 
 // Retry helper function
@@ -71,14 +69,13 @@ export async function getProductById(id: string): Promise<Product | null> {
   });
 }
 
-// Optional: Helper function to get all brands (can be used when needed)
-export async function getAllBrands(): Promise<string[]> {
-  const allProducts = await fetchProducts();
-  return [...new Set(allProducts.map(p => p.brand))];
-}
 
-// Optional: Helper function to get all types (can be used when needed)
-export async function getAllTypes(): Promise<string[]> {
-  const allProducts = await fetchProducts();
-  return [...new Set(allProducts.map(p => p.type))];
+
+export async function getFilteredProductsViaCategory(category: string, subcategory: string): Promise<Product[]> {
+  const allDocs = await db.collection('products').get();
+  const allProducts = allDocs.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+  return allProducts.filter((product: any) =>
+    product.category === category && product.subcategory === subcategory
+  ) as Product[];
 }

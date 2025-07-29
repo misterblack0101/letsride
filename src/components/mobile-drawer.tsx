@@ -1,16 +1,33 @@
 import Link from "next/link";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Menu } from "lucide-react";
+import { Menu, ChevronRight, ChevronDown } from "lucide-react";
 import React from "react";
 
-export default function MobileDrawer() {
+interface MobileDrawerProps {
+	categories?: Record<string, string[]>;
+}
+
+export default function MobileDrawer({ categories }: MobileDrawerProps) {
 	const [open, setOpen] = React.useState(false);
+	const [expandedCategory, setExpandedCategory] = React.useState<string | null>(null);
+
+	const toggleCategory = (category: string) => {
+		setExpandedCategory(expandedCategory === category ? null : category);
+	};
+
+	// Reset expanded category when drawer is closed
+	const handleOpenChange = (isOpen: boolean) => {
+		setOpen(isOpen);
+		if (!isOpen) {
+			setExpandedCategory(null);
+		}
+	};
 
 	return (
-		<Sheet open={open} onOpenChange={setOpen}>
+		<Sheet open={open} onOpenChange={handleOpenChange}>
 			<SheetTrigger asChild>
-				<Button variant="outline" size="icon" className="md:hidden">
+				<Button variant="outline" size="icon" className="lg:hidden">
 					<Menu className="w-6 h-6" />
 				</Button>
 			</SheetTrigger>
@@ -26,6 +43,39 @@ export default function MobileDrawer() {
 					>
 						All Products
 					</Link>
+
+					{/* Categories */}
+					{categories && Object.entries(categories).map(([category, subcategories]) => (
+						<div key={category} className="border-t pt-2 mt-2">
+							<button
+								onClick={() => toggleCategory(category)}
+								className="w-full flex items-center justify-between text-base font-medium py-2 px-2 rounded hover:bg-accent transition-colors text-left"
+							>
+								<span>{category}</span>
+								{expandedCategory === category ? (
+									<ChevronDown className="w-4 h-4" />
+								) : (
+									<ChevronRight className="w-4 h-4" />
+								)}
+							</button>
+
+							{/* Collapsible subcategories */}
+							{expandedCategory === category && (
+								<div className="ml-4 mt-1 space-y-1">
+									{subcategories.map((subcat) => (
+										<Link
+											key={subcat}
+											href={`/products/${encodeURIComponent(category)}/${encodeURIComponent(subcat)}`}
+											className="block text-sm py-2 px-2 rounded hover:bg-accent transition-colors text-left"
+											onClick={() => setOpen(false)}
+										>
+											{subcat}
+										</Link>
+									))}
+								</div>
+							)}
+						</div>
+					))}
 				</nav>
 			</SheetContent>
 		</Sheet>

@@ -1,110 +1,221 @@
 [
     {
         "id": "1",
-        "name": "Mountain Conqueror X2",
-        "type": "Cycle",
-        "category": "Mountain",
-        "brand": "Hero",
-        "price": 68000.00,
-        "rating": 4.8,
-        "popularity": 12,
-        "image": "https://placehold.co/600x400.png",
-        "dataAiHint": "trail mountain bike",
-        "description": "Brave the toughest trails with the Mountain Conqueror X2. Built for durability and performance, it features a lightweight aluminum frame and superior suspension.",
-        "details": "Frame: Lightweight Aluminum, Suspension: Full-suspension, Gears: 24-speed Shimano, Brakes: Hydraulic Disc Brakes"
+        "name": "Redmi Note 12 Pro",
+        "category": "Electronics",
+        "subCategory": "Mobile Phones",
+        "brand": "Xiaomi",
+        "price": 18999,
+        "discountPercentage": 10,
+        "rating": 4.3,
+        "shortDescription": "Fast and affordable 5G phone",
+        "details": "67W fast charging, 120Hz AMOLED display",
+        "images": [
+            "https://yourcdn.com/images/redmi-note-12-front.jpg",
+            "https://yourcdn.com/images/redmi-note-12-back.jpg"
+        ]
     },
     {
         "id": "2",
-        "name": "Urban Glide Pro",
-        "type": "Cycle",
-        "category": "Hybrid",
-        "brand": "Atlas",
-        "price": 49600.00,
-        "rating": 4.6,
-        "popularity": 15,
-        "image": "https://placehold.co/600x400.png",
-        "dataAiHint": "city hybrid bike",
-        "description": "The perfect companion for your city commutes and weekend explorations. The Urban Glide Pro offers a comfortable ride with a sleek, modern design.",
-        "details": "Frame: Aluminum Alloy, Gears: 8-speed Internal Hub, Brakes: V-Brakes, Includes: Fenders and Rear Rack"
+        "name": "Samsung Galaxy M14",
+        "category": "Electronics",
+        "subCategory": "Mobile Phones",
+        "brand": "Samsung",
+        "price": 13499,
+        "rating": 4.2,
+        "shortDescription": "Reliable battery and display",
+        "images": [
+            "https://yourcdn.com/images/galaxy-m14.jpg"
+        ]
     },
     {
         "id": "3",
-        "name": "Velocity Racer 5000",
-        "type": "Cycle",
-        "category": "Road",
-        "brand": "Firefox",
-        "price": 100000.00,
-        "rating": 4.9,
-        "popularity": 9,
-        "image": "https://placehold.co/600x400.png",
-        "dataAiHint": "racing road bike",
-        "description": "Experience pure speed. The Velocity Racer 5000 is an aerodynamic marvel, designed for competitive racing and serious road cycling enthusiasts.",
-        "details": "Frame: Carbon Fiber, Gears: 22-speed Shimano Ultegra, Brakes: Caliper, Weight: 7.5kg"
+        "name": "Realme Narzo 60x",
+        "category": "Electronics",
+        "subCategory": "Mobile Phones",
+        "brand": "Realme",
+        "price": 10999,
+        "discountPercentage": 5,
+        "rating": 4.0,
+        "details": "MediaTek Dimensity processor with smooth UI"
     },
     {
         "id": "4",
-        "name": "Kid's Sparkle Cruiser",
-        "type": "Cycle",
-        "category": "Kids",
-        "brand": "Avon",
-        "price": 14400.00,
-        "rating": 4.7,
-        "popularity": 20,
-        "image": "https://placehold.co/600x400.png",
-        "dataAiHint": "pink kids bike",
-        "description": "A fun and safe first bike for your little one. The Sparkle Cruiser comes with training wheels and a vibrant design that kids will love.",
-        "details": "Frame: Steel, Brakes: Coaster Brake, Size: 16-inch wheels, Includes: Training wheels, basket, and streamers"
+        "name": "boAt Airdopes 141",
+        "category": "Electronics",
+        "subCategory": "Earphones",
+        "brand": "boAt",
+        "price": 1199,
+        "rating": 4.1
     },
     {
         "id": "5",
-        "name": "Aero-Dynamic Helmet",
-        "type": "Accessory",
-        "category": "Safety",
-        "brand": "Vega",
-        "price": 6000.00,
-        "rating": 4.9,
-        "popularity": 25,
-        "image": "https://placehold.co/600x400.png",
-        "dataAiHint": "aerodynamic helmet",
-        "description": "Stay safe and stylish with the Aero-Dynamic Helmet. It offers superior protection with a lightweight, ventilated design for maximum comfort."
+        "name": "Sony WH-CH520",
+        "category": "Electronics",
+        "subCategory": "Headphones",
+        "brand": "Sony",
+        "price": 4499,
+        "rating": 4.6,
+        "shortDescription": "30 hours battery life, great clarity",
+        "images": [
+            "https://yourcdn.com/images/sony-ch520.jpg"
+        ]
     },
     {
         "id": "6",
-        "name": "All-Terrain Tire Set",
-        "type": "Accessory",
-        "category": "Parts",
-        "brand": "CEAT",
-        "price": 7200.00,
-        "rating": 4.5,
-        "popularity": 11,
-        "image": "https://placehold.co/600x400.png",
-        "dataAiHint": "mountain bike tires",
-        "description": "Upgrade your ride with our All-Terrain Tire Set. Designed for grip and durability on a variety of surfaces, from city streets to mountain trails."
+        "name": "Apple MacBook Air M1",
+        "category": "Computers",
+        "subCategory": "Laptops",
+        "brand": "Apple",
+        "price": 84990,
+        "rating": 4.8,
+        "details": "8GB RAM, 256GB SSD, lightweight build",
+        "images": [
+            "https://yourcdn.com/images/macbook-air.jpg"
+        ]
     },
     {
         "id": "7",
-        "name": "Pro-Rider Cycling Jersey",
-        "type": "Gear",
-        "category": "Apparel",
-        "brand": "Decathlon",
-        "price": 5200.00,
-        "rating": 4.6,
-        "popularity": 18,
-        "image": "https://placehold.co/600x400.png",
-        "dataAiHint": "yellow cycling jersey",
-        "description": "A high-performance jersey made from moisture-wicking fabric to keep you cool and dry. Features a full-length zipper and three rear pockets."
+        "name": "HP Victus 15",
+        "category": "Computers",
+        "subCategory": "Laptops",
+        "brand": "HP",
+        "price": 57990,
+        "discountPercentage": 15,
+        "rating": 4.4,
+        "shortDescription": "Gaming performance under budget"
     },
     {
         "id": "8",
-        "name": "Mini Bicycle Model",
-        "type": "Toy",
-        "category": "Collectibles",
-        "brand": "BSA",
-        "price": 2000.00,
-        "rating": 4.8,
-        "popularity": 7,
-        "image": "https://placehold.co/600x400.png",
-        "dataAiHint": "collectible bicycle model",
-        "description": "A detailed die-cast model of a classic road bike. Perfect for collectors and cycling enthusiasts of all ages."
+        "name": "OnePlus Nord CE 3 Lite",
+        "category": "Electronics",
+        "subCategory": "Mobile Phones",
+        "brand": "OnePlus",
+        "price": 19999,
+        "rating": 4.1
+    },
+    {
+        "id": "9",
+        "name": "Canon EOS 1500D",
+        "category": "Electronics",
+        "subCategory": "Cameras",
+        "brand": "Canon",
+        "price": 32999,
+        "rating": 4.5,
+        "details": "DSLR camera with 24.1 MP and Wi-Fi",
+        "images": [
+            "https://yourcdn.com/images/canon-1500d.jpg"
+        ]
+    },
+    {
+        "id": "10",
+        "name": "Nike Revolution 6",
+        "category": "Fashion",
+        "subCategory": "Shoes",
+        "brand": "Nike",
+        "price": 3495,
+        "discountPercentage": 20,
+        "rating": 4.2,
+        "shortDescription": "Running shoes for men"
+    },
+    {
+        "id": "11",
+        "name": "Puma T-Shirt",
+        "category": "Fashion",
+        "subCategory": "Clothing",
+        "brand": "Puma",
+        "price": 899,
+        "rating": 4.0,
+        "images": [
+            "https://yourcdn.com/images/puma-tshirt.jpg"
+        ]
+    },
+    {
+        "id": "12",
+        "name": "Adidas Gym Bag",
+        "category": "Accessories",
+        "subCategory": "Bags",
+        "brand": "Adidas",
+        "price": 1599,
+        "rating": 4.1
+    },
+    {
+        "id": "13",
+        "name": "Fire-Boltt Ninja Call Pro",
+        "category": "Electronics",
+        "subCategory": "Smartwatches",
+        "brand": "Fire-Boltt",
+        "price": 1499,
+        "rating": 3.9
+    },
+    {
+        "id": "14",
+        "name": "Noise ColorFit Pulse 2",
+        "category": "Electronics",
+        "subCategory": "Smartwatches",
+        "brand": "Noise",
+        "price": 1799,
+        "rating": 4.0,
+        "discountPercentage": 8
+    },
+    {
+        "id": "15",
+        "name": "JBL Flip 5",
+        "category": "Electronics",
+        "subCategory": "Speakers",
+        "brand": "JBL",
+        "price": 6999,
+        "rating": 4.5,
+        "shortDescription": "Portable Bluetooth speaker",
+        "images": [
+            "https://yourcdn.com/images/jbl-flip5.jpg"
+        ]
+    },
+    {
+        "id": "16",
+        "name": "Lenovo Tab M10",
+        "category": "Electronics",
+        "subCategory": "Tablets",
+        "brand": "Lenovo",
+        "price": 10499,
+        "rating": 4.1
+    },
+    {
+        "id": "17",
+        "name": "Mi 5A 32 Inch TV",
+        "category": "Electronics",
+        "subCategory": "Televisions",
+        "brand": "Xiaomi",
+        "price": 13499,
+        "rating": 4.3,
+        "details": "HD Ready Smart TV with Android"
+    },
+    {
+        "id": "18",
+        "name": "Asus ROG Strix G17",
+        "category": "Computers",
+        "subCategory": "Laptops",
+        "brand": "Asus",
+        "price": 109999,
+        "rating": 4.7,
+        "shortDescription": "High-end gaming laptop"
+    },
+    {
+        "id": "19",
+        "name": "Samsung Galaxy Tab S6 Lite",
+        "category": "Electronics",
+        "subCategory": "Tablets",
+        "brand": "Samsung",
+        "price": 23999,
+        "rating": 4.5
+    },
+    {
+        "id": "20",
+        "name": "Zebronics Gaming Keyboard",
+        "category": "Computers",
+        "subCategory": "Accessories",
+        "brand": "Zebronics",
+        "price": 1299,
+        "rating": 4.0
     }
 ]

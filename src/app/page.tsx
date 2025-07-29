@@ -3,7 +3,8 @@ import React from 'react'
 import Link from 'next/link'
 import { ArrowRight, Star, Shield, Truck } from 'lucide-react'
 
-const HomePage = () => {
+const HomePage = async () => {
+
   return (
     <div className="space-y-12">
       {/* Hero Section */}
