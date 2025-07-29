@@ -7,10 +7,28 @@ const HomePage = async () => {
 
   return (
     <div className="space-y-12">
-      {/* Hero Section */}
-      <div className="hero bg-gradient-to-r from-primary to-secondary rounded-2xl text-primary-content">
-        <div className="hero-content text-center py-20">
-          <div className="max-w-2xl">
+      <div className="w-full rounded-2xl shadow-2xl overflow-hidden">
+        <img
+          src="/images/hero_sm.png"
+          alt="Cyclist on a bike"
+          className="w-full h-auto object-cover block md:hidden"
+        />
+        <img
+          src="/images/hero_lg.png"
+          alt="Cyclist on a bike"
+          className="w-full h-auto object-cover hidden md:block"
+        />
+      </div>
+      {/* <div className="hero bg-gradient-to-r from-primary to-secondary rounded-2xl text-primary-content">
+        <div className="hero-content flex-col lg:flex-row-reverse py-20 gap-12">
+          <div className="max-w-md rounded-lg shadow-2xl overflow-hidden">
+            <img
+              src="/images/hero_lg.png"
+              alt="Cyclist on a bike"
+              className="w-full h-full object-cover"
+            />
+          </div>
+          <div className="max-w-2xl text-center lg:text-left">
             <h1 className="text-5xl font-bold font-headline mb-6">
               Let's Ride Together
             </h1>
@@ -24,7 +42,7 @@ const HomePage = async () => {
             </Link>
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* Features Section */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
