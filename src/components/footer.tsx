@@ -1,6 +1,6 @@
 import { Twitter, Instagram, Facebook } from 'lucide-react';
 import Link from 'next/link';
-import BrandLogo from '@/components/brand-logo';
+import BrandLogo from '@/components/BrandLogo';
 
 export default function Footer() {
   return (

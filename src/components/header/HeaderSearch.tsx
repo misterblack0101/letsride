@@ -9,7 +9,7 @@ interface SearchComponentProps {
     isMobile?: boolean;
 }
 
-export default function SearchComponent({ isOpen, onToggle, isMobile = false }: SearchComponentProps) {
+export default function HeaderSearch({ isOpen, onToggle, isMobile = false }: SearchComponentProps) {
     const [searchValue, setSearchValue] = useState('');
 
     const handleSearch = () => {

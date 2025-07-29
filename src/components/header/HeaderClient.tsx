@@ -4,18 +4,17 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { ShoppingCart } from 'lucide-react';
 import { useCart } from '@/context/cart-context';
-import BrandLogo from '@/components/brand-logo';
-import SearchComponent from '@/components/search';
+import BrandLogo from '@/components/BrandLogo';
+import HeaderSearch from '@/components/header/HeaderSearch';
 import { useState } from 'react';
-import MegaMenu from './mega-menu';
-import MobileDrawer from './mobile-drawer';
-import { Menu } from 'lucide-react';
+import MegaMenu from './MegaMenu';
+import MobileDrawer from '../MobileDrawer';
 
 interface HeaderContentProps {
   categories?: Record<string, string[]>;
 }
 
-export default function HeaderContent({ categories }: HeaderContentProps) {
+export default function HeaderClient({ categories }: HeaderContentProps) {
   const { itemCount } = useCart();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const pathname = usePathname();
@@ -38,7 +37,7 @@ export default function HeaderContent({ categories }: HeaderContentProps) {
 
         {/* Right - Cart */}
         <div className="flex items-center gap-4">
-          <SearchComponent
+          <HeaderSearch
             isOpen={isSearchOpen}
             onToggle={() => setIsSearchOpen(!isSearchOpen)}
             isMobile={true}
@@ -67,7 +66,7 @@ export default function HeaderContent({ categories }: HeaderContentProps) {
           <div className="container mx-auto flex items-center justify-between py-4 font-light tracking-widest uppercase text-sm relative">
             {/* Left - Search */}
             <div className="flex items-center gap-6">
-              <SearchComponent
+              <HeaderSearch
                 isOpen={isSearchOpen}
                 onToggle={() => setIsSearchOpen(!isSearchOpen)}
                 isMobile={false}

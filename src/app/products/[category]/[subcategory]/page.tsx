@@ -1,6 +1,6 @@
 // app/products/category/[category]/[subcategory]/page.tsx
 import { getFilteredProductsViaCategory } from '@/lib/services/products'; // <- you write this
-import ProductsClient from '../../products-client';
+import ClientProducts from '../../ClientProducts';
 
 type Props = {
     params: {
@@ -15,5 +15,5 @@ export default async function CategoryPage({ params }: Props) {
     const products = await getFilteredProductsViaCategory(category, subcategory);
 
 
-    return <ProductsClient initialProducts={products} />;
+    return <ClientProducts initialProducts={products} />;
 }

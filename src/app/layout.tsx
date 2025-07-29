@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
-import Header from "@/components/header"
-import Footer from "@/components/footer"
+import Footer from "@/components/Footer"
 import { CartProvider } from '@/context/cart-context';
+import Header from '@/components/header/Header';
 
 export const metadata: Metadata = {
   title: "Let's Ride Online",

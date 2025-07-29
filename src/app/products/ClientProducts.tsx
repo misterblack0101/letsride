@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useMemo } from 'react';
-import ProductFilters from '@/components/product-filters';
-import ProductGrid from '@/components/product-grid';
-import ProductSort from '@/components/product-sort';
+import ProductFilters from '@/components/products/ProductFilters';
+import ProductGrid from '@/components/products/ProductGrid';
+import ProductSort from '@/components/products/ProductSort';
 import ViewToggle from '@/components/view-toggle';
 import { useIsMobile } from '@/hooks/use-mobile';
 import type { Product } from '@/lib/models/Product';
@@ -12,7 +12,7 @@ interface ProductsClientProps {
     initialProducts: Product[];
 }
 
-export default function ProductsClient({ initialProducts }: ProductsClientProps) {
+export default function ClientProducts({ initialProducts }: ProductsClientProps) {
     const [filters, setFilters] = useState({
         type: [] as string[],
         brand: [] as string[],

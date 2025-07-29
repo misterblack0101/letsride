@@ -7,7 +7,6 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Star, ShoppingCart } from 'lucide-react';
-import GearRecommendation from '@/components/gear-recommendation';
 
 export default function ProductDetails({ product }: { product: Product }) {
   const { addItem } = useCart();
@@ -63,9 +62,6 @@ export default function ProductDetails({ product }: { product: Product }) {
             </CardContent>
           </Card>
 
-          {product.type === 'Cycle' && product.details && (
-            <GearRecommendation cycleDetails={`${product.name} - ${product.details}`} />
-          )}
         </div>
       </div>
     </div>
