@@ -1,6 +1,5 @@
 import type { Product } from '@/lib/models/Product';
 import ProductCard from './product-card';
-import { useIsMobile } from '@/hooks/use-mobile';
 
 type ProductGridProps = {
   products: Product[];
@@ -8,7 +7,6 @@ type ProductGridProps = {
 };
 
 export default function ProductGrid({ products, viewMode }: ProductGridProps) {
-  const isMobile = useIsMobile();
 
   if (products.length === 0) {
     return (

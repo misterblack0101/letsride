@@ -63,53 +63,57 @@ export default function HeaderContent({ categories }: HeaderContentProps) {
       {/* Desktop Header */}
       <header className="hidden lg:flex flex-col w-full bg-white text-black">
         {/* Top row */}
-        <div className="flex items-center justify-between px-8 py-4 font-light tracking-widest uppercase text-sm border-b border-gray-200 relative">
-          {/* Left - Search */}
-          <div className="flex items-center gap-6">
-            <SearchComponent
-              isOpen={isSearchOpen}
-              onToggle={() => setIsSearchOpen(!isSearchOpen)}
-              isMobile={false}
-            />
-          </div>
+        <div className="w-full border-b border-gray-200">
+          <div className="container mx-auto flex items-center justify-between py-4 font-light tracking-widest uppercase text-sm relative">
+            {/* Left - Search */}
+            <div className="flex items-center gap-6">
+              <SearchComponent
+                isOpen={isSearchOpen}
+                onToggle={() => setIsSearchOpen(!isSearchOpen)}
+                isMobile={false}
+              />
+            </div>
 
-          {/* Center - Logo */}
-          <div className="absolute left-1/2 transform -translate-x-1/2">
-            <Link href="/" className="hover:opacity-80 transition-all duration-200">
-              <BrandLogo size="md" />
-            </Link>
-          </div>
-
-          {/* Right - Links & Cart */}
-          <div className="flex items-center gap-6">
-            <Link
-              href="/products"
-              className={`hover:text-primary transition-colors ${isActive('/products') ? 'text-primary font-semibold' : ''
-                }`}
-            >
-              All Products
-            </Link>
-
-            <div className="indicator">
-              {itemCount > 0 && (
-                <span className="indicator-item badge badge-sm bg-primary text-white font-bold">
-                  {itemCount > 9 ? '9+' : itemCount}
-                </span>
-              )}
-              <Link
-                href="/cart"
-                className="hover:text-primary transition-transform hover:scale-110"
-              >
-                <ShoppingCart className="h-5 w-5" />
+            {/* Center - Logo */}
+            <div className="absolute left-1/2 transform -translate-x-1/2">
+              <Link href="/" className="hover:opacity-80 transition-all duration-200">
+                <BrandLogo size="md" />
               </Link>
+            </div>
+
+            {/* Right - Links & Cart */}
+            <div className="flex items-center gap-6">
+              <Link
+                href="/products"
+                className={`hover:text-primary transition-colors ${isActive('/products') ? 'text-primary font-semibold' : ''
+                  }`}
+              >
+                All Products
+              </Link>
+
+              <div className="indicator">
+                {itemCount > 0 && (
+                  <span className="indicator-item badge badge-sm bg-primary text-white font-bold">
+                    {itemCount > 9 ? '9+' : itemCount}
+                  </span>
+                )}
+                <Link
+                  href="/cart"
+                  className="hover:text-primary transition-transform hover:scale-110"
+                >
+                  <ShoppingCart className="h-5 w-5" />
+                </Link>
+              </div>
             </div>
           </div>
         </div>
 
         {/* Mega Menu row */}
         {categories && (
-          <div className="px-8 py-2 border-b border-gray-200">
-            <MegaMenu data={categories} />
+          <div className="w-full border-b border-gray-200">
+            <div className="container mx-auto py-2">
+              <MegaMenu data={categories} />
+            </div>
           </div>
         )}
       </header>

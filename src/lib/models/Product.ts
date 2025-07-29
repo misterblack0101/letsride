@@ -19,6 +19,7 @@ export const ProductSchema = z.object({
   brandLogo: product.brand
     ? `${baseBrandLogoUrl}/${product.brand.toLowerCase().replace(/\s+/g, '-')}.png`
     : `${baseBrandLogoUrl}/default.png`,
+  // /images/bicycle_no_bg.png
 }));
 
 export type Product = z.infer<typeof ProductSchema>;
