@@ -50,12 +50,11 @@ export default function CartPage() {
                     <TableRow key={item.id}>
                       <TableCell className="hidden md:table-cell">
                         <Image
-                          src={item.image}
+                          src={item.images?.[0] || "/images/placeholder.jpg"}
                           alt={item.name}
                           width={80}
                           height={80}
                           className="rounded-md object-cover"
-                          data-ai-hint={item.dataAiHint}
                         />
                       </TableCell>
                       <TableCell>
@@ -83,7 +82,7 @@ export default function CartPage() {
                           </Button>
                         </div>
                       </TableCell>
-                      <TableCell className="text-right font-medium">
+                      <TableCell className="text-right font-medium font-currency">
                         ₹{(item.price * item.quantity).toLocaleString('en-IN')}
                       </TableCell>
                       <TableCell>
@@ -105,14 +104,14 @@ export default function CartPage() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Subtotal</span>
-                <span className="font-medium">₹{cartTotal.toLocaleString('en-IN')}</span>
+                <span className="text-muted-foreground ">Subtotal</span>
+                <span className="font-medium font-currency">₹{cartTotal.toLocaleString('en-IN')}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Shipping</span>
                 <span className="font-medium">Free</span>
               </div>
-              <div className="flex justify-between text-lg font-bold border-t pt-4 mt-4">
+              <div className="flex justify-between text-lg font-bold border-t pt-4 mt-4 font-currency">
                 <span>Total</span>
                 <span>₹{cartTotal.toLocaleString('en-IN')}</span>
               </div>

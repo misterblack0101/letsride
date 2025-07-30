@@ -31,7 +31,7 @@ export async function fetchProducts(): Promise<Product[]> {
 
     // Map over each document and validate its data
     const data = productDocs.docs.map(doc => {
-      const raw = { id: doc.id, ...doc.data() };
+      const raw = { ...doc.data(), id: doc.id, };
       // Validate the raw data against the ProductSchema
       const parsed = ProductSchema.safeParse(raw);
       if (!parsed.success) {
@@ -52,18 +52,25 @@ export async function fetchProducts(): Promise<Product[]> {
 export async function getProductById(id: string): Promise<Product | null> {
   return retryOperation(async () => {
 
+    console.log(`Fetching product with ID: ${id}`);
+
     const productDocRef = db.collection('products').doc(id);
     const snapshot = await productDocRef.get();
 
+    console.log(`Product snapshot exists: ${snapshot.exists}`);
+
+
     if (!snapshot.exists) return null;
 
-    const raw = { id: snapshot.id, ...snapshot.data() };
+    const raw = { ...snapshot.data(), id: snapshot.id, };
     const parsed = ProductSchema.safeParse(raw);
 
     if (!parsed.success) {
       console.error('Invalid product schema:', parsed.error.format());
       return null;
     }
+
+    console.log(`Product fetched successfully: ${id}`);
 
     return parsed.data;
   });
@@ -82,7 +89,7 @@ export async function getFilteredProductsViaCategory(category: string, subcatego
     .get();
 
   const products = querySnapshot.docs.map(doc => {
-    const raw = { id: doc.id, ...doc.data() };
+    const raw = { ...doc.data(), id: doc.id, };
     const parsed = ProductSchema.safeParse(raw);
     if (!parsed.success) {
       console.warn('Invalid product skipped:', parsed.error.format());
@@ -103,7 +110,7 @@ export async function fetchRecommendedProducts(): Promise<Product[]> {
       .get();
 
     const products = snapshot.docs.map(doc => {
-      const raw = { id: doc.id, ...doc.data() };
+      const raw = { ...doc.data(), id: doc.id, };
       const parsed = ProductSchema.safeParse(raw);
       if (!parsed.success) {
         console.warn('Invalid product skipped:', parsed.error.format());
