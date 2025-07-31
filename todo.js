@@ -12,3 +12,13 @@
 //       { brands: ['apple', 'hp', 'dell'] }
 
 // Use a Cloud Function that triggers on products onCreate/onDelete
+
+// ✅ Hybrid: Best of Both Worlds
+// You can:
+
+// Use SSR for initial product load
+
+// Use /api/products for dynamic filters, infinite scroll, etc.
+
+
+// show loader using default loader mechanism in nextjs api routes

@@ -18,7 +18,7 @@ export default function ProductGrid({ products, viewMode }: ProductGridProps) {
   }
 
   const gridClasses = viewMode === 'grid'
-    ? "grid grid-cols-2 sm:grid-cols-2 xl:grid-cols-3 gap-6"
+    ? "grid grid-cols-2 sm:grid-cols-2 xl:grid-cols-4 gap-6"
     : "flex flex-col gap-4";
 
   return (

@@ -87,7 +87,7 @@ export default function HeaderClient({ categories }: HeaderContentProps) {
                 className={`hover:text-primary transition-colors ${isActive('/products') ? 'text-primary font-semibold' : ''
                   }`}
               >
-                All Products
+                Store
               </Link>
 
               <div className="indicator">
