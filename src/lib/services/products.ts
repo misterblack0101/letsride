@@ -20,32 +20,98 @@ async function retryOperation<T>(operation: () => Promise<T>, maxRetries = 3): P
   throw new Error('Max retries exceeded');
 }
 
-// Fetch all products
-// 🔄 Fetch all products from the Firestore 'products' collection
-export async function fetchProducts(): Promise<Product[]> {
+// Filter options interface
+export interface ProductFilterOptions {
+  categories?: string[];
+  brands?: string[];
+  minPrice?: number;
+  maxPrice?: number;
+  sortBy?: 'name' | 'price_low' | 'price_high' | 'rating' | 'popularity';
+}
+
+// Enhanced fetch function with server-side filtering
+export async function fetchFilteredProducts(filters: ProductFilterOptions = {}): Promise<Product[]> {
   return retryOperation(async () => {
     const productsCollection = db.collection('products') as CollectionReference;
-    // const productsCollection = collection(db, 'products');
-    // Retrieve all documents from the 'products' collection
-    const productDocs = await productsCollection.get();
+    let query: any = productsCollection;
 
-    // Map over each document and validate its data
-    const data = productDocs.docs.map(doc => {
-      const raw = { ...doc.data(), id: doc.id, };
-      // Validate the raw data against the ProductSchema
+    // Apply Firestore filters where possible
+    if (filters.categories && filters.categories.length === 1) {
+      // Firestore can only filter by one category at a time efficiently
+      query = query.where('category', '==', filters.categories[0]);
+    }
+
+    if (filters.brands && filters.brands.length === 1) {
+      // Firestore can only filter by one brand at a time efficiently
+      query = query.where('brand', '==', filters.brands[0]);
+    }
+
+    // Get documents
+    const productDocs = await query.get();
+
+    // Map and validate documents
+    const products = productDocs.docs.map((doc: any) => {
+      const raw = { ...doc.data(), id: doc.id };
       const parsed = ProductSchema.safeParse(raw);
       if (!parsed.success) {
-        // If validation fails, log a warning and skip this product
         console.warn('Invalid product skipped:', parsed.error.format());
         return null;
       }
-      // If valid, return the parsed product data
       return parsed.data;
-    });
+    }).filter(Boolean) as Product[];
 
-    // Filter out any invalid (null) products and return the valid ones
-    return data.filter(Boolean) as Product[];
+    // Apply client-side filters for complex filtering
+    let filteredProducts = products;
+
+    // Filter by multiple categories (if more than one)
+    if (filters.categories && filters.categories.length > 1) {
+      filteredProducts = filteredProducts.filter(p =>
+        filters.categories!.includes(p.category)
+      );
+    }
+
+    // Filter by multiple brands (if more than one)
+    if (filters.brands && filters.brands.length > 1) {
+      filteredProducts = filteredProducts.filter(p =>
+        p.brand && filters.brands!.includes(p.brand)
+      );
+    }
+
+    // Filter by price range
+    if (filters.minPrice !== undefined || filters.maxPrice !== undefined) {
+      const minPrice = filters.minPrice ?? 0;
+      const maxPrice = filters.maxPrice ?? Number.MAX_SAFE_INTEGER;
+      filteredProducts = filteredProducts.filter(p =>
+        p.price >= minPrice && p.price <= maxPrice
+      );
+    }
+
+    // Sort products
+    if (filters.sortBy) {
+      filteredProducts.sort((a, b) => {
+        switch (filters.sortBy) {
+          case 'name':
+            return a.name.localeCompare(b.name);
+          case 'price_low':
+            return a.price - b.price;
+          case 'price_high':
+            return b.price - a.price;
+          case 'rating':
+            return b.rating - a.rating;
+          case 'popularity':
+          default:
+            return b.rating - a.rating; // Using rating as popularity proxy
+        }
+      });
+    }
+
+    return filteredProducts;
   });
+}
+
+// Fetch all products (kept for backward compatibility)
+export async function fetchProducts(): Promise<Product[]> {
+  return fetchFilteredProducts();
 }
 
 // 🔍 Fetch a single product by ID (from Firestore)
