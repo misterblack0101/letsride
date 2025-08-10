@@ -26,30 +26,23 @@ export default function ClientProducts({ initialProducts }: ProductsClientProps)
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
     const isMobile = useIsMobile();
 
-    // Fetch products if not provided initially
-    useEffect(() => {
-        if (!initialProducts) {
-            fetchProducts();
-        }
-    }, [initialProducts]);
-
-    const fetchProducts = async () => {
-        try {
-            setLoading(true);
-            setError(null);
-            const response = await fetch('/api/products');
-            if (!response.ok) {
-                throw new Error('Failed to fetch products');
-            }
-            const data = await response.json();
-            setProducts(data);
-        } catch (err) {
-            setError(err instanceof Error ? err.message : 'An error occurred');
-            console.error('Error fetching products:', err);
-        } finally {
-            setLoading(false);
-        }
-    };
+    // const fetchProducts = async () => {
+    //     try {
+    //         setLoading(true);
+    //         setError(null);
+    //         const response = await fetch('/api/products');
+    //         if (!response.ok) {
+    //             throw new Error('Failed to fetch products');
+    //         }
+    //         const data = await response.json();
+    //         setProducts(data);
+    //     } catch (err) {
+    //         setError(err instanceof Error ? err.message : 'An error occurred');
+    //         console.error('Error fetching products:', err);
+    //     } finally {
+    //         setLoading(false);
+    //     }
+    // };
 
     // Get available brands and categories from products
     const availableBrands = useMemo(() => {
@@ -96,7 +89,7 @@ export default function ClientProducts({ initialProducts }: ProductsClientProps)
 
     return (
         <div>
-            <h1 className="text-4xl font-bold font-headline text-center mb-2">Explore Our Collection</h1>
+            {/* <h1 className="text-4xl font-bold font-headline text-center mb-2">Explore Our Collection</h1>
             <p className="text-lg text-muted-foreground text-center mb-8">Find the perfect ride and gear for your next adventure.</p>
 
             {error && (
@@ -109,7 +102,7 @@ export default function ClientProducts({ initialProducts }: ProductsClientProps)
                         Try Again
                     </button>
                 </div>
-            )}
+            )} */}
 
             {loading ? (
                 <div className={`${isMobile ? 'space-y-4' : 'grid grid-cols-1 lg:grid-cols-4 gap-8'} items-start`}>
