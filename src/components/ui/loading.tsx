@@ -1,4 +1,7 @@
+'use client';
+
 import React from 'react';
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 
 interface LoadingSpinnerProps {
     size?: 'sm' | 'md' | 'lg';
@@ -17,6 +20,83 @@ export function LoadingSpinner({ size = 'md', className = '' }: LoadingSpinnerPr
     );
 }
 
+interface LottieLoadingProps {
+    size?: 'sm' | 'md' | 'lg';
+    fullscreen?: boolean;
+    className?: string;
+}
+
+export function LottieLoading({ size = 'md', fullscreen = true, className = '' }: LottieLoadingProps) {
+    const sizes = {
+        sm: { width: '100px', height: '100px' },
+        md: { width: '200px', height: '200px' },
+        lg: { width: '300px', height: '300px' },
+    };
+
+    const containerStyle = fullscreen
+        ? {
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            minHeight: "100vh",
+            width: "100%",
+            background: "#fffdf9",
+            position: "fixed" as const,
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            zIndex: 9999,
+        }
+        : {
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "2rem",
+            width: "100%",
+        };
+
+    // Responsive sizing for mobile
+    const responsiveSize = {
+        width: fullscreen ? 'min(200px, 50vw)' : sizes[size].width,
+        height: fullscreen ? 'min(200px, 50vw)' : sizes[size].height,
+        maxWidth: '100%',
+        maxHeight: '100%',
+    };
+
+    return (
+        <div style={containerStyle} role="status" className={`${className}`}>
+            <div style={responsiveSize}>
+                <DotLottieReact
+                    src="/lottie/cycling.lottie"
+                    loop
+                    autoplay
+                    style={{
+                        width: "100%",
+                        height: "100%",
+                    }}
+                />
+            </div>
+
+            <span
+                style={{
+                    position: "absolute",
+                    width: 1,
+                    height: 1,
+                    padding: 0,
+                    margin: -1,
+                    overflow: "hidden",
+                    clip: "rect(0,0,0,0)",
+                    whiteSpace: "nowrap",
+                    border: 0,
+                }}
+            >
+                Loading…
+            </span>
+        </div>
+    );
+}
+
 interface LoadingStateProps {
     message?: string;
     className?: string;
@@ -25,7 +105,7 @@ interface LoadingStateProps {
 export function LoadingState({ message = 'Loading...', className = '' }: LoadingStateProps) {
     return (
         <div className={`flex flex-col items-center justify-center py-12 ${className}`}>
-            <LoadingSpinner size="lg" className="mb-4" />
+            <LottieLoading size="md" fullscreen={false} className="mb-4" />
             <p className="text-lg text-muted-foreground">{message}</p>
         </div>
     );
