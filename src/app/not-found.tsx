@@ -45,15 +45,19 @@ export default function NotFound() {
                     </div>
 
                     {/* Go Home Button */}
-                    <div className="mb-3">
+                    <div className="mb-3 flex flex-col gap-2 w-full max-w-xs mx-auto">
                         <Link
                             href="/"
-                            className="inline-flex items-center px-4 py-2 sm:px-6 sm:py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-lg text-sm sm:text-base"
+                            className="btn btn-primary btn-lg w-full"
                         >
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 sm:h-5 sm:w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                            </svg>
-                            Go Back Home
+                            Go Home
+                        </Link>
+
+                        <Link
+                            href="/search"
+                            className="btn btn-outline btn-lg w-full"
+                        >
+                            Search Products
                         </Link>
                     </div>
 
@@ -101,15 +105,19 @@ export default function NotFound() {
                         </div>
 
                         {/* Go Home Button */}
-                        <div>
+                        <div className="flex gap-4 mb-8">
                             <Link
                                 href="/"
-                                className="inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-lg"
+                                className="btn btn-primary btn-lg"
                             >
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                                </svg>
-                                Go Back Home
+                                Go Home
+                            </Link>
+
+                            <Link
+                                href="/search"
+                                className="btn btn-outline btn-lg"
+                            >
+                                Search Products
                             </Link>
                         </div>
 
