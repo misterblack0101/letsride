@@ -9,7 +9,7 @@ export interface ProductFilterOptions {
   brands?: string[];
   minPrice?: number;
   maxPrice?: number;
-  sortBy?: 'name' | 'price_low' | 'price_high' | 'rating' | 'popularity';
+  sortBy?: 'name' | 'price_low' | 'price_high' | 'rating';
   pageSize?: number;
   startAfterId?: string;
 }

@@ -74,7 +74,7 @@ export default async function StorePage({ searchParams }: StorePageProps) {
 
   const minPrice = params.minPrice ? parseInt(params.minPrice) : undefined;
   const maxPrice = params.maxPrice ? parseInt(params.maxPrice) : undefined;
-  const sortBy = params.sort as 'name' | 'price_low' | 'price_high' | 'rating' | 'popularity' || 'popularity';
+  const sortBy = (params.sort as 'name' | 'price_low' | 'price_high' | 'rating') || 'rating';
   const viewMode = (params.view as 'grid' | 'list') || 'grid';
 
   // Use enhanced filtering for better performance
@@ -102,8 +102,6 @@ export default async function StorePage({ searchParams }: StorePageProps) {
       case 'price_high':
         return b.price - a.price;
       case 'rating':
-        return b.rating - a.rating;
-      case 'popularity':
       default:
         return b.rating - a.rating;
     }

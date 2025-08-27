@@ -31,7 +31,7 @@ export interface ProductFilterOptions {
     brands?: string[];
     minPrice?: number;
     maxPrice?: number;
-    sortBy?: 'name' | 'price_low' | 'price_high' | 'rating' | 'popularity';
+    sortBy?: 'name' | 'price_low' | 'price_high' | 'rating';
     // Pagination support (pageSize and startAfterId for cursor based paging)
     pageSize?: number;
     startAfterId?: string; // Document ID to start after (for cursor paging)
@@ -65,8 +65,6 @@ export async function fetchFilteredProducts(filters: ProductFilterOptions = {}):
                     case 'price_high':
                         return { field: 'price', direction: 'desc' as const };
                     case 'rating':
-                        return { field: 'rating', direction: 'desc' as const };
-                    case 'popularity':
                     default:
                         return { field: 'rating', direction: 'desc' as const };
                 }
@@ -198,8 +196,6 @@ export async function getFilteredProductsViaCategory(
                 case 'price_high':
                     return { field: 'price', direction: 'desc' as const };
                 case 'rating':
-                    return { field: 'rating', direction: 'desc' as const };
-                case 'popularity':
                 default:
                     return { field: 'rating', direction: 'desc' as const };
             }

@@ -21,8 +21,8 @@ export default function ProductSort({ sort, setSort }: ProductSortProps) {
         <SelectValue placeholder="Sort by" />
       </SelectTrigger>
       <SelectContent>
-        <SelectItem value="popularity">Sort by Popularity</SelectItem>
         <SelectItem value="rating">Sort by Average Rating</SelectItem>
+        <SelectItem value="name">Sort by Name (A-Z)</SelectItem>
         <SelectItem value="price_low">Sort by Price: Low to High</SelectItem>
         <SelectItem value="price_high">Sort by Price: High to Low</SelectItem>
       </SelectContent>

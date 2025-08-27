@@ -18,11 +18,10 @@ export default function ClientProducts({ initialProducts }: ProductsClientProps)
     const [loading, setLoading] = useState(!initialProducts);
     const [error, setError] = useState<string | null>(null);
     const [filters, setFilters] = useState({
-        type: [] as string[],
         brand: [] as string[],
         price: [0, 120000] as [number, number],
     });
-    const [sort, setSort] = useState('popularity');
+    const [sort, setSort] = useState('rating');
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
     const isMobile = useIsMobile();
 
@@ -49,39 +48,26 @@ export default function ClientProducts({ initialProducts }: ProductsClientProps)
         return [...new Set(products.map(p => p.brand).filter((brand): brand is string => !!brand))];
     }, [products]);
 
-    const availableTypes = useMemo(() => {
-        return [...new Set(products.map(p => p.category))];
-    }, [products]);
-
     const filteredProducts = useMemo(() => {
         return products
             .filter(p => {
-                // Filter by category (type)
-                const typeMatch = filters.type.length === 0 || filters.type.includes(p.category);
                 // Filter by brand
                 const brandMatch = filters.brand.length === 0 || (p.brand && filters.brand.includes(p.brand));
                 // Filter by price range
                 const priceMatch = p.price >= filters.price[0] && p.price <= filters.price[1];
 
-                return typeMatch && brandMatch && priceMatch;
+                return brandMatch && priceMatch;
             })
             .sort((a, b) => {
                 switch (sort) {
                     case 'name':
-                        // Sort by name, A to Z
                         return a.name.localeCompare(b.name);
                     case 'price_low':
-                        // Sort by price, lowest to highest
                         return a.price - b.price;
                     case 'price_high':
-                        // Sort by price, highest to lowest
                         return b.price - a.price;
                     case 'rating':
-                        // Sort by rating, highest to lowest
-                        return b.rating - a.rating;
-                    case 'popularity':
                     default:
-                        // Sort by rating as default (since popularity doesn't exist)
                         return b.rating - a.rating;
                 }
             });
@@ -138,7 +124,6 @@ export default function ClientProducts({ initialProducts }: ProductsClientProps)
                             filters={filters}
                             setFilters={setFilters}
                             availableBrands={availableBrands}
-                            availableTypes={availableTypes}
                         />
                     </aside>
                     <main className={isMobile ? '' : 'lg:col-span-3'}>

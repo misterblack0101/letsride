@@ -12,27 +12,17 @@ import { useIsMobile } from '@/hooks/use-mobile';
 
 type ProductFiltersProps = {
   filters: {
-    type: string[];
     brand: string[];
     price: [number, number];
   };
   setFilters: React.Dispatch<React.SetStateAction<any>>;
   availableBrands: string[];
-  availableTypes: string[];
 };
 
-export default function ProductFilters({ filters, setFilters, availableBrands, availableTypes }: ProductFiltersProps) {
+export default function ProductFilters({ filters, setFilters, availableBrands }: ProductFiltersProps) {
   const isMobile = useIsMobile();
   const [sliderValue, setSliderValue] = useState<[number, number]>(filters.price);
 
-  const handleTypeChange = (type: string) => {
-    setFilters((prev: any) => ({
-      ...prev,
-      type: prev.type.includes(type)
-        ? prev.type.filter((t: string) => t !== type)
-        : [...prev.type, type],
-    }));
-  };
 
   const handleBrandChange = (brand: string) => {
     setFilters((prev: any) => ({
@@ -105,23 +95,7 @@ export default function ProductFilters({ filters, setFilters, availableBrands, a
         </Button>
       </div>
 
-      <div>
-        <h4 className="font-semibold mb-3">Type</h4>
-        <div className="space-y-3">
-          {availableTypes.map(type => (
-            <div key={type} className="flex items-center space-x-2">
-              <Checkbox
-                id={`type-${type}`}
-                checked={filters.type.includes(type)}
-                onCheckedChange={() => handleTypeChange(type)}
-              />
-              <Label htmlFor={`type-${type}`} className="cursor-pointer text-sm">{type}</Label>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <Separator />
+      {/* Type filter removed by request */}
 
       <div>
         <h4 className="font-semibold mb-3">Brand</h4>

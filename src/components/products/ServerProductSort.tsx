@@ -18,16 +18,9 @@ export default function ServerProductSort({ currentSort }: ServerProductSortProp
     const router = useRouter();
     const searchParams = useSearchParams();
     const isMobile = useIsMobile();
-
     const handleSortChange = (value: string) => {
         const params = new URLSearchParams(searchParams);
-
-        if (value === 'popularity') {
-            params.delete('sort');
-        } else {
-            params.set('sort', value);
-        }
-
+        params.set('sort', value);
         router.push(`/products?${params.toString()}`);
     };
 
@@ -40,10 +33,8 @@ export default function ServerProductSort({ currentSort }: ServerProductSortProp
             case 'price_high':
                 return 'Price: High to Low';
             case 'rating':
-                return 'Rating';
-            case 'popularity':
             default:
-                return 'Popularity';
+                return 'Rating';
         }
     };
 
@@ -53,7 +44,6 @@ export default function ServerProductSort({ currentSort }: ServerProductSortProp
                 <SelectValue placeholder="Sort by" />
             </SelectTrigger>
             <SelectContent>
-                <SelectItem value="popularity">Popularity</SelectItem>
                 <SelectItem value="rating">Rating</SelectItem>
                 <SelectItem value="name">Name (A-Z)</SelectItem>
                 <SelectItem value="price_low">Price: Low to High</SelectItem>
