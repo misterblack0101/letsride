@@ -1,5 +1,5 @@
 // app/products/category/[category]/[subcategory]/page.tsx
-import { getFilteredProductsViaCategory } from '@/lib/services/products'; // <- you write this
+import { getFilteredProductsViaCategory } from '@/lib/server/products.server'; // server-only
 import ClientProducts from '../../ClientProducts';
 
 type Props = {

@@ -1,4 +1,4 @@
-import { fetchProducts, fetchFilteredProducts } from '@/lib/services/products';
+import { fetchProducts, fetchFilteredProducts } from '@/lib/server/products.server';
 import ServerProductFilters from '@/components/products/ServerProductFilters';
 import ProductGrid from '@/components/products/ProductGrid';
 import ServerProductSort from '@/components/products/ServerProductSort';

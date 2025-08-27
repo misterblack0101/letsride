@@ -3,15 +3,21 @@
 ## Architecture Overview
 
 This is a **Next.js 15** e-commerce platform for cycling products with dual Firebase backends:
-- **Firestore** (via Firebase Admin SDK) for product data
+````instructions
+# Let's Ride Codebase Instructions
+
+## Architecture Overview
+
+This is a **Next.js 15** e-commerce platform for cycling products with dual Firebase backends:
+- **Firestore** (via Firebase Admin SDK) for product data — server-only
 - **Realtime Database** for category/subcategory metadata  
 - **Google AI (Gemini)** integration for product recommendations (via Genkit)
 
-### Key Service Boundaries
-- `/src/lib/services/products.ts` - All product CRUD operations using Firestore
-- `/src/lib/services/categories.ts` - Category data from Realtime DB with React cache
-- `/src/lib/firebase/admin.ts` - Server-side Firebase Admin initialization
-- `/src/context/cart-context.tsx` - Client-side cart state with localStorage persistence
+### Key Service Boundaries (updated)
+- `src/lib/server/products.server.ts` - Server-only product queries using `firebase-admin` (do not import from client)
+- `src/lib/services/products.ts` - Client-safe wrappers that call API routes (`/api/products`)
+- `src/lib/services/categories.ts` - Category data from Realtime DB with React cache
+- `src/lib/firebase/admin.ts` - Server-side Firebase Admin initialization
 
 ## Development Setup
 
@@ -33,7 +39,7 @@ GOOGLE_GENAI_API_KEY=...
 
 **Development Commands:**
 ```bash
-npm run dev              # Next.js on port 9002 with Turbopack
+npm run dev              # Next.js dev
 npm run genkit:dev       # AI development server (Genkit)
 npm run genkit:watch     # AI server with watch mode
 ```
@@ -41,106 +47,46 @@ npm run genkit:watch     # AI server with watch mode
 ## Critical Patterns
 
 ### Firebase Dual Database Pattern
-- **Products**: Stored in Firestore collections, accessed via `adminDb` from admin.ts
-- **Categories**: Stored in Realtime DB as CSV strings, parsed in `getSubcategoriesFromDB()`
-- **Why**: Categories are simple metadata, products need complex querying
+- **Products**: stored in Firestore and queried server-side via `src/lib/server/products.server.ts` (uses `adminDb`)
+- **Categories**: stored in Realtime DB as CSV strings, parsed in `getSubcategoriesFromDB()`
 
-### Server/Client Component Split
-- **Server**: `src/app/products/page.tsx` fetches initial data
-- **Client**: `src/app/products/ClientProducts.tsx` handles filtering/sorting
-- **Pattern**: Server components fetch data, client components manage state
+### Server/Client Component Split (important change)
+- Server-only product logic lives in `src/lib/server/*.server.ts` and is imported only by server components and API routes.
+- Client code should import `src/lib/services/products.ts` which uses `fetch()` to call API endpoints. This prevents `firebase-admin` from being bundled into the browser.
 
-## Development Guidelines
+## Data Fetching & Sorting (how it works now)
+- Client UI (e.g. `ProductSort`) updates a sort key.
+- Client code calls `src/lib/services/products.ts` which issues `fetch()` to `/api/products` or `/api/products/category/:cat/:subcat`.
+- API routes call `src/lib/server/products.server.ts` which executes Firestore `where`, `orderBy`, `limit`, and `startAfter` using the Admin SDK and returns JSON.
+- Server components can import `products.server` directly (SSR) to avoid extra network roundtrips.
 
-### Next.js Component Strategy
-- **Default to Server Components** in `app/` directory for all new components
-- **Only use Client Components** with `'use client'` directive when:
-  - Using React hooks like `useState`, `useEffect`, `useRouter`
-  - Requiring DOM interactions or browser APIs
-  - Managing client-side state or event handlers
+## Security & Hardening Notes
+- Never import `firebase-admin` from client code. Use the client-safe wrappers or API routes.
+- Server module `src/lib/server/products.server.ts` includes a runtime guard that throws if imported in a browser — fail-fast.
+- Create Firestore composite indexes when runtime errors show missing indexes for `where` + `orderBy` combos.
 
-### Data Fetching Patterns
-- **Server Components**: Use `fetch()` or direct database calls (see `services/` folder)
-- **Avoid `useEffect`** for data fetching - leverage Server Components instead
-- **Client Components**: Only fetch data when user interactions require it
+## Development Guidelines (high level)
+- Default to Server Components in `app/` for data fetching.
+- Only use Client Components when needed (`'use client'`).
+- Always pass server-fetched data into client components as props for initial render.
 
-### TypeScript Standards
-- **Enforce interfaces and types** for all component props and state
-- **Define explicit types** for API responses and database models
-- **Use Zod schemas** for runtime validation (see `Product.ts` model)
-
-### Layout Architecture
-- **Nest `layout.tsx` files** for consistent UI across route sections
-- **Global providers** in root layout (see `CartProvider` example)
-- **Section-specific layouts** for admin, products, etc.
-
-### Async Operations
-- **Prefer `async/await`** over Promise chains
-- **Add appropriate error handling** with try/catch blocks
-- **Implement UI loading states** using `loading.tsx` files or skeleton components
-- **Show user feedback** via toast notifications (existing pattern)
-
-### Route Structure
+## Route Structure (unchanged)
 ```
-/products                    # All products
-/products/[category]/[subcategory]  # Filtered products
+/products                    # All products (server page uses server module)
+/products/[category]/[subcategory]  # Filtered products (server API supports pagination + sort)
 /product/[id]               # Single product page
 /admin                      # Protected admin area
 ```
 
-### Authentication & Middleware
-- Simple cookie-based admin auth (hardcoded: `lala/lala`)
-- `middleware.ts` protects `/admin/*` routes
-- Admin APIs in `/src/app/api/admin/`
-
-## Component Architecture
-
-### Product Components
-- `ProductGrid.tsx` - Display logic only
-- `ProductFilters.tsx` - Client-side filtering UI
-- `ServerProductFilters.tsx` - Server-side filtering wrapper
-- **Pattern**: Server components wrap client components for data fetching
-
-### Layout Components
-- `Header.tsx` (server) wraps `HeaderClient.tsx` (client)
-- `MegaMenu.tsx` builds navigation from category data
-- Mobile-first responsive design with `use-mobile.tsx` hook
-
-## Data Flow Patterns
-
-### Product Filtering
-1. Server: `fetchFilteredProducts()` with ProductFilterOptions
-2. Client: State management in `ClientProducts.tsx`
-3. URL params sync for filters (category/subcategory routing)
-
-### Cart Management
-- Global state via React Context (`CartProvider`)
-- Automatic localStorage persistence
-- Toast notifications for user feedback
-
-## AI Integration (Currently Disabled)
-
-- Genkit setup exists but AI features return placeholder errors
-- `gear-recommendations-client.ts` has infrastructure for external AI APIs
-- Admin panel includes recommendation flags in product model
-
-## Build Configuration
-
-- **Next.js 15** with Turbopack for development
-- TypeScript with `ignoreBuildErrors: true` (legacy)
-- Image optimization disabled for static export compatibility
-- Trailing slashes enabled, custom `dist` directory
-
 ## Testing Strategy
+- Use `/src/lib/server/` for tests that need admin SDK (mock admin calls).
+- Use `/src/lib/services/` to test client fetch behavior (mock fetch or API routes).
 
-No test framework currently configured. When adding tests:
-- Use `/src/lib/services/` for business logic testing
-- Mock Firebase Admin SDK calls
-- Test cart context state management
+## Key Files to Reference (updated)
+- `src/lib/server/products.server.ts` - Server-only product queries (admin)
+- `src/lib/services/products.ts` - Client fetch wrappers (calls `/api/products`)
+- `src/lib/firebase/admin.ts` - Firebase Admin init (server)
+- `src/app/api/products/route.ts` and `src/app/api/products/category/[category]/[subcategory]/route.ts` - API endpoints
 
-## Key Files to Reference
-
-- `src/lib/models/Product.ts` - Zod schema with computed fields
-- `src/lib/firebase/admin.ts` - Firebase initialization pattern
-- `middleware.ts` - Route protection example
-- `src/app/layout.tsx` - Global providers setup
+````
+- Simple cookie-based admin auth (hardcoded: `lala/lala`)

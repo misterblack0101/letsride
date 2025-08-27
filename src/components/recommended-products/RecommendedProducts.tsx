@@ -1,5 +1,5 @@
 // components/RecommendedProducts.tsx
-import { fetchRecommendedProducts } from '@/lib/services/products';
+import { fetchRecommendedProducts } from '@/lib/server/products.server';
 import ClientRecommendedProducts from './ClientRecommendedProducts';
 
 export default async function RecommendedProducts() {
