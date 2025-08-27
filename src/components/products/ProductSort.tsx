@@ -23,8 +23,8 @@ export default function ProductSort({ sort, setSort }: ProductSortProps) {
       <SelectContent>
         <SelectItem value="popularity">Sort by Popularity</SelectItem>
         <SelectItem value="rating">Sort by Average Rating</SelectItem>
-        <SelectItem value="price-asc">Sort by Price: Low to High</SelectItem>
-        <SelectItem value="price-desc">Sort by Price: High to Low</SelectItem>
+        <SelectItem value="price_low">Sort by Price: Low to High</SelectItem>
+        <SelectItem value="price_high">Sort by Price: High to Low</SelectItem>
       </SelectContent>
     </Select>
   );
