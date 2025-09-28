@@ -10,11 +10,17 @@ import { useState } from 'react';
 import MegaMenu from './MegaMenu';
 import MobileDrawer from '../MobileDrawer';
 
-interface HeaderContentProps {
-  categories?: Record<string, string[]>;
+interface CategoryData {
+  subcategoriesByCategory: Record<string, string[]>;
+  brandsBySubcategory: Record<string, Record<string, string[]>>;
 }
 
-export default function HeaderClient({ categories }: HeaderContentProps) {
+interface HeaderContentProps {
+  categoriesData: CategoryData;
+}
+
+export default function HeaderClient({ categoriesData }: HeaderContentProps) {
+  const { subcategoriesByCategory } = categoriesData;
   const { itemCount } = useCart();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const pathname = usePathname();
@@ -26,7 +32,7 @@ export default function HeaderClient({ categories }: HeaderContentProps) {
       {/* Mobile Header */}
       <header className="lg:hidden flex items-center justify-between px-4 py-3 bg-white text-black border-b border-gray-200">
         {/* Left - Menu */}
-        <MobileDrawer categories={categories} />
+        <MobileDrawer subcategories={subcategoriesByCategory} brandsBySubcategory={categoriesData.brandsBySubcategory} />
 
         {/* Center - Logo */}
         <div className="flex-1 flex justify-center">
@@ -108,10 +114,13 @@ export default function HeaderClient({ categories }: HeaderContentProps) {
         </div>
 
         {/* Mega Menu row */}
-        {categories && (
+        {subcategoriesByCategory && Object.keys(subcategoriesByCategory).length > 0 && (
           <div className="w-full border-b border-gray-200">
             <div className="container mx-auto py-2">
-              <MegaMenu data={categories} />
+              <MegaMenu
+                data={subcategoriesByCategory}
+                brandsBySubcategory={categoriesData.brandsBySubcategory}
+              />
             </div>
           </div>
         )}

@@ -1,7 +1,7 @@
 import HeaderClient from './HeaderClient';
-import { getSubcategoriesFromDB } from '@/lib/services/categories';
+import { getCategoriesFromDB } from '@/lib/services/categories';
 
 export default async function Header() {
-    const categories = await getSubcategoriesFromDB();
-    return <HeaderClient categories={categories} />;
+    const { subcategoriesByCategory, brandsBySubcategory } = await getCategoriesFromDB();
+    return <HeaderClient categoriesData={{ subcategoriesByCategory, brandsBySubcategory }} />;
 }

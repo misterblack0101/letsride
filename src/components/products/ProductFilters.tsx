@@ -17,9 +17,18 @@ type ProductFiltersProps = {
   };
   setFilters: React.Dispatch<React.SetStateAction<any>>;
   availableBrands: string[];
+  // Add support for contextual filtering
+  category?: string;
+  subcategory?: string;
 };
 
-export default function ProductFilters({ filters, setFilters, availableBrands }: ProductFiltersProps) {
+export default function ProductFilters({
+  filters,
+  setFilters,
+  availableBrands,
+  category,
+  subcategory
+}: ProductFiltersProps) {
   const isMobile = useIsMobile();
   const [sliderValue, setSliderValue] = useState<[number, number]>(filters.price);
 

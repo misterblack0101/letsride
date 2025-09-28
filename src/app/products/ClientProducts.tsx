@@ -11,9 +11,17 @@ import type { Product } from '@/lib/models/Product';
 
 interface ProductsClientProps {
     initialProducts?: Product[];
+    category?: string;
+    subcategory?: string;
+    availableBrands?: string[];
 }
 
-export default function ClientProducts({ initialProducts }: ProductsClientProps) {
+export default function ClientProducts({
+    initialProducts,
+    category,
+    subcategory,
+    availableBrands
+}: ProductsClientProps) {
     const [products, setProducts] = useState<Product[]>(initialProducts || []);
     const [loading, setLoading] = useState(!initialProducts);
     const [error, setError] = useState<string | null>(null);
@@ -43,10 +51,14 @@ export default function ClientProducts({ initialProducts }: ProductsClientProps)
     //     }
     // };
 
-    // Get available brands and categories from products
-    const availableBrands = useMemo(() => {
+    // Get available brands - either use provided list or extract from products
+    const productBrands = useMemo(() => {
+        // If availableBrands is provided, use it; otherwise extract from products
+        if (availableBrands && availableBrands.length > 0) {
+            return availableBrands;
+        }
         return [...new Set(products.map(p => p.brand).filter((brand): brand is string => !!brand))];
-    }, [products]);
+    }, [products, availableBrands]);
 
     const filteredProducts = useMemo(() => {
         return products
@@ -123,13 +135,17 @@ export default function ClientProducts({ initialProducts }: ProductsClientProps)
                         <ProductFilters
                             filters={filters}
                             setFilters={setFilters}
-                            availableBrands={availableBrands}
+                            availableBrands={productBrands}
+                            category={category}
+                            subcategory={subcategory}
                         />
                     </aside>
                     <main className={isMobile ? '' : 'lg:col-span-3'}>
                         <div className="flex flex-col gap-4 mb-6">
                             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                                <h2 className="text-2xl font-semibold font-headline">Products</h2>
+                                <h2 className="text-2xl font-semibold font-headline">
+                                    {subcategory ? subcategory : category ? category : 'Products'}
+                                </h2>
                                 <div className={`flex gap-4 ${isMobile ? 'flex-col w-full' : 'items-center w-auto'}`}>
                                     <div className={isMobile ? 'w-full' : ''}>
                                         <ProductSort sort={sort} setSort={setSort} />

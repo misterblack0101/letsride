@@ -18,6 +18,10 @@ type ServerProductFiltersProps = {
     selectedCategories: string[];
     selectedBrands: string[];
     priceRange: [number, number];
+    // New props for contextual filtering
+    currentCategory?: string;
+    currentSubcategory?: string;
+    currentSubcategories?: string[];
 };
 
 export default function ServerProductFilters({
@@ -25,7 +29,10 @@ export default function ServerProductFilters({
     availableCategories,
     selectedCategories,
     selectedBrands,
-    priceRange
+    priceRange,
+    currentCategory,
+    currentSubcategory,
+    currentSubcategories
 }: ServerProductFiltersProps) {
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -45,7 +52,21 @@ export default function ServerProductFilters({
             }
         });
 
-        router.push(`/products?${params.toString()}`);
+        // Determine the base URL based on context
+        let baseUrl = '/products';
+
+        // If we're viewing a specific category
+        if (currentCategory) {
+            if (currentSubcategory) {
+                // We're in a subcategory view
+                baseUrl = `/products/${encodeURIComponent(currentCategory)}/${encodeURIComponent(currentSubcategory)}`;
+            } else {
+                // We're in a category view
+                baseUrl = `/products/${encodeURIComponent(currentCategory)}`;
+            }
+        }
+
+        router.push(`${baseUrl}?${params.toString()}`);
     };
 
     const handleCategoryChange = (category: string, checked: boolean) => {
@@ -72,7 +93,17 @@ export default function ServerProductFilters({
     };
 
     const clearAllFilters = () => {
-        router.push('/products');
+        // If we're in a category or subcategory context, stay there but clear other filters
+        if (currentCategory) {
+            if (currentSubcategory) {
+                router.push(`/products/${encodeURIComponent(currentCategory)}/${encodeURIComponent(currentSubcategory)}`);
+            } else {
+                router.push(`/products/${encodeURIComponent(currentCategory)}`);
+            }
+        } else {
+            // If not in a category context, go back to all products
+            router.push('/products');
+        }
     };
 
     const hasActiveFilters = selectedCategories.length > 0 || selectedBrands.length > 0 ||
@@ -95,31 +126,69 @@ export default function ServerProductFilters({
                 </div>
             )}
 
-            {/* Category Filter */}
-            <div>
-                <h3 className="font-medium mb-3">Category</h3>
-                <div className="space-y-2">
-                    {availableCategories.map(category => (
-                        <div key={category} className="flex items-center space-x-2">
-                            <Checkbox
-                                id={`category-${category}`}
-                                checked={selectedCategories.includes(category)}
-                                onCheckedChange={(checked) =>
-                                    handleCategoryChange(category, checked as boolean)
-                                }
-                            />
-                            <Label
-                                htmlFor={`category-${category}`}
-                                className="text-sm capitalize cursor-pointer"
-                            >
-                                {category}
-                            </Label>
-                        </div>
-                    ))}
+            {/* Context information - show what category/subcategory we're in */}
+            {currentCategory && (
+                <div>
+                    <h3 className="font-medium mb-1">Currently Browsing</h3>
+                    <div className="text-sm bg-muted/50 p-2 rounded">
+                        <div><strong>Category:</strong> {currentCategory}</div>
+                        {currentSubcategory && (
+                            <div><strong>Subcategory:</strong> {currentSubcategory}</div>
+                        )}
+                    </div>
                 </div>
-            </div>
+            )}
 
-            <Separator />
+            {/* Category Filter - only show if not in a category context */}
+            {!currentCategory && availableCategories.length > 0 && (
+                <>
+                    <div>
+                        <h3 className="font-medium mb-3">Category</h3>
+                        <div className="space-y-2">
+                            {availableCategories.map(category => (
+                                <div key={category} className="flex items-center space-x-2">
+                                    <Checkbox
+                                        id={`category-${category}`}
+                                        checked={selectedCategories.includes(category)}
+                                        onCheckedChange={(checked) =>
+                                            handleCategoryChange(category, checked as boolean)
+                                        }
+                                    />
+                                    <Label
+                                        htmlFor={`category-${category}`}
+                                        className="text-sm capitalize cursor-pointer"
+                                    >
+                                        {category}
+                                    </Label>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                    <Separator />
+                </>
+            )}
+
+            {/* Subcategory filter - only show if in a category but not in a subcategory */}
+            {currentCategory && !currentSubcategory && currentSubcategories && currentSubcategories.length > 0 && (
+                <>
+                    <div>
+                        <h3 className="font-medium mb-3">Subcategories</h3>
+                        <div className="space-y-2">
+                            {currentSubcategories.map(subcat => (
+                                <div key={subcat} className="flex items-center space-x-2">
+                                    <a
+                                        href={`/products/${encodeURIComponent(currentCategory)}/${encodeURIComponent(subcat)}`}
+                                        className="text-sm hover:underline hover:text-primary cursor-pointer w-full py-1"
+                                    >
+                                        {subcat}
+                                    </a>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                    <Separator />
+                </>
+            )}
 
             {/* Brand Filter */}
             <div>

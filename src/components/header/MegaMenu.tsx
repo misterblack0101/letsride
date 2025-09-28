@@ -3,11 +3,12 @@
 import Link from 'next/link';
 import { useState, useRef } from 'react';
 
-type CategoryData = {
-    [category: string]: string[];
-};
+interface MegaMenuProps {
+    data: Record<string, string[]>;
+    brandsBySubcategory?: Record<string, Record<string, string[]>>;
+}
 
-export default function MegaMenu({ data }: { data: CategoryData }) {
+export default function MegaMenu({ data, brandsBySubcategory }: MegaMenuProps) {
     const [openCategory, setOpenCategory] = useState<string | null>(null);
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 

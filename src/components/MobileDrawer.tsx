@@ -5,10 +5,11 @@ import { Menu, ChevronRight, ChevronDown } from "lucide-react";
 import React from "react";
 
 interface MobileDrawerProps {
-	categories?: Record<string, string[]>;
+	subcategories: Record<string, string[]>;
+	brandsBySubcategory: Record<string, Record<string, string[]>>;
 }
 
-export default function MobileDrawer({ categories }: MobileDrawerProps) {
+export default function MobileDrawer({ subcategories }: MobileDrawerProps) {
 	const [open, setOpen] = React.useState(false);
 	const [expandedCategory, setExpandedCategory] = React.useState<string | null>(null);
 
@@ -45,7 +46,7 @@ export default function MobileDrawer({ categories }: MobileDrawerProps) {
 					</Link>
 
 					{/* Categories */}
-					{categories && Object.entries(categories).map(([category, subcategories]) => (
+					{subcategories && Object.entries(subcategories).map(([category, subcats]) => (
 						<div key={category} className="border-t pt-2 mt-2">
 							<button
 								onClick={() => toggleCategory(category)}
@@ -62,7 +63,7 @@ export default function MobileDrawer({ categories }: MobileDrawerProps) {
 							{/* Collapsible subcategories */}
 							{expandedCategory === category && (
 								<div className="ml-4 mt-1 space-y-1">
-									{subcategories.map((subcat) => (
+									{subcats.map((subcat) => (
 										<Link
 											key={subcat}
 											href={`/products/${encodeURIComponent(category)}/${encodeURIComponent(subcat)}`}

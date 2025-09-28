@@ -1,4 +1,5 @@
 import { fetchProducts, fetchFilteredProducts } from '@/lib/server/products.server';
+import { getCategoriesFromDB } from '@/lib/services/categories';
 import ServerProductFilters from '@/components/products/ServerProductFilters';
 import ProductGrid from '@/components/products/ProductGrid';
 import ServerProductSort from '@/components/products/ServerProductSort';
@@ -107,9 +108,13 @@ export default async function StorePage({ searchParams }: StorePageProps) {
     }
   });
 
-  // Get available filter options from all products (filter out undefined values)
+  // Get structured category data from our cached service
+  const { subcategoriesByCategory, brandsBySubcategory } = await getCategoriesFromDB();
+  const availableCategories = Object.keys(subcategoriesByCategory);
+
+  // Still get available brands from products for the current view
+  // Alternatively, we could use getAllBrands() from the categories service
   const availableBrands = [...new Set(allProducts.map(p => p.brand).filter((brand): brand is string => !!brand))];
-  const availableCategories = [...new Set(allProducts.map(p => p.category))];
 
   return (
     <div className="container mx-auto px-4 py-8">
