@@ -49,20 +49,24 @@ export default async function SubcategoryPage({ params, searchParams }: Props) {
 
     // Parse and validate search parameters using our utility
     const {
-        brand: brands = [],
-        sort: sortBy = 'rating',
-        view: viewMode = 'grid',
+        brands = [],
+        minPrice,
+        maxPrice,
+        sortBy = 'rating',
+        viewMode = 'grid',
         page: requestedPage = 1,
         lastId
     } = parseProductFilterParams(awaitedSearchParams as Record<string, string | string[]>);
 
-    const pageSize = 12; // Number of products per page
+    const pageSize = 24; // Number of products per page
 
     // Get the total count for pagination using a proper count query
     const totalCount = await getProductCount({
         category: decodedCategory,
         subcategory: decodedSubcategory,
-        brands: brands.length > 0 ? brands : undefined
+        brands: brands.length > 0 ? brands : undefined,
+        minPrice,
+        maxPrice
     });
 
     // Calculate total pages and ensure page number is within valid range
@@ -79,6 +83,8 @@ export default async function SubcategoryPage({ params, searchParams }: Props) {
         {
             sortBy: sortBy as 'name' | 'price_low' | 'price_high' | 'rating',
             brands: brands.length > 0 ? brands : undefined,
+            minPrice,
+            maxPrice,
             pageSize,
             startAfterId
         }
@@ -99,6 +105,8 @@ export default async function SubcategoryPage({ params, searchParams }: Props) {
             currentCategory={decodedCategory}
             currentSubcategory={decodedSubcategory}
             selectedBrands={brands}
+            selectedMinPrice={minPrice}
+            selectedMaxPrice={maxPrice}
             sortBy={sortBy as 'name' | 'price_low' | 'price_high' | 'rating'}
             viewMode={viewMode as 'grid' | 'list'}
             totalCount={totalCount}

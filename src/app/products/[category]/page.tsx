@@ -47,20 +47,24 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
 
     // Parse and validate search parameters using our utility
     const {
-        brand: brands = [], // Renamed to match our expected prop name
-        sort: sortBy = 'rating',
-        view: viewMode = 'grid',
+        brands = [], // Renamed to match our expected prop name
+        minPrice,
+        maxPrice,
+        sortBy = 'rating',
+        viewMode = 'grid',
         page = 1,
         lastId
     } = parseProductFilterParams(awaitedSearchParams as Record<string, string | string[]>);
 
-    const pageSize = 12; // Number of products per page
+    const pageSize = 24; // Number of products per page
     const startAfterId = page > 1 && lastId ? lastId : undefined;
 
     // Always filter by the current category
     const products = await fetchFilteredProducts({
         categories: [decodedCategory],
         brands: brands.length > 0 ? brands : undefined,
+        minPrice,
+        maxPrice,
         sortBy: sortBy as 'name' | 'price_low' | 'price_high' | 'rating',
         pageSize,
         startAfterId
@@ -70,6 +74,8 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
     const totalCount = await getProductCount({
         category: decodedCategory,
         brands: brands.length > 0 ? brands : undefined,
+        minPrice,
+        maxPrice
     });    // Get subcategories and brands specific to this category
     const { subcategoriesByCategory } = await getCategoriesFromDB();
     const subcategories = subcategoriesByCategory[decodedCategory] || [];
@@ -86,6 +92,8 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
             currentCategory={decodedCategory}
             currentSubcategories={subcategories}
             selectedBrands={brands}
+            selectedMinPrice={minPrice}
+            selectedMaxPrice={maxPrice}
             sortBy={sortBy as 'name' | 'price_low' | 'price_high' | 'rating'}
             viewMode={viewMode as 'grid' | 'list'}
             totalCount={totalCount}

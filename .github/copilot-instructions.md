@@ -39,16 +39,19 @@ GOOGLE_GENAI_API_KEY=...
 
 **Development Commands:**
 ```bash
-npm run dev              # Next.js dev
-npm run genkit:dev       # AI development server (Genkit)
+npm run dev              # Next.js dev server on port 9002 (with Turbopack)
+npm run genkit:dev       # AI development server (Genkit) - requires src/ai/dev.ts setup
 npm run genkit:watch     # AI server with watch mode
+npm run build            # Production build
+npm run typecheck        # TypeScript validation without build
 ```
 
 ## Critical Patterns
 
-### Firebase Dual Database Pattern
+### Firebase Database Pattern
 - **Products**: stored in Firestore and queried server-side via `src/lib/server/products.server.ts` (uses `adminDb`)
-- **Categories**: stored in Realtime DB as CSV strings, parsed in `getSubcategoriesFromDB()`
+- **Categories**: stored in Firestore with pre-computed structure in `src/lib/services/categories.ts` (uses React cache)
+- **Search**: in-memory cache with 5-minute TTL in `src/lib/services/search.ts` to avoid repeated Firestore calls
 
 ### Server/Client Component Split (important change)
 - Server-only product logic lives in `src/lib/server/*.server.ts` and is imported only by server components and API routes.
@@ -60,6 +63,23 @@ npm run genkit:watch     # AI server with watch mode
 - API routes call `src/lib/server/products.server.ts` which executes Firestore `where`, `orderBy`, `limit`, and `startAfter` using the Admin SDK and returns JSON.
 - Server components can import `products.server` directly (SSR) to avoid extra network roundtrips.
 
+## Component Architecture Patterns
+
+### Server/Client Component Split
+- **Server-first**: Use Server Components by default for data fetching and SEO (e.g., `Header`, `ProductPage`)
+- **Client wrappers**: Pattern like `Header` → `HeaderClient` where server component fetches data and passes to client component for interactivity
+- **Suspense boundaries**: Wrap dynamic content in `<Suspense>` with skeleton loaders (e.g., `ProductGridSkeleton`)
+
+### State Management
+- **Cart**: React Context with localStorage persistence (`src/context/cart-context.tsx`)
+- **URL state**: Search params for filters, sorting, pagination via `useSearchParams` and Next.js navigation
+- **Toast notifications**: Shadcn/ui toast system integrated with cart actions
+
+### Search & Caching Patterns
+- **Product search**: `src/lib/services/search.ts` implements server-side search with 5-minute in-memory cache
+- **Category data**: React cache pattern in `src/lib/services/categories.ts` for pre-computed category structures
+- **Runtime guards**: Server modules include `typeof window !== 'undefined'` checks to prevent client bundling
+
 ## Security & Hardening Notes
 - Never import `firebase-admin` from client code. Use the client-safe wrappers or API routes.
 - Server module `src/lib/server/products.server.ts` includes a runtime guard that throws if imported in a browser — fail-fast.
@@ -69,6 +89,14 @@ npm run genkit:watch     # AI server with watch mode
 - Default to Server Components in `app/` for data fetching.
 - Only use Client Components when needed (`'use client'`).
 - Always pass server-fetched data into client components as props for initial render.
+
+## Code Quality Standards (PRODUCTION APP)
+- **This is a production application** - maintain professional code quality at all times
+- Write clean, readable code with meaningful variable/function names
+- Add comments for complex business logic, non-obvious patterns, or architectural decisions
+- **No debug code**: Remove console.logs, timers, or temporary debugging code before committing
+- Follow TypeScript best practices - use proper typing, avoid `any` when possible
+- Implement proper error handling and user-friendly error messages
 
 ## Route Structure (unchanged)
 ```
@@ -89,4 +117,10 @@ npm run genkit:watch     # AI server with watch mode
 - `src/app/api/products/route.ts` and `src/app/api/products/category/[category]/[subcategory]/route.ts` - API endpoints
 
 ````
+- `src/context/cart-context.tsx` - Cart state management with localStorage
+- `src/lib/services/search.ts` - Server-side search with in-memory caching
+- `middleware.ts` - Route protection for admin areas
+
+## Authentication & Admin
 - Simple cookie-based admin auth (hardcoded: `lala/lala`)
+- Middleware protection on `/admin` routes via session cookies (`middleware.ts`)

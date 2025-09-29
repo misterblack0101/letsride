@@ -10,6 +10,8 @@ export async function getProductCount(filters: {
     category?: string;
     subcategory?: string;
     brands?: string[];
+    minPrice?: number;
+    maxPrice?: number;
 }): Promise<number> {
     return retryOperation(async () => {
         const productsRef = adminDb.collection('products') as CollectionReference;
@@ -32,7 +34,13 @@ export async function getProductCount(filters: {
             query = query.where('brand', '==', filters.brands[0]);
         }
 
-        // Price range filters removed
+        // Apply price range filters
+        if (filters.minPrice !== undefined) {
+            query = query.where('price', '>=', filters.minPrice);
+        }
+        if (filters.maxPrice !== undefined) {
+            query = query.where('price', '<=', filters.maxPrice);
+        }
 
         // First try using aggregation query if supported
         try {

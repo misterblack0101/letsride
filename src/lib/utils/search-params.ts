@@ -5,6 +5,8 @@ import { z } from 'zod';
  */
 export const ProductFilterSchema = z.object({
     brand: z.union([z.string(), z.array(z.string())]).optional(),
+    minPrice: z.string().optional().transform(val => val ? parseFloat(val) : undefined),
+    maxPrice: z.string().optional().transform(val => val ? parseFloat(val) : undefined),
     sort: z.enum(['name', 'price_low', 'price_high', 'rating']).default('rating'),
     view: z.enum(['grid', 'list']).default('grid'),
     page: z.string().optional().transform(val => val ? parseInt(val) : 1),
@@ -29,12 +31,15 @@ export function parseProductFilterParams(searchParams: Record<string, string | s
             ? parsed.brand
             : parsed.brand ? [parsed.brand] : [];
 
-        // Reset to default values
         return {
-            brand: [],
-            sort: 'rating',
-            view: 'grid',
-            page: 1
+            brands,
+            minPrice: parsed.minPrice,
+            maxPrice: parsed.maxPrice,
+            sortBy: parsed.sort,
+            viewMode: parsed.view,
+            page: parsed.page,
+            lastId: parsed.lastId,
+            isValid: true,
         };
     } catch (error) {
         // Log validation errors but still return default values
@@ -59,6 +64,8 @@ export function updateSearchParams(
     currentParams: URLSearchParams,
     updates: Partial<{
         brand: string[] | null;
+        minPrice: number | null;
+        maxPrice: number | null;
         sort: string | null;
         view: string | null;
         page: number | null;

@@ -10,12 +10,15 @@ import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Filter, X } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
+import PriceRangeFilter from './PriceRangeFilter';
 
 type ServerProductFiltersProps = {
     availableBrands: string[];
     availableCategories: string[];
     selectedCategories: string[];
     selectedBrands: string[];
+    selectedMinPrice?: number;
+    selectedMaxPrice?: number;
     // New props for contextual filtering
     currentCategory?: string;
     currentSubcategory?: string;
@@ -27,6 +30,8 @@ export default function ServerProductFilters({
     availableCategories,
     selectedCategories,
     selectedBrands,
+    selectedMinPrice,
+    selectedMaxPrice,
     currentCategory,
     currentSubcategory,
     currentSubcategories
@@ -82,6 +87,13 @@ export default function ServerProductFilters({
         updateURL({ brand: newBrands });
     };
 
+    const handlePriceChange = (minPrice: number | undefined, maxPrice: number | undefined) => {
+        updateURL({
+            minPrice: minPrice?.toString() || null,
+            maxPrice: maxPrice?.toString() || null
+        });
+    };
+
     const clearAllFilters = () => {
         // If we're in a category or subcategory context, stay there but clear other filters
         if (currentCategory) {
@@ -96,7 +108,7 @@ export default function ServerProductFilters({
         }
     };
 
-    const hasActiveFilters = selectedCategories.length > 0 || selectedBrands.length > 0;
+    const hasActiveFilters = selectedCategories.length > 0 || selectedBrands.length > 0 || selectedMinPrice !== undefined || selectedMaxPrice !== undefined;
 
     const FilterContent = () => (
         <div className="space-y-6">
@@ -203,7 +215,15 @@ export default function ServerProductFilters({
                 </div>
             </div>
 
-            {/* Price Range Filter removed */}
+            {/* Price Range Filter */}
+            <div>
+                <Separator className="mb-4" />
+                <PriceRangeFilter
+                    minPrice={selectedMinPrice}
+                    maxPrice={selectedMaxPrice}
+                    onPriceChange={handlePriceChange}
+                />
+            </div>
         </div>
     );
 
@@ -216,7 +236,7 @@ export default function ServerProductFilters({
                         Filters
                         {hasActiveFilters && (
                             <span className="ml-2 bg-primary text-primary-foreground rounded-full w-5 h-5 text-xs flex items-center justify-center">
-                                {selectedCategories.length + selectedBrands.length}
+                                {selectedCategories.length + selectedBrands.length + (selectedMinPrice !== undefined || selectedMaxPrice !== undefined ? 1 : 0)}
                             </span>
                         )}
                     </Button>

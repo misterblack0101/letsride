@@ -12,6 +12,8 @@ if (typeof window !== 'undefined') {
 export interface ProductFilterOptions {
     categories?: string[];
     brands?: string[];
+    minPrice?: number;
+    maxPrice?: number;
     sortBy?: 'name' | 'price_low' | 'price_high' | 'rating';
     // Pagination support (pageSize and startAfterId for cursor based paging)
     pageSize?: number;
@@ -50,7 +52,13 @@ export async function fetchFilteredProducts(filters: ProductFilterOptions = {}):
             }
         }
 
-        // Price range filters removed
+        // Apply price range filters
+        if (filters.minPrice !== undefined) {
+            queryBuilder.where('price', '>=', filters.minPrice);
+        }
+        if (filters.maxPrice !== undefined) {
+            queryBuilder.where('price', '<=', filters.maxPrice);
+        }
 
         // Apply sorting
         if (filters.sortBy) {
@@ -154,6 +162,8 @@ export async function getFilteredProductsViaCategory(
         pageSize?: number;
         startAfterId?: string;
         brands?: string[];
+        minPrice?: number;
+        maxPrice?: number;
     } = {}
 ): Promise<Product[]> {
     return retryOperation(async () => {
@@ -179,7 +189,13 @@ export async function getFilteredProductsViaCategory(
             }
         }
 
-        // Price range filters removed
+        // Apply price range filters
+        if (options.minPrice !== undefined) {
+            queryBuilder.where('price', '>=', options.minPrice);
+        }
+        if (options.maxPrice !== undefined) {
+            queryBuilder.where('price', '<=', options.maxPrice);
+        }
 
         // Apply sorting
         if (options.sortBy) {
