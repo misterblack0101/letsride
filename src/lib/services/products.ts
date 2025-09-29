@@ -7,8 +7,6 @@ import type { Product } from '../models/Product';
 export interface ProductFilterOptions {
   categories?: string[];
   brands?: string[];
-  minPrice?: number;
-  maxPrice?: number;
   sortBy?: 'name' | 'price_low' | 'price_high' | 'rating';
   pageSize?: number;
   startAfterId?: string;
@@ -20,8 +18,6 @@ export async function fetchFilteredProducts(filters: ProductFilterOptions = {}):
   const params = new URLSearchParams();
   if (filters.categories) params.set('categories', filters.categories.join(','));
   if (filters.brands) params.set('brands', filters.brands.join(','));
-  if (filters.minPrice !== undefined) params.set('minPrice', String(filters.minPrice));
-  if (filters.maxPrice !== undefined) params.set('maxPrice', String(filters.maxPrice));
   if (filters.sortBy) params.set('sortBy', filters.sortBy);
   if (filters.pageSize) params.set('pageSize', String(filters.pageSize));
   if (filters.startAfterId) params.set('startAfterId', filters.startAfterId);

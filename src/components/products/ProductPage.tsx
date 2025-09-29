@@ -17,8 +17,6 @@ interface ProductPageProps {
     currentSubcategory?: string;
     currentSubcategories?: string[];
     selectedBrands: string[];
-    minPrice?: number;
-    maxPrice?: number;
     sortBy: 'name' | 'price_low' | 'price_high' | 'rating';
     viewMode: 'grid' | 'list';
     totalCount: number;
@@ -33,8 +31,6 @@ interface ProductPageProps {
     currentSubcategory,
     currentSubcategories,
     selectedBrands,
-    minPrice,
-    maxPrice,
     sortBy,
     viewMode,
     totalCount,
@@ -55,7 +51,6 @@ interface ProductPageProps {
                     availableCategories={[]}
                     selectedCategories={[]}
                     selectedBrands={selectedBrands}
-                    priceRange={[minPrice || 0, maxPrice || 120000]}
                     currentCategory={currentCategory}
                     currentSubcategory={currentSubcategory}
                     currentSubcategories={currentSubcategories}
@@ -70,7 +65,6 @@ interface ProductPageProps {
                         availableCategories={[]}
                         selectedCategories={[]}
                         selectedBrands={selectedBrands}
-                        priceRange={[minPrice || 0, maxPrice || 120000]}
                         currentCategory={currentCategory}
                         currentSubcategory={currentSubcategory}
                         currentSubcategories={currentSubcategories}

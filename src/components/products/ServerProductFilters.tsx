@@ -5,7 +5,6 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
-import { Slider } from '@/components/ui/slider';
 import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
@@ -17,7 +16,6 @@ type ServerProductFiltersProps = {
     availableCategories: string[];
     selectedCategories: string[];
     selectedBrands: string[];
-    priceRange: [number, number];
     // New props for contextual filtering
     currentCategory?: string;
     currentSubcategory?: string;
@@ -29,7 +27,6 @@ export default function ServerProductFilters({
     availableCategories,
     selectedCategories,
     selectedBrands,
-    priceRange,
     currentCategory,
     currentSubcategory,
     currentSubcategories
@@ -85,13 +82,6 @@ export default function ServerProductFilters({
         updateURL({ brand: newBrands });
     };
 
-    const handlePriceChange = (newPrice: [number, number]) => {
-        updateURL({
-            minPrice: newPrice[0].toString(),
-            maxPrice: newPrice[1].toString()
-        });
-    };
-
     const clearAllFilters = () => {
         // If we're in a category or subcategory context, stay there but clear other filters
         if (currentCategory) {
@@ -106,8 +96,7 @@ export default function ServerProductFilters({
         }
     };
 
-    const hasActiveFilters = selectedCategories.length > 0 || selectedBrands.length > 0 ||
-        priceRange[0] > 0 || priceRange[1] < 120000;
+    const hasActiveFilters = selectedCategories.length > 0 || selectedBrands.length > 0;
 
     const FilterContent = () => (
         <div className="space-y-6">
@@ -214,26 +203,7 @@ export default function ServerProductFilters({
                 </div>
             </div>
 
-            <Separator />
-
-            {/* Price Range Filter */}
-            <div>
-                <h3 className="font-medium mb-3">Price Range</h3>
-                <div className="space-y-4">
-                    <Slider
-                        value={priceRange}
-                        onValueChange={handlePriceChange}
-                        max={120000}
-                        min={0}
-                        step={1000}
-                        className="w-full"
-                    />
-                    <div className="flex justify-between text-sm text-muted-foreground">
-                        <span>₹{priceRange[0].toLocaleString()}</span>
-                        <span>₹{priceRange[1].toLocaleString()}</span>
-                    </div>
-                </div>
-            </div>
+            {/* Price Range Filter removed */}
         </div>
     );
 
@@ -246,7 +216,7 @@ export default function ServerProductFilters({
                         Filters
                         {hasActiveFilters && (
                             <span className="ml-2 bg-primary text-primary-foreground rounded-full w-5 h-5 text-xs flex items-center justify-center">
-                                {selectedCategories.length + selectedBrands.length + (priceRange[0] > 0 || priceRange[1] < 120000 ? 1 : 0)}
+                                {selectedCategories.length + selectedBrands.length}
                             </span>
                         )}
                     </Button>

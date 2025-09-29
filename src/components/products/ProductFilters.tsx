@@ -1,11 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
-import { Slider } from '@/components/ui/slider';
 import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Filter, X } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -13,7 +11,6 @@ import { useIsMobile } from '@/hooks/use-mobile';
 type ProductFiltersProps = {
   filters: {
     brand: string[];
-    price: [number, number];
   };
   setFilters: React.Dispatch<React.SetStateAction<any>>;
   availableBrands: string[];
@@ -30,8 +27,6 @@ function ProductFilters({
   subcategory
 }: ProductFiltersProps) {
   const isMobile = useIsMobile();
-  const [sliderValue, setSliderValue] = useState<[number, number]>(filters.price);
-
 
   const handleBrandChange = (brand: string) => {
     setFilters((prev: any) => ({
@@ -42,56 +37,10 @@ function ProductFilters({
     }));
   };
 
-  // Update local slider value on drag
-  const handleSliderChange = (value: number[]) => {
-    setSliderValue([Math.max(0, value[0]), Math.min(120000, value[1])]);
-  };
-
-  // Only update filters when drag ends
-  const handleSliderCommit = (value: number[]) => {
-    let [min, max] = value;
-    min = Math.max(0, Math.min(min, 120000));
-    max = Math.max(0, Math.min(max, 120000));
-    if (min > max) min = max;
-    if (max < min) max = min;
-    setFilters((prev: any) => ({ ...prev, price: [min, max] }));
-  };
-
-  const handleMinPriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    // Allow any input while typing, validate on blur
-    setFilters((prev: any) => ({
-      ...prev,
-      price: [value === '' ? 0 : Math.max(0, parseInt(value) || 0), prev.price[1]]
-    }));
-  };
-
-  const handleMaxPriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    // Allow any input while typing, validate on blur
-    setFilters((prev: any) => ({
-      ...prev,
-      price: [prev.price[0], value === '' ? 120000 : Math.max(0, parseInt(value) || 120000)]
-    }));
-  };
-
-  const handleMinPriceBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-    const value = parseInt(e.target.value) || 0;
-    const validMin = Math.max(0, Math.min(value, filters.price[1]));
-    setFilters((prev: any) => ({ ...prev, price: [validMin, prev.price[1]] }));
-  };
-
-  const handleMaxPriceBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-    const value = parseInt(e.target.value) || 120000;
-    const validMax = Math.max(filters.price[0], Math.min(value, 120000));
-    setFilters((prev: any) => ({ ...prev, price: [prev.price[0], validMax] }));
-  };
-
   const clearFilters = () => {
     setFilters({
       type: [],
       brand: [],
-      price: [0, 120000],
     });
   };
 
@@ -122,34 +71,11 @@ function ProductFilters({
         </div>
       </div>
 
-      <Separator />
-
-      <div>
-        <h4 className="font-headline font-semibold mb-3">Price Range (₹)</h4>
-        <div className="space-y-4">
-          <div className="px-2">
-            <Slider
-              min={0}
-              max={120000}
-              step={1000}
-              value={sliderValue}
-              onValueChange={handleSliderChange}
-              onValueCommit={handleSliderCommit}
-              className="w-full max-w-full sm:max-w-[400px] mx-auto"
-            />
-          </div>
-          <div className="flex justify-between text-xs text-muted-foreground">
-            <span className="font-headline">₹{sliderValue[0].toLocaleString('en-IN')}</span>
-            <span className="font-headline">₹{sliderValue[1].toLocaleString('en-IN')}</span>
-          </div>
-        </div>
-      </div>
+      {/* Price Range Filter removed */}
     </div>
   );
 
-  React.useEffect(() => {
-    setSliderValue(filters.price);
-  }, [filters.price]);
+  // Price range effect removed
 
   if (isMobile) {
     return (
@@ -191,10 +117,6 @@ export default React.memo(ProductFilters, (prevProps, nextProps) => {
 
     // Deep compare arrays (brands)
     JSON.stringify(prevProps.availableBrands) === JSON.stringify(nextProps.availableBrands) &&
-
-    // Compare filter price ranges
-    prevProps.filters.price[0] === nextProps.filters.price[0] &&
-    prevProps.filters.price[1] === nextProps.filters.price[1] &&
 
     // Compare brand filters array length
     prevProps.filters.brand.length === nextProps.filters.brand.length &&

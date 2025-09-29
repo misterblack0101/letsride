@@ -12,8 +12,6 @@ if (typeof window !== 'undefined') {
 export interface ProductFilterOptions {
     categories?: string[];
     brands?: string[];
-    minPrice?: number;
-    maxPrice?: number;
     sortBy?: 'name' | 'price_low' | 'price_high' | 'rating';
     // Pagination support (pageSize and startAfterId for cursor based paging)
     pageSize?: number;
@@ -44,7 +42,7 @@ export async function fetchFilteredProducts(filters: ProductFilterOptions = {}):
         // Apply brand filter
         if (filters.brands && filters.brands.length > 0) {
             // If we have more than one brand, we need to use in operator
-            // Note: This requires a composite index to be created in Firestore
+            // Note: This requires a composite index to be9 created in Firestore
             if (filters.brands.length === 1) {
                 queryBuilder.where('brand', '==', filters.brands[0]);
             } else {
@@ -52,14 +50,7 @@ export async function fetchFilteredProducts(filters: ProductFilterOptions = {}):
             }
         }
 
-        // Apply price range filters
-        if (filters.minPrice !== undefined) {
-            queryBuilder.where('price', '>=', filters.minPrice);
-        }
-
-        if (filters.maxPrice !== undefined) {
-            queryBuilder.where('price', '<=', filters.maxPrice);
-        }
+        // Price range filters removed
 
         // Apply sorting
         if (filters.sortBy) {
@@ -163,8 +154,6 @@ export async function getFilteredProductsViaCategory(
         pageSize?: number;
         startAfterId?: string;
         brands?: string[];
-        minPrice?: number;
-        maxPrice?: number;
     } = {}
 ): Promise<Product[]> {
     return retryOperation(async () => {
@@ -190,14 +179,7 @@ export async function getFilteredProductsViaCategory(
             }
         }
 
-        // Apply price range filters if provided
-        if (options.minPrice !== undefined) {
-            queryBuilder.where('price', '>=', options.minPrice);
-        }
-
-        if (options.maxPrice !== undefined) {
-            queryBuilder.where('price', '<=', options.maxPrice);
-        }
+        // Price range filters removed
 
         // Apply sorting
         if (options.sortBy) {

@@ -69,8 +69,6 @@ export default async function StorePage({ searchParams }: StorePageProps) {
     ? params.brand
     : params.brand ? [params.brand] : [];
 
-  const minPrice = params.minPrice ? parseInt(params.minPrice) : undefined;
-  const maxPrice = params.maxPrice ? parseInt(params.maxPrice) : undefined;
   const sortBy = (params.sort as 'name' | 'price_low' | 'price_high' | 'rating') || 'rating';
   const viewMode = (params.view as 'grid' | 'list') || 'grid';
   const page = params.page ? parseInt(params.page) : 1;
@@ -81,14 +79,12 @@ export default async function StorePage({ searchParams }: StorePageProps) {
   const endIndex = startIndex + pageSize;
 
   // Use enhanced filtering for better performance
-  const hasFilters = categories.length > 0 || brands.length > 0 || minPrice !== undefined || maxPrice !== undefined;
+  const hasFilters = categories.length > 0 || brands.length > 0;
 
   // Get product count for pagination
   const totalCount = await getProductCount({
     category: categories.length > 0 ? categories[0] : undefined,
-    brands: brands.length > 0 ? brands : undefined,
-    minPrice,
-    maxPrice
+    brands: brands.length > 0 ? brands : undefined
   });
 
   // Fetch filtered products with pagination
@@ -96,8 +92,6 @@ export default async function StorePage({ searchParams }: StorePageProps) {
     fetchFilteredProducts({
       categories: categories.length > 0 ? categories : undefined,
       brands: brands.length > 0 ? brands : undefined,
-      minPrice,
-      maxPrice,
       sortBy,
       pageSize: pageSize,
       // We could use startAfterId for cursor-based pagination, but we don't have it for the first page
@@ -119,8 +113,6 @@ export default async function StorePage({ searchParams }: StorePageProps) {
       products={productsToShow}
       availableBrands={allBrands}
       selectedBrands={brands}
-      minPrice={minPrice}
-      maxPrice={maxPrice}
       sortBy={sortBy}
       viewMode={viewMode}
       totalCount={totalCount}
