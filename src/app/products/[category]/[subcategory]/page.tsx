@@ -49,12 +49,10 @@ export default async function SubcategoryPage({ params, searchParams }: Props) {
 
     // Parse and validate search parameters using our utility
     const {
-        brands,
-        minPrice,
-        maxPrice,
-        sortBy,
-        viewMode,
-        page,
+        brand: brands = [],
+        sort: sortBy = 'rating',
+        view: viewMode = 'grid',
+        page = 1,
         lastId
     } = parseProductFilterParams(awaitedSearchParams as Record<string, string | string[]>);
 
@@ -66,10 +64,8 @@ export default async function SubcategoryPage({ params, searchParams }: Props) {
         decodedCategory,
         decodedSubcategory,
         {
-            sortBy,
+            sortBy: sortBy as 'name' | 'price_low' | 'price_high' | 'rating',
             brands: brands.length > 0 ? brands : undefined,
-            minPrice,
-            maxPrice,
             pageSize,
             startAfterId
         }
@@ -79,9 +75,7 @@ export default async function SubcategoryPage({ params, searchParams }: Props) {
     const totalCount = await getProductCount({
         category: decodedCategory,
         subcategory: decodedSubcategory,
-        brands: brands.length > 0 ? brands : undefined,
-        minPrice,
-        maxPrice
+        brands: brands.length > 0 ? brands : undefined
     });
 
     // Get the specific brands for this subcategory
@@ -99,10 +93,8 @@ export default async function SubcategoryPage({ params, searchParams }: Props) {
             currentCategory={decodedCategory}
             currentSubcategory={decodedSubcategory}
             selectedBrands={brands}
-            minPrice={minPrice}
-            maxPrice={maxPrice}
-            sortBy={sortBy}
-            viewMode={viewMode}
+            sortBy={sortBy as 'name' | 'price_low' | 'price_high' | 'rating'}
+            viewMode={viewMode as 'grid' | 'list'}
             totalCount={totalCount}
             currentPage={page}
             pageSize={pageSize}

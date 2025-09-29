@@ -47,12 +47,10 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
 
     // Parse and validate search parameters using our utility
     const {
-        brands,
-        minPrice,
-        maxPrice,
-        sortBy,
-        viewMode,
-        page,
+        brand: brands = [], // Renamed to match our expected prop name
+        sort: sortBy = 'rating',
+        view: viewMode = 'grid',
+        page = 1,
         lastId
     } = parseProductFilterParams(awaitedSearchParams as Record<string, string | string[]>);
 
@@ -63,9 +61,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
     const products = await fetchFilteredProducts({
         categories: [decodedCategory],
         brands: brands.length > 0 ? brands : undefined,
-        minPrice,
-        maxPrice,
-        sortBy,
+        sortBy: sortBy as 'name' | 'price_low' | 'price_high' | 'rating',
         pageSize,
         startAfterId
     });
@@ -74,8 +70,6 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
     const totalCount = await getProductCount({
         category: decodedCategory,
         brands: brands.length > 0 ? brands : undefined,
-        minPrice,
-        maxPrice
     });    // Get subcategories and brands specific to this category
     const { subcategoriesByCategory } = await getCategoriesFromDB();
     const subcategories = subcategoriesByCategory[decodedCategory] || [];
@@ -92,10 +86,8 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
             currentCategory={decodedCategory}
             currentSubcategories={subcategories}
             selectedBrands={brands}
-            minPrice={minPrice}
-            maxPrice={maxPrice}
-            sortBy={sortBy}
-            viewMode={viewMode}
+            sortBy={sortBy as 'name' | 'price_low' | 'price_high' | 'rating'}
+            viewMode={viewMode as 'grid' | 'list'}
             totalCount={totalCount}
             currentPage={page}
             pageSize={pageSize}

@@ -15,6 +15,7 @@ if (!getApps().length) {
             clientEmail: config.firebase.clientEmail!,
             privateKey: config.firebase.privateKey!,
         }),
+        // No longer using Realtime Database, only Firestore
         databaseURL: 'https://letsridecycles-default-rtdb.firebaseio.com',
     });
 } else {

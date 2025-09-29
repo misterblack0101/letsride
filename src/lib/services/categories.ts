@@ -3,6 +3,7 @@ import { cache } from 'react';
 
 /**
  * Type definitions for category data structure
+ * All category data is stored and fetched from Firestore (not Realtime DB)
  */
 export interface Brand {
     name: string;
