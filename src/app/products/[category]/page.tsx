@@ -1,12 +1,9 @@
 // app/products/[category]/page.tsx
 import { fetchFilteredProducts } from '@/lib/server/products.server'; // server-only
+import { getProductCount } from '@/lib/server/product-count'; // Import count function
 import { getCategoriesFromDB, getBrandsForCategory } from '@/lib/services/categories';
-import ProductGrid from '@/components/products/ProductGrid';
-import ServerProductSort from '@/components/products/ServerProductSort';
-import ServerViewToggle from '@/components/products/ServerViewToggle';
-import ServerProductFilters from '@/components/products/ServerProductFilters';
-import { Suspense } from 'react';
-import { ProductGridSkeleton } from '@/components/ui/loading';
+import ProductPage from '@/components/products/ProductPage';
+import { parseProductFilterParams } from '@/lib/utils/search-params';
 import type { Metadata } from 'next';
 
 interface SearchParams {
@@ -15,6 +12,8 @@ interface SearchParams {
     maxPrice?: string;
     sort?: string;
     view?: string;
+    page?: string;
+    lastId?: string;
 }
 
 interface CategoryPageProps {
@@ -46,15 +45,19 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
     // Need to await searchParams in Next.js server components
     const awaitedSearchParams = await searchParams;
 
-    // Parse search parameters
-    const brands = Array.isArray(awaitedSearchParams.brand)
-        ? awaitedSearchParams.brand
-        : awaitedSearchParams.brand ? [awaitedSearchParams.brand] : [];
+    // Parse and validate search parameters using our utility
+    const {
+        brands,
+        minPrice,
+        maxPrice,
+        sortBy,
+        viewMode,
+        page,
+        lastId
+    } = parseProductFilterParams(awaitedSearchParams as Record<string, string | string[]>);
 
-    const minPrice = awaitedSearchParams.minPrice ? parseInt(awaitedSearchParams.minPrice) : undefined;
-    const maxPrice = awaitedSearchParams.maxPrice ? parseInt(awaitedSearchParams.maxPrice) : undefined;
-    const sortBy = (awaitedSearchParams.sort as 'name' | 'price_low' | 'price_high' | 'rating') || 'rating';
-    const viewMode = (awaitedSearchParams.view as 'grid' | 'list') || 'grid';
+    const pageSize = 12; // Number of products per page
+    const startAfterId = page > 1 && lastId ? lastId : undefined;
 
     // Always filter by the current category
     const products = await fetchFilteredProducts({
@@ -62,10 +65,18 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
         brands: brands.length > 0 ? brands : undefined,
         minPrice,
         maxPrice,
-        sortBy
+        sortBy,
+        pageSize,
+        startAfterId
     });
 
-    // Get subcategories and brands specific to this category
+    // Get the total count for pagination using a proper count query
+    const totalCount = await getProductCount({
+        category: decodedCategory,
+        brands: brands.length > 0 ? brands : undefined,
+        minPrice,
+        maxPrice
+    });    // Get subcategories and brands specific to this category
     const { subcategoriesByCategory } = await getCategoriesFromDB();
     const subcategories = subcategoriesByCategory[decodedCategory] || [];
 
@@ -73,60 +84,21 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
     const categoryBrands = await getBrandsForCategory(decodedCategory);
 
     return (
-        <div className="container mx-auto px-4 py-8">
-            <h1 className="text-4xl font-bold font-headline text-center mb-2">{decodedCategory}</h1>
-            <p className="text-lg text-muted-foreground text-center mb-8">
-                Find the perfect {decodedCategory.toLowerCase()} for your cycling adventures.
-            </p>
-
-            {/* Mobile Filters Button */}
-            <div className="block lg:hidden mb-6">
-                <ServerProductFilters
-                    availableBrands={categoryBrands}
-                    availableCategories={[]}
-                    selectedCategories={[]}
-                    selectedBrands={brands}
-                    priceRange={[minPrice || 0, maxPrice || 120000]}
-                    currentCategory={decodedCategory}
-                    currentSubcategories={subcategories}
-                />
-            </div>
-
-            <div className="flex gap-8">
-                {/* Desktop Filters Sidebar */}
-                <div className="hidden lg:block w-64 flex-shrink-0">
-                    <ServerProductFilters
-                        availableBrands={categoryBrands}
-                        availableCategories={[]}
-                        selectedCategories={[]}
-                        selectedBrands={brands}
-                        priceRange={[minPrice || 0, maxPrice || 120000]}
-                        currentCategory={decodedCategory}
-                        currentSubcategories={subcategories}
-                    />
-                </div>
-
-                {/* Main Content */}
-                <div className="flex-1">
-                    {/* Controls */}
-                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-                        <p className="text-sm text-muted-foreground order-2 sm:order-1">
-                            Showing {products.length} products in {decodedCategory}
-                        </p>
-                        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto order-1 sm:order-2">
-                            <div className="flex-1 sm:flex-initial">
-                                <ServerProductSort currentSort={sortBy} />
-                            </div>
-                            <ServerViewToggle currentView={viewMode} />
-                        </div>
-                    </div>
-
-                    {/* Products Grid */}
-                    <Suspense fallback={<ProductGridSkeleton />}>
-                        <ProductGrid products={products} viewMode={viewMode} />
-                    </Suspense>
-                </div>
-            </div>
-        </div>
+        <ProductPage
+            title={decodedCategory}
+            description={`Find the perfect ${decodedCategory.toLowerCase()} for your cycling adventures.`}
+            products={products}
+            availableBrands={categoryBrands}
+            currentCategory={decodedCategory}
+            currentSubcategories={subcategories}
+            selectedBrands={brands}
+            minPrice={minPrice}
+            maxPrice={maxPrice}
+            sortBy={sortBy}
+            viewMode={viewMode}
+            totalCount={totalCount}
+            currentPage={page}
+            pageSize={pageSize}
+        />
     );
 }

@@ -1,24 +1,7 @@
 import { adminDb as db } from '../firebase/admin';
 import { CollectionReference } from 'firebase-admin/firestore';
 import { ProductSchema, Product } from '../models/Product';
-
-// Retry helper function
-async function retryOperation<T>(operation: () => Promise<T>, maxRetries = 3): Promise<T> {
-    for (let attempt = 1; attempt <= maxRetries; attempt++) {
-        try {
-            return await operation();
-        } catch (error) {
-            if (attempt === maxRetries) {
-                throw error;
-            }
-            // Wait before retrying (exponential backoff)
-            const delay = Math.min(1000 * Math.pow(2, attempt - 1), 5000);
-            await new Promise(resolve => setTimeout(resolve, delay));
-            console.log(`Retrying operation, attempt ${attempt + 1}/${maxRetries}`);
-        }
-    }
-    throw new Error('Max retries exceeded');
-}
+import { retryOperation } from './retry';
 
 // Runtime guard: fail fast if this file is imported in a browser/client environment.
 if (typeof window !== 'undefined') {
@@ -37,56 +20,88 @@ export interface ProductFilterOptions {
     startAfterId?: string; // Document ID to start after (for cursor paging)
 }
 
-// Enhanced fetch function with server-side filtering
+import { createQueryBuilder } from './firestore-query-builder';
+
+// Enhanced fetch function with server-side filtering using query builder
 export async function fetchFilteredProducts(filters: ProductFilterOptions = {}): Promise<Product[]> {
     return retryOperation(async () => {
         const productsCollection = db.collection('products') as CollectionReference;
-        let query: any = productsCollection;
 
-        // Apply Firestore filters where possible
-        if (filters.categories && filters.categories.length === 1) {
-            // Firestore can only filter by one category at a time efficiently
-            query = query.where('category', '==', filters.categories[0]);
+        // Initialize the query builder
+        const queryBuilder = createQueryBuilder<Product>(productsCollection);
+
+        // Apply category filter
+        if (filters.categories && filters.categories.length > 0) {
+            // If we have more than one category, we need to use in operator
+            // Note: This requires a composite index to be created in Firestore
+            if (filters.categories.length === 1) {
+                queryBuilder.where('category', '==', filters.categories[0]);
+            } else {
+                queryBuilder.where('category', 'in', filters.categories);
+            }
         }
 
-        if (filters.brands && filters.brands.length === 1) {
-            // Firestore can only filter by one brand at a time efficiently
-            query = query.where('brand', '==', filters.brands[0]);
+        // Apply brand filter
+        if (filters.brands && filters.brands.length > 0) {
+            // If we have more than one brand, we need to use in operator
+            // Note: This requires a composite index to be created in Firestore
+            if (filters.brands.length === 1) {
+                queryBuilder.where('brand', '==', filters.brands[0]);
+            } else {
+                queryBuilder.where('brand', 'in', filters.brands);
+            }
         }
 
-        // Apply ordering for server-side sorting if requested
+        // Apply price range filters
+        if (filters.minPrice !== undefined) {
+            queryBuilder.where('price', '>=', filters.minPrice);
+        }
+
+        if (filters.maxPrice !== undefined) {
+            queryBuilder.where('price', '<=', filters.maxPrice);
+        }
+
+        // Apply sorting
         if (filters.sortBy) {
-            const { field, direction } = (() => {
-                switch (filters.sortBy) {
-                    case 'name':
-                        return { field: 'name', direction: 'asc' as const };
-                    case 'price_low':
-                        return { field: 'price', direction: 'asc' as const };
-                    case 'price_high':
-                        return { field: 'price', direction: 'desc' as const };
-                    case 'rating':
-                    default:
-                        return { field: 'rating', direction: 'desc' as const };
-                }
-            })();
-
-            query = query.orderBy(field, direction);
+            switch (filters.sortBy) {
+                case 'name':
+                    queryBuilder.orderBy('name', 'asc');
+                    break;
+                case 'price_low':
+                    queryBuilder.orderBy('price', 'asc');
+                    break;
+                case 'price_high':
+                    queryBuilder.orderBy('price', 'desc');
+                    break;
+                case 'rating':
+                default:
+                    queryBuilder.orderBy('rating', 'desc');
+                    break;
+            }
+        } else {
+            // Default sorting
+            queryBuilder.orderBy('rating', 'desc');
         }
 
-        // Apply pagination: startAfterId and pageSize
+        // Apply pagination with cursor (startAfter)
         if (filters.startAfterId) {
             try {
                 const startDoc = await db.collection('products').doc(filters.startAfterId).get();
-                if (startDoc.exists) query = query.startAfter(startDoc);
+                if (startDoc.exists) {
+                    queryBuilder.startAfter(startDoc);
+                }
             } catch (err) {
                 console.warn('startAfterId not found or error fetching start doc:', err);
             }
         }
 
+        // Apply page size limit
         if (filters.pageSize && Number.isFinite(filters.pageSize)) {
-            query = query.limit(filters.pageSize);
+            queryBuilder.limit(filters.pageSize);
         }
 
+        // Execute the query
+        const query = queryBuilder.build();
         const productDocs = await query.get();
 
         // Map and validate documents
@@ -100,41 +115,8 @@ export async function fetchFilteredProducts(filters: ProductFilterOptions = {}):
             return parsed.data;
         }).filter(Boolean) as Product[];
 
-        // Apply client-side filters for complex filtering
-        let filteredProducts = products;
-
-        // Filter by multiple categories (if more than one)
-        if (filters.categories && filters.categories.length > 1) {
-            filteredProducts = filteredProducts.filter(p =>
-                filters.categories!.includes(p.category)
-            );
-        }
-
-        // Filter by multiple brands (if more than one)
-        if (filters.brands && filters.brands.length > 1) {
-            filteredProducts = filteredProducts.filter(p =>
-                p.brand && filters.brands!.includes(p.brand)
-            );
-        }
-
-        // Filter by price range
-        if (filters.minPrice !== undefined || filters.maxPrice !== undefined) {
-            const minPrice = filters.minPrice ?? 0;
-            const maxPrice = filters.maxPrice ?? Number.MAX_SAFE_INTEGER;
-            filteredProducts = filteredProducts.filter(p =>
-                p.price >= minPrice && p.price <= maxPrice
-            );
-        }
-
-        // Sort products
-        // If the server already applied ordering (via query.orderBy) we keep server order.
-        // Otherwise apply client-side sort as before.
-        if (!filters.sortBy) {
-            // apply the same local sorting logic
-            filteredProducts.sort((a, b) => b.rating - a.rating);
-        }
-
-        return filteredProducts;
+        // All filtering, sorting, and pagination has been handled server-side by the query builder
+        return products;
     });
 }
 
@@ -176,73 +158,93 @@ export async function getProductById(id: string): Promise<Product | null> {
 export async function getFilteredProductsViaCategory(
     category: string,
     subcategory: string,
-    options: { sortBy?: ProductFilterOptions['sortBy']; pageSize?: number; startAfterId?: string } = {}
+    options: {
+        sortBy?: ProductFilterOptions['sortBy'];
+        pageSize?: number;
+        startAfterId?: string;
+        brands?: string[];
+        minPrice?: number;
+        maxPrice?: number;
+    } = {}
 ): Promise<Product[]> {
-    const productsRef = db.collection('products') as CollectionReference;
-    // the category/subcategory might have characters like %20... so parse it before checking
-    category = decodeURIComponent(category);
-    subcategory = decodeURIComponent(subcategory);
+    return retryOperation(async () => {
+        const productsRef = db.collection('products') as CollectionReference;
+        // Decode URI components to handle special characters
+        category = decodeURIComponent(category);
+        subcategory = decodeURIComponent(subcategory);
 
-    let query: any = productsRef.where('category', '==', category).where('subCategory', '==', subcategory);
+        // Use the query builder pattern
+        const queryBuilder = createQueryBuilder<Product>(productsRef);
 
-    // Server-side ordering
-    if (options.sortBy) {
-        const { field, direction } = (() => {
+        // Apply category and subcategory filters
+        queryBuilder
+            .where('category', '==', category)
+            .where('subCategory', '==', subcategory);
+
+        // Apply brand filter if provided
+        if (options.brands && options.brands.length > 0) {
+            if (options.brands.length === 1) {
+                queryBuilder.where('brand', '==', options.brands[0]);
+            } else {
+                queryBuilder.where('brand', 'in', options.brands);
+            }
+        }
+
+        // Apply price range filters if provided
+        if (options.minPrice !== undefined) {
+            queryBuilder.where('price', '>=', options.minPrice);
+        }
+
+        if (options.maxPrice !== undefined) {
+            queryBuilder.where('price', '<=', options.maxPrice);
+        }
+
+        // Apply sorting
+        if (options.sortBy) {
             switch (options.sortBy) {
                 case 'name':
-                    return { field: 'name', direction: 'asc' as const };
+                    queryBuilder.orderBy('name', 'asc');
+                    break;
                 case 'price_low':
-                    return { field: 'price', direction: 'asc' as const };
+                    queryBuilder.orderBy('price', 'asc');
+                    break;
                 case 'price_high':
-                    return { field: 'price', direction: 'desc' as const };
+                    queryBuilder.orderBy('price', 'desc');
+                    break;
                 case 'rating':
                 default:
-                    return { field: 'rating', direction: 'desc' as const };
+                    queryBuilder.orderBy('rating', 'desc');
+                    break;
             }
-        })();
-
-        query = query.orderBy(field, direction);
-    }
-
-    // Pagination support
-    if (options.startAfterId) {
-        try {
-            const startDoc = await db.collection('products').doc(options.startAfterId).get();
-            if (startDoc.exists) query = query.startAfter(startDoc);
-        } catch (err) {
-            console.warn('startAfterId not found or error fetching start doc:', err);
+        } else {
+            // Default sorting
+            queryBuilder.orderBy('rating', 'desc');
         }
-    }
 
-    if (options.pageSize && Number.isFinite(options.pageSize)) {
-        query = query.limit(options.pageSize);
-    }
-
-    const querySnapshot = await query.get();
-
-    const products = querySnapshot.docs.map((doc: any) => {
-        const raw = { ...doc.data(), id: doc.id, };
-        const parsed = ProductSchema.safeParse(raw);
-        if (!parsed.success) {
-            console.warn('Invalid product skipped:', parsed.error.format());
-            return null;
+        // Apply pagination
+        if (options.startAfterId) {
+            try {
+                const startDoc = await productsRef.doc(options.startAfterId).get();
+                if (startDoc.exists) {
+                    queryBuilder.startAfter(startDoc);
+                }
+            } catch (err) {
+                console.warn('startAfterId not found or error fetching start doc:', err);
+            }
         }
-        return parsed.data;
-    });
 
-    return products.filter(Boolean) as Product[];
-}
+        // Apply limit if provided
+        if (options.pageSize && Number.isFinite(options.pageSize)) {
+            queryBuilder.limit(options.pageSize);
+        }
 
-export async function fetchRecommendedProducts(): Promise<Product[]> {
-    return retryOperation(async () => {
-        const productsCollection = db.collection('products') as CollectionReference;
-        // Example: fetch products ordered by a 'popularity' field, descending
-        const snapshot = await productsCollection
-            .where('isRecommended', '==', true)
-            .get();
+        // Execute the query
+        const query = queryBuilder.build();
+        const querySnapshot = await query.get();
 
-        const products = snapshot.docs.map(doc => {
-            const raw = { ...doc.data(), id: doc.id, };
+        // Map and validate the results
+        const products = querySnapshot.docs.map((doc: any) => {
+            const raw = { ...doc.data(), id: doc.id };
             const parsed = ProductSchema.safeParse(raw);
             if (!parsed.success) {
                 console.warn('Invalid product skipped:', parsed.error.format());
@@ -250,6 +252,37 @@ export async function fetchRecommendedProducts(): Promise<Product[]> {
             }
             return parsed.data;
         });
+
+        return products.filter(Boolean) as Product[];
+    });
+}
+
+export async function fetchRecommendedProducts(): Promise<Product[]> {
+    return retryOperation(async () => {
+        const productsCollection = db.collection('products') as CollectionReference;
+
+        // Use the query builder pattern
+        const queryBuilder = createQueryBuilder<Product>(productsCollection);
+
+        // Get recommended products
+        queryBuilder
+            .where('isRecommended', '==', true)
+            .orderBy('rating', 'desc');
+
+        // Execute the query
+        const query = queryBuilder.build();
+        const snapshot = await query.get();
+
+        const products = snapshot.docs.map(doc => {
+            const raw = { ...doc.data(), id: doc.id };
+            const parsed = ProductSchema.safeParse(raw);
+            if (!parsed.success) {
+                console.warn('Invalid product skipped:', parsed.error.format());
+                return null;
+            }
+            return parsed.data;
+        });
+
         return products.filter(Boolean) as Product[];
     });
 }

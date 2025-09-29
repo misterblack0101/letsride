@@ -1,27 +1,41 @@
 "use client";
 
-import { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import ProductFilters from '@/components/products/ProductFilters';
 import ProductGrid from '@/components/products/ProductGrid';
 import ProductSort from '@/components/products/ProductSort';
 import ViewToggle from '@/components/view-toggle';
+import Pagination from '@/components/products/Pagination';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { LoadingState, ProductGridSkeleton } from '@/components/ui/loading';
 import type { Product } from '@/lib/models/Product';
+import { useRouter, usePathname, useSearchParams } from 'next/navigation';
+
+// Define pagination settings
+const PRODUCTS_PER_PAGE = 12;
 
 interface ProductsClientProps {
     initialProducts?: Product[];
     category?: string;
     subcategory?: string;
     availableBrands?: string[];
+    totalCount?: number;
 }
 
-export default function ClientProducts({
+function ClientProducts({
     initialProducts,
     category,
     subcategory,
-    availableBrands
+    availableBrands,
+    totalCount = 0
 }: ProductsClientProps) {
+    const router = useRouter();
+    const pathname = usePathname();
+    const searchParams = useSearchParams();
+
+    // Get current page from URL or default to 1
+    const currentPage = parseInt(searchParams.get('page') || '1', 10);
+
     const [products, setProducts] = useState<Product[]>(initialProducts || []);
     const [loading, setLoading] = useState(!initialProducts);
     const [error, setError] = useState<string | null>(null);
@@ -32,6 +46,11 @@ export default function ClientProducts({
     const [sort, setSort] = useState('rating');
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
     const isMobile = useIsMobile();
+
+    // Calculate pagination info
+    const totalPages = Math.ceil(totalCount > 0 ? totalCount : products.length / PRODUCTS_PER_PAGE);
+    const hasNextPage = currentPage < totalPages;
+    const hasPreviousPage = currentPage > 1;
 
     // const fetchProducts = async () => {
     //     try {
@@ -157,9 +176,27 @@ export default function ClientProducts({
                             </div>
                         </div>
                         <ProductGrid products={filteredProducts} viewMode={viewMode} />
+
+                        {/* Pagination Component */}
+                        <Pagination
+                            currentPage={currentPage}
+                            totalPages={totalPages}
+                            hasNextPage={hasNextPage}
+                            hasPreviousPage={hasPreviousPage}
+                            onPageChange={(page) => {
+                                // Update URL with the new page
+                                const params = new URLSearchParams(searchParams.toString());
+                                params.set('page', page.toString());
+                                router.push(`${pathname}?${params.toString()}`);
+                            }}
+                        />
                     </main>
                 </div>
             )}
         </div>
     );
 }
+
+// Export with React.memo to prevent unnecessary re-renders
+// Only re-render when the initial products or category/subcategory changes
+export default React.memo(ClientProducts);

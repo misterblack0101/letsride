@@ -22,7 +22,7 @@ type ProductFiltersProps = {
   subcategory?: string;
 };
 
-export default function ProductFilters({
+function ProductFilters({
   filters,
   setFilters,
   availableBrands,
@@ -180,3 +180,26 @@ export default function ProductFilters({
     </Card>
   );
 }
+
+// Export with React.memo to prevent unnecessary re-renders when props don't change
+export default React.memo(ProductFilters, (prevProps, nextProps) => {
+  // Return true if the props are equal (component will not re-render)
+  return (
+    // Compare basic props
+    prevProps.category === nextProps.category &&
+    prevProps.subcategory === nextProps.subcategory &&
+
+    // Deep compare arrays (brands)
+    JSON.stringify(prevProps.availableBrands) === JSON.stringify(nextProps.availableBrands) &&
+
+    // Compare filter price ranges
+    prevProps.filters.price[0] === nextProps.filters.price[0] &&
+    prevProps.filters.price[1] === nextProps.filters.price[1] &&
+
+    // Compare brand filters array length
+    prevProps.filters.brand.length === nextProps.filters.brand.length &&
+
+    // Compare brand filters content (assuming they're sorted)
+    JSON.stringify(prevProps.filters.brand) === JSON.stringify(nextProps.filters.brand)
+  );
+});

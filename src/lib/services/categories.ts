@@ -22,6 +22,9 @@ export interface CategoriesData {
     categories: Record<string, Category>;
     subcategoriesByCategory: Record<string, string[]>;
     brandsBySubcategory: Record<string, Record<string, string[]>>;
+    // Pre-computed data
+    allBrands: string[];
+    brandsByCategory: Record<string, string[]>;
 }
 
 /**
@@ -38,7 +41,9 @@ export const getCategoriesFromDB = cache(async (): Promise<CategoriesData> => {
             return {
                 categories: {},
                 subcategoriesByCategory: {},
-                brandsBySubcategory: {}
+                brandsBySubcategory: {},
+                allBrands: [],
+                brandsByCategory: {}
             };
         }
 
@@ -47,30 +52,55 @@ export const getCategoriesFromDB = cache(async (): Promise<CategoriesData> => {
         // Transform the data into more usable formats for the UI
         const subcategoriesByCategory: Record<string, string[]> = {};
         const brandsBySubcategory: Record<string, Record<string, string[]>> = {};
+        const brandsByCategory: Record<string, string[]> = {};
+        const allBrandsSet = new Set<string>();
 
         // For each category, extract its subcategories
         for (const [categoryName, categoryData] of Object.entries(rawData)) {
             const subcategories = (categoryData as any).subcategories || {};
             subcategoriesByCategory[categoryName] = Object.keys(subcategories);
+            brandsByCategory[categoryName] = [];
 
             // For each subcategory, extract its brands
             brandsBySubcategory[categoryName] = {};
             for (const [subcategoryName, subcategoryData] of Object.entries(subcategories)) {
-                brandsBySubcategory[categoryName][subcategoryName] = (subcategoryData as any).brands || [];
+                const brands = (subcategoryData as any).brands || [];
+                brandsBySubcategory[categoryName][subcategoryName] = brands;
+
+                // Add brands to the category's brand set
+                brands.forEach((brand: string) => {
+                    // Add to all brands set
+                    allBrandsSet.add(brand);
+
+                    // Add to category brands if not already included
+                    if (!brandsByCategory[categoryName].includes(brand)) {
+                        brandsByCategory[categoryName].push(brand);
+                    }
+                });
             }
+
+            // Sort the brands for this category
+            brandsByCategory[categoryName].sort();
         }
+
+        // Convert the Set to a sorted array
+        const allBrands = Array.from(allBrandsSet).sort();
 
         return {
             categories: rawData as any,
             subcategoriesByCategory,
-            brandsBySubcategory
+            brandsBySubcategory,
+            allBrands,
+            brandsByCategory
         };
     } catch (error) {
         console.error('Error fetching categories:', error);
         return {
             categories: {},
             subcategoriesByCategory: {},
-            brandsBySubcategory: {}
+            brandsBySubcategory: {},
+            allBrands: [],
+            brandsByCategory: {}
         };
     }
 });
@@ -85,36 +115,17 @@ export const getBrandsForSubcategory = cache(async (category: string, subcategor
 });
 
 /**
- * Gets all brands for a specific category by combining brands from all its subcategories
+ * Gets all brands for a specific category using pre-computed data
  */
 export const getBrandsForCategory = cache(async (category: string): Promise<string[]> => {
-    const { brandsBySubcategory } = await getCategoriesFromDB();
-
-    if (!brandsBySubcategory[category]) {
-        return [];
-    }
-
-    // Combine all brands from the subcategories of this category
-    const categoryBrands = new Set<string>();
-    Object.values(brandsBySubcategory[category]).forEach(brands => {
-        brands.forEach(brand => categoryBrands.add(brand));
-    });
-
-    return Array.from(categoryBrands).sort();
+    const { brandsByCategory } = await getCategoriesFromDB();
+    return brandsByCategory[category] || [];
 });
 
 /**
- * Gets all available brands across all categories
+ * Gets all available brands across all categories using pre-computed data
  */
 export const getAllBrands = cache(async (): Promise<string[]> => {
-    const { brandsBySubcategory } = await getCategoriesFromDB();
-
-    const allBrands = new Set<string>();
-    Object.values(brandsBySubcategory).forEach(subcategories => {
-        Object.values(subcategories).forEach(brands => {
-            brands.forEach(brand => allBrands.add(brand));
-        });
-    });
-
-    return Array.from(allBrands).sort();
+    const { allBrands } = await getCategoriesFromDB();
+    return allBrands;
 });

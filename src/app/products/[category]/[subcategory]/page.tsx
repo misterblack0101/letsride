@@ -1,7 +1,9 @@
 // app/products/[category]/[subcategory]/page.tsx
 import { getFilteredProductsViaCategory } from '@/lib/server/products.server'; // server-only
+import { getProductCount } from '@/lib/server/product-count'; // Import the count function
 import { getBrandsForSubcategory } from '@/lib/services/categories'; // Get brands for the specific subcategory
-import ClientProducts from '../../ClientProducts';
+import { parseProductFilterParams } from '@/lib/utils/search-params';
+import ProductPage from '@/components/products/ProductPage';
 import type { Metadata } from 'next';
 
 type Props = {
@@ -15,6 +17,8 @@ type Props = {
         maxPrice?: string;
         sort?: string;
         view?: string;
+        page?: string;
+        lastId?: string;
     };
 };
 
@@ -43,15 +47,19 @@ export default async function SubcategoryPage({ params, searchParams }: Props) {
     // Prepare searchParams for future use
     const awaitedSearchParams = await searchParams;
 
-    // Parse search parameters
-    const brands = Array.isArray(awaitedSearchParams.brand)
-        ? awaitedSearchParams.brand
-        : awaitedSearchParams.brand ? [awaitedSearchParams.brand] : [];
+    // Parse and validate search parameters using our utility
+    const {
+        brands,
+        minPrice,
+        maxPrice,
+        sortBy,
+        viewMode,
+        page,
+        lastId
+    } = parseProductFilterParams(awaitedSearchParams as Record<string, string | string[]>);
 
-    const minPrice = awaitedSearchParams.minPrice ? parseInt(awaitedSearchParams.minPrice) : undefined;
-    const maxPrice = awaitedSearchParams.maxPrice ? parseInt(awaitedSearchParams.maxPrice) : undefined;
-    const sortBy = (awaitedSearchParams.sort as 'name' | 'price_low' | 'price_high' | 'rating') || 'rating';
-    const viewMode = (awaitedSearchParams.view as 'grid' | 'list') || 'grid';
+    const pageSize = 12; // Number of products per page
+    const startAfterId = page > 1 && lastId ? lastId : undefined;
 
     // Get products for this category/subcategory combination with any additional filters
     const products = await getFilteredProductsViaCategory(
@@ -59,20 +67,45 @@ export default async function SubcategoryPage({ params, searchParams }: Props) {
         decodedSubcategory,
         {
             sortBy,
-            // Add other filter options as needed
-            // brands: brands.length > 0 ? brands : undefined,
+            brands: brands.length > 0 ? brands : undefined,
+            minPrice,
+            maxPrice,
+            pageSize,
+            startAfterId
         }
     );
+
+    // Get the total count for pagination using a proper count query
+    const totalCount = await getProductCount({
+        category: decodedCategory,
+        subcategory: decodedSubcategory,
+        brands: brands.length > 0 ? brands : undefined,
+        minPrice,
+        maxPrice
+    });
 
     // Get the specific brands for this subcategory
     const subcategoryBrands = await getBrandsForSubcategory(decodedCategory, decodedSubcategory);
 
+    // Get the ID of the last product for cursor-based pagination
+    const lastProductId = products.length > 0 ? products[products.length - 1].id : undefined;
+
     return (
-        <ClientProducts
-            initialProducts={products}
-            category={decodedCategory}
-            subcategory={decodedSubcategory}
+        <ProductPage
+            title={decodedSubcategory}
+            description={`Shop our collection of ${decodedSubcategory.toLowerCase()} in the ${decodedCategory.toLowerCase()} category.`}
+            products={products}
             availableBrands={subcategoryBrands}
+            currentCategory={decodedCategory}
+            currentSubcategory={decodedSubcategory}
+            selectedBrands={brands}
+            minPrice={minPrice}
+            maxPrice={maxPrice}
+            sortBy={sortBy}
+            viewMode={viewMode}
+            totalCount={totalCount}
+            currentPage={page}
+            pageSize={pageSize}
         />
     );
 }

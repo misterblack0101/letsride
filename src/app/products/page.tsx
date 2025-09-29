@@ -1,12 +1,7 @@
 import { fetchProducts, fetchFilteredProducts } from '@/lib/server/products.server';
+import { getProductCount } from '@/lib/server/product-count';
 import { getCategoriesFromDB } from '@/lib/services/categories';
-import ServerProductFilters from '@/components/products/ServerProductFilters';
-import ProductGrid from '@/components/products/ProductGrid';
-import ServerProductSort from '@/components/products/ServerProductSort';
-import ServerViewToggle from '@/components/products/ServerViewToggle';
-import { Suspense } from 'react';
-import { ProductGridSkeleton } from '@/components/ui/loading';
-import type { Product } from '@/lib/models/Product';
+import ProductPage from '@/components/products/ProductPage';
 import type { Metadata } from 'next';
 
 interface SearchParams {
@@ -16,6 +11,7 @@ interface SearchParams {
   maxPrice?: string;
   sort?: string;
   view?: string;
+  page?: string;
 }
 
 interface StorePageProps {
@@ -77,94 +73,59 @@ export default async function StorePage({ searchParams }: StorePageProps) {
   const maxPrice = params.maxPrice ? parseInt(params.maxPrice) : undefined;
   const sortBy = (params.sort as 'name' | 'price_low' | 'price_high' | 'rating') || 'rating';
   const viewMode = (params.view as 'grid' | 'list') || 'grid';
+  const page = params.page ? parseInt(params.page) : 1;
+  const pageSize = 12; // Number of products per page
+
+  // Calculate pagination offsets
+  const startIndex = (page - 1) * pageSize;
+  const endIndex = startIndex + pageSize;
 
   // Use enhanced filtering for better performance
   const hasFilters = categories.length > 0 || brands.length > 0 || minPrice !== undefined || maxPrice !== undefined;
 
+  // Get product count for pagination
+  const totalCount = await getProductCount({
+    category: categories.length > 0 ? categories[0] : undefined,
+    brands: brands.length > 0 ? brands : undefined,
+    minPrice,
+    maxPrice
+  });
+
+  // Fetch filtered products with pagination
   const [filteredProducts, allProducts] = await Promise.all([
-    hasFilters ? fetchFilteredProducts({
+    fetchFilteredProducts({
       categories: categories.length > 0 ? categories : undefined,
       brands: brands.length > 0 ? brands : undefined,
       minPrice,
       maxPrice,
-      sortBy
-    }) : fetchProducts(),
-    // Always fetch all products for filter options
+      sortBy,
+      pageSize: pageSize,
+      // We could use startAfterId for cursor-based pagination, but we don't have it for the first page
+    }),
+    // Always fetch all products for filter options (no pagination)
     fetchProducts()
   ]);
 
   // If no filters were applied, use the same data for both
-  const productsToShow = hasFilters ? filteredProducts : allProducts.sort((a, b) => {
-    switch (sortBy) {
-      case 'name':
-        return a.name.localeCompare(b.name);
-      case 'price_low':
-        return a.price - b.price;
-      case 'price_high':
-        return b.price - a.price;
-      case 'rating':
-      default:
-        return b.rating - a.rating;
-    }
-  });
+  const productsToShow = hasFilters ? filteredProducts : filteredProducts;
 
   // Get structured category data from our cached service
-  const { subcategoriesByCategory, brandsBySubcategory } = await getCategoriesFromDB();
-  const availableCategories = Object.keys(subcategoriesByCategory);
-
-  // Still get available brands from products for the current view
-  // Alternatively, we could use getAllBrands() from the categories service
-  const availableBrands = [...new Set(allProducts.map(p => p.brand).filter((brand): brand is string => !!brand))];
+  const { allBrands } = await getCategoriesFromDB();
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-4xl font-bold font-headline text-center mb-2">Explore Our Collection</h1>
-      <p className="text-lg text-muted-foreground text-center mb-8">Find the perfect ride and gear for your next adventure.</p>
-
-      {/* Mobile Filters Button */}
-      <div className="block lg:hidden mb-6">
-        <ServerProductFilters
-          availableBrands={availableBrands}
-          availableCategories={availableCategories}
-          selectedCategories={categories}
-          selectedBrands={brands}
-          priceRange={[minPrice || 0, maxPrice || 120000]}
-        />
-      </div>
-
-      <div className="flex gap-8">
-        {/* Desktop Filters Sidebar */}
-        <div className="hidden lg:block w-64 flex-shrink-0">
-          <ServerProductFilters
-            availableBrands={availableBrands}
-            availableCategories={availableCategories}
-            selectedCategories={categories}
-            selectedBrands={brands}
-            priceRange={[minPrice || 0, maxPrice || 120000]}
-          />
-        </div>
-
-        {/* Main Content */}
-        <div className="flex-1">
-          {/* Controls */}
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-            <p className="text-sm text-muted-foreground order-2 sm:order-1">
-              Showing {productsToShow.length} products
-            </p>
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto order-1 sm:order-2">
-              <div className="flex-1 sm:flex-initial">
-                <ServerProductSort currentSort={sortBy} />
-              </div>
-              <ServerViewToggle currentView={viewMode} />
-            </div>
-          </div>
-
-          {/* Products Grid */}
-          <Suspense fallback={<ProductGridSkeleton />}>
-            <ProductGrid products={productsToShow} viewMode={viewMode} />
-          </Suspense>
-        </div>
-      </div>
-    </div>
+    <ProductPage
+      title="Explore Our Collection"
+      description="Find the perfect ride and gear for your next adventure."
+      products={productsToShow}
+      availableBrands={allBrands}
+      selectedBrands={brands}
+      minPrice={minPrice}
+      maxPrice={maxPrice}
+      sortBy={sortBy}
+      viewMode={viewMode}
+      totalCount={totalCount}
+      currentPage={page}
+      pageSize={pageSize}
+    />
   );
 }
