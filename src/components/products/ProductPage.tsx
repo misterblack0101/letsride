@@ -7,6 +7,7 @@ import ServerProductFilters from '@/components/products/ServerProductFilters';
 import ServerPagination from '@/components/products/ServerPagination';
 import { ProductGridSkeleton } from '@/components/ui/loading';
 import type { Product } from '@/lib/models/Product';
+import ProductCount from './ProductCount';
 
 interface ProductPageProps {
     title: string;
@@ -75,10 +76,13 @@ interface ProductPageProps {
                 <div className="flex-1">
                     {/* Controls */}
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-                        <p className="text-sm text-muted-foreground order-2 sm:order-1">
-                            Showing {Math.min(pageSize * (currentPage - 1) + 1, totalCount)} to {Math.min(pageSize * currentPage, totalCount)} of {totalCount} products
-                            {currentSubcategory ? ` in ${currentSubcategory}` : currentCategory ? ` in ${currentCategory}` : ''}
-                        </p>
+                        <ProductCount
+                            totalCount={totalCount}
+                            currentPage={currentPage}
+                            pageSize={pageSize}
+                            currentCategory={currentCategory}
+                            currentSubcategory={currentSubcategory}
+                        />
                         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto order-1 sm:order-2">
                             <div className="flex-1 sm:flex-initial">
                                 <ServerProductSort currentSort={sortBy} />
@@ -87,10 +91,8 @@ interface ProductPageProps {
                         </div>
                     </div>
 
-                    {/* Products Grid */}
-                    <Suspense fallback={<ProductGridSkeleton />}>
-                        <ProductGrid products={products} viewMode={viewMode} />
-                    </Suspense>
+                    {/* Products Grid with automatic loading state */}
+                    <ProductGrid products={products} viewMode={viewMode} />
 
                     {/* Pagination */}
                     <ServerPagination

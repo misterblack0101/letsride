@@ -52,11 +52,24 @@ export default async function SubcategoryPage({ params, searchParams }: Props) {
         brand: brands = [],
         sort: sortBy = 'rating',
         view: viewMode = 'grid',
-        page = 1,
+        page: requestedPage = 1,
         lastId
     } = parseProductFilterParams(awaitedSearchParams as Record<string, string | string[]>);
 
     const pageSize = 12; // Number of products per page
+
+    // Get the total count for pagination using a proper count query
+    const totalCount = await getProductCount({
+        category: decodedCategory,
+        subcategory: decodedSubcategory,
+        brands: brands.length > 0 ? brands : undefined
+    });
+
+    // Calculate total pages and ensure page number is within valid range
+    const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
+    const page = requestedPage > totalPages ? 1 : requestedPage;
+
+    // Only use startAfterId for valid pages beyond the first
     const startAfterId = page > 1 && lastId ? lastId : undefined;
 
     // Get products for this category/subcategory combination with any additional filters
@@ -70,13 +83,6 @@ export default async function SubcategoryPage({ params, searchParams }: Props) {
             startAfterId
         }
     );
-
-    // Get the total count for pagination using a proper count query
-    const totalCount = await getProductCount({
-        category: decodedCategory,
-        subcategory: decodedSubcategory,
-        brands: brands.length > 0 ? brands : undefined
-    });
 
     // Get the specific brands for this subcategory
     const subcategoryBrands = await getBrandsForSubcategory(decodedCategory, decodedSubcategory);
