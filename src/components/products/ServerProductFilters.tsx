@@ -12,19 +12,72 @@ import { Filter, X } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import PriceRangeFilter from './PriceRangeFilter';
 
+/**
+ * Props for ServerProductFilters component.
+ * 
+ * @interface ServerProductFiltersProps
+ */
 type ServerProductFiltersProps = {
+    /** Available brand options for filtering */
     availableBrands: string[];
+    /** Available category options for filtering (used in general product pages) */
     availableCategories: string[];
+    /** Currently selected categories */
     selectedCategories: string[];
+    /** Currently selected brands */
     selectedBrands: string[];
+    /** Current minimum price filter value */
     selectedMinPrice?: number;
+    /** Current maximum price filter value */
     selectedMaxPrice?: number;
-    // New props for contextual filtering
+    /** Current category context (for category-specific pages) */
     currentCategory?: string;
+    /** Current subcategory context (for subcategory-specific pages) */
     currentSubcategory?: string;
+    /** Available subcategories in current category */
     currentSubcategories?: string[];
 };
 
+/**
+ * Advanced product filtering component with URL-based state management.
+ * 
+ * **Architecture:**
+ * - Client component that manages filter state via URL search parameters
+ * - Supports both general product pages and category/subcategory specific pages
+ * - Responsive design with mobile sheet and desktop sidebar layouts
+ * - Real-time URL updates trigger server-side re-rendering
+ * 
+ * **URL Management:**
+ * - Builds appropriate URLs based on current page context
+ * - Preserves category/subcategory routes while updating filters
+ * - Cleans up empty filter parameters from URL
+ * 
+ * **Usage Contexts:**
+ * 1. `/products` - General product browsing with category filters
+ * 2. `/products/[category]` - Category-specific filtering
+ * 3. `/products/[category]/[subcategory]` - Subcategory-specific filtering
+ * 
+ * @param props - Filter configuration and current state
+ * 
+ * @example
+ * ```tsx
+ * // General products page
+ * <ServerProductFilters
+ *   availableBrands={['Trek', 'Giant']}
+ *   availableCategories={['Bikes', 'Accessories']}
+ *   selectedBrands={['Trek']}
+ *   selectedCategories={[]}
+ * />
+ * 
+ * // Category-specific page  
+ * <ServerProductFilters
+ *   availableBrands={['Trek', 'Giant']}
+ *   currentCategory="Bikes"
+ *   currentSubcategories={['Mountain', 'Road']}
+ *   selectedBrands={[]}
+ * />
+ * ```
+ */
 export default function ServerProductFilters({
     availableBrands,
     availableCategories,
@@ -40,6 +93,22 @@ export default function ServerProductFilters({
     const searchParams = useSearchParams();
     const isMobile = useIsMobile();
 
+    /**
+     * Updates URL search parameters and navigates to the new URL.
+     * 
+     * **URL Building Logic:**
+     * 1. Preserves current page context (general/category/subcategory)
+     * 2. Adds/updates filter parameters
+     * 3. Removes empty or null parameters to keep URLs clean
+     * 4. Handles array parameters (brands, categories) correctly
+     * 
+     * **Navigation Behavior:**
+     * - Triggers server-side re-render with new filters
+     * - Maintains browser history for back/forward navigation
+     * - Preserves SEO-friendly URL structure
+     * 
+     * @param updates - Object with parameter updates (null removes parameter)
+     */
     const updateURL = (updates: Record<string, string | string[] | null>) => {
         const params = new URLSearchParams(searchParams);
 
@@ -71,6 +140,10 @@ export default function ServerProductFilters({
         router.push(`${baseUrl}?${params.toString()}`);
     };
 
+    /**
+     * Handles category filter checkbox changes.
+     * Updates the URL with new category selection.
+     */
     const handleCategoryChange = (category: string, checked: boolean) => {
         const newCategories = checked
             ? [...selectedCategories, category]
@@ -79,6 +152,10 @@ export default function ServerProductFilters({
         updateURL({ category: newCategories });
     };
 
+    /**
+     * Handles brand filter checkbox changes.
+     * Updates the URL with new brand selection.
+     */
     const handleBrandChange = (brand: string, checked: boolean) => {
         const newBrands = checked
             ? [...selectedBrands, brand]
@@ -87,6 +164,10 @@ export default function ServerProductFilters({
         updateURL({ brand: newBrands });
     };
 
+    /**
+     * Handles price range filter changes from PriceRangeFilter component.
+     * Updates URL with new price range parameters.
+     */
     const handlePriceChange = (minPrice: number | undefined, maxPrice: number | undefined) => {
         updateURL({
             minPrice: minPrice?.toString() || null,
@@ -94,6 +175,14 @@ export default function ServerProductFilters({
         });
     };
 
+    /**
+     * Clears all active filters while preserving current page context.
+     * 
+     * **Context Preservation:**
+     * - General products page: navigates to `/products`
+     * - Category page: navigates to `/products/[category]`
+     * - Subcategory page: navigates to `/products/[category]/[subcategory]`
+     */
     const clearAllFilters = () => {
         // If we're in a category or subcategory context, stay there but clear other filters
         if (currentCategory) {
@@ -108,6 +197,7 @@ export default function ServerProductFilters({
         }
     };
 
+    /** Determines if any filters are currently active for UI state */
     const hasActiveFilters = selectedCategories.length > 0 || selectedBrands.length > 0 || selectedMinPrice !== undefined || selectedMaxPrice !== undefined;
 
     const FilterContent = () => (

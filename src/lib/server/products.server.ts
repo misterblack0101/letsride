@@ -8,21 +8,73 @@ if (typeof window !== 'undefined') {
     throw new Error('server/products.server.ts is server-only and must not be imported from client-side code');
 }
 
-// Filter options interface
+/**
+ * Filter and pagination options for product queries.
+ * Supports complex filtering with Firestore composite indexes.
+ * 
+ * @interface ProductFilterOptions
+ */
 export interface ProductFilterOptions {
+    /** Array of category names to filter by. Uses Firestore 'in' operator for multiple values. */
     categories?: string[];
+    /** Array of brand names to filter by. Uses Firestore 'in' operator for multiple values. */
     brands?: string[];
+    /** Minimum price filter (inclusive). Combined with maxPrice for range queries. */
     minPrice?: number;
+    /** Maximum price filter (inclusive). Combined with minPrice for range queries. */
     maxPrice?: number;
+    /** Sort order for results. Affects Firestore index requirements when combined with filters. */
     sortBy?: 'name' | 'price_low' | 'price_high' | 'rating';
-    // Pagination support (pageSize and startAfterId for cursor based paging)
+    /** Number of products to return per page. Default: 20. Used for cursor-based pagination. */
     pageSize?: number;
-    startAfterId?: string; // Document ID to start after (for cursor paging)
+    /** Document ID to start after for cursor-based pagination. Enables efficient large dataset navigation. */
+    startAfterId?: string;
 }
 
 import { createQueryBuilder } from './firestore-query-builder';
 
-// Enhanced fetch function with server-side filtering using query builder
+/**
+ * Fetches filtered products from Firestore with advanced filtering and pagination.
+ * 
+ * This function builds complex Firestore queries using the query builder pattern.
+ * It supports category/brand filtering, price ranges, sorting, and cursor-based pagination.
+ * 
+ * **Important**: Complex filter combinations require Firestore composite indexes.
+ * The console will show index creation links when new combinations are used.
+ * 
+ * @param filters - Filter and pagination options
+ * @param filters.categories - Filter by product categories (uses 'in' operator)
+ * @param filters.brands - Filter by product brands (uses 'in' operator) 
+ * @param filters.minPrice - Minimum price filter (inclusive)
+ * @param filters.maxPrice - Maximum price filter (inclusive)
+ * @param filters.sortBy - Sort order: 'name', 'price_low', 'price_high', 'rating'
+ * @param filters.pageSize - Products per page (default: 20)
+ * @param filters.startAfterId - Document ID for cursor pagination
+ * 
+ * @returns Promise resolving to array of filtered products
+ * 
+ * @throws {Error} When Firestore composite indexes are missing
+ * @throws {Error} When Firebase Admin SDK encounters connection issues
+ * 
+ * @example
+ * ```typescript
+ * // Basic category filter
+ * const bikes = await fetchFilteredProducts({ 
+ *   categories: ['Bikes'] 
+ * });
+ * 
+ * // Complex filter with pagination
+ * const premiumBikes = await fetchFilteredProducts({
+ *   categories: ['Bikes'],
+ *   brands: ['Trek', 'Giant'],
+ *   minPrice: 500,
+ *   maxPrice: 2000,
+ *   sortBy: 'price_low',
+ *   pageSize: 10,
+ *   startAfterId: 'last-product-id'
+ * });
+ * ```
+ */
 export async function fetchFilteredProducts(filters: ProductFilterOptions = {}): Promise<Product[]> {
     return retryOperation(async () => {
         const productsCollection = db.collection('products') as CollectionReference;
@@ -119,12 +171,41 @@ export async function fetchFilteredProducts(filters: ProductFilterOptions = {}):
     });
 }
 
-// Fetch all products (kept for backward compatibility)
+/**
+ * Fetches all products without filtering.
+ * 
+ * This is a convenience wrapper around fetchFilteredProducts() for backward compatibility.
+ * Consider using fetchFilteredProducts() directly for better performance with large datasets.
+ * 
+ * @returns Promise resolving to array of all products
+ * 
+ * @example
+ * ```typescript
+ * const allProducts = await fetchProducts();
+ * ```
+ */
 export async function fetchProducts(): Promise<Product[]> {
     return fetchFilteredProducts();
 }
 
-// 🔍 Fetch a single product by ID (from Firestore)
+/**
+ * Fetches a single product by its Firestore document ID.
+ * 
+ * @param id - The Firestore document ID of the product
+ * @returns Promise resolving to the product or null if not found
+ * 
+ * @throws {Error} When Firebase Admin SDK encounters connection issues
+ * 
+ * @example
+ * ```typescript
+ * const product = await getProductById('product-123');
+ * if (product) {
+ *   console.log(`Found: ${product.name}`);
+ * } else {
+ *   console.log('Product not found');
+ * }
+ * ```
+ */
 export async function getProductById(id: string): Promise<Product | null> {
     return retryOperation(async () => {
 
@@ -154,6 +235,54 @@ export async function getProductById(id: string): Promise<Product | null> {
 
 
 
+/**
+ * Fetches products filtered by specific category and subcategory combination.
+ * 
+ * This function is optimized for category/subcategory page routes and uses
+ * compound WHERE clauses for efficient filtering. It supports additional
+ * filters like brands, price range, and sorting.
+ * 
+ * **Route Usage**: Primarily used by `/products/[category]/[subcategory]` pages.
+ * 
+ * @param category - Product category (will be URI decoded)
+ * @param subcategory - Product subcategory (will be URI decoded)
+ * @param options - Additional filtering and pagination options
+ * @param options.sortBy - Sort order for results
+ * @param options.pageSize - Number of products to return (pagination)
+ * @param options.startAfterId - Document ID for cursor-based pagination
+ * @param options.brands - Array of brand names to filter by
+ * @param options.minPrice - Minimum price filter (inclusive)
+ * @param options.maxPrice - Maximum price filter (inclusive)
+ * 
+ * @returns Promise resolving to array of filtered products
+ * 
+ * @throws {Error} When Firestore composite indexes are missing for complex filters
+ * 
+ * @example
+ * ```typescript
+ * // Get mountain bikes from Trek brand
+ * const mountainBikes = await getFilteredProductsViaCategory(
+ *   'Bikes', 
+ *   'Mountain',
+ *   {
+ *     brands: ['Trek'],
+ *     sortBy: 'price_low',
+ *     pageSize: 20
+ *   }
+ * );
+ * 
+ * // Get helmets in price range with pagination
+ * const helmets = await getFilteredProductsViaCategory(
+ *   'Safety Gear',
+ *   'Helmets', 
+ *   {
+ *     minPrice: 50,
+ *     maxPrice: 200,
+ *     startAfterId: 'previous-page-last-id'
+ *   }
+ * );
+ * ```
+ */
 export async function getFilteredProductsViaCategory(
     category: string,
     subcategory: string,
@@ -255,6 +384,23 @@ export async function getFilteredProductsViaCategory(
     });
 }
 
+/**
+ * Fetches products marked as recommended, sorted by rating.
+ * 
+ * This function retrieves products with the `isRecommended` flag set to true,
+ * ordering them by rating in descending order. Used for homepage recommendations
+ * and featured product sections.
+ * 
+ * @returns Promise resolving to array of recommended products
+ * 
+ * @throws {Error} When Firebase Admin SDK encounters connection issues
+ * 
+ * @example
+ * ```typescript
+ * const recommendedProducts = await fetchRecommendedProducts();
+ * // Products are already sorted by rating (highest first)
+ * ```
+ */
 export async function fetchRecommendedProducts(): Promise<Product[]> {
     return retryOperation(async () => {
         const productsCollection = db.collection('products') as CollectionReference;

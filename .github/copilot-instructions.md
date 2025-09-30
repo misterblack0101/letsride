@@ -98,6 +98,96 @@ npm run typecheck        # TypeScript validation without build
 - Follow TypeScript best practices - use proper typing, avoid `any` when possible
 - Implement proper error handling and user-friendly error messages
 
+## Documentation Standards & JSDoc Patterns
+
+### JSDoc Requirements
+All complex functions, interfaces, and components must include comprehensive JSDoc documentation:
+
+#### Function Documentation Template
+```typescript
+/**
+ * Brief description of what the function does.
+ * 
+ * **Implementation Notes:** (if complex logic)
+ * - Key algorithmic details
+ * - Performance considerations
+ * - Error handling strategy
+ * 
+ * @param paramName - Description of parameter with type info
+ * @param optionalParam - Description (optional parameters)
+ * 
+ * @returns Description of return value and type
+ * 
+ * @throws {ErrorType} When this error occurs
+ * 
+ * @example
+ * ```typescript
+ * const result = await functionName(param1, param2);
+ * // Usage context and expected behavior
+ * ```
+ */
+```
+
+#### Interface Documentation Template
+```typescript
+/**
+ * Description of the interface purpose and usage context.
+ * 
+ * **Usage Patterns:**
+ * - When to use this interface
+ * - Common implementation scenarios
+ * 
+ * @interface InterfaceName
+ */
+interface InterfaceName {
+  /** Description of each property with business context */
+  propertyName: string;
+  /** Optional properties should explain when they're undefined */
+  optionalProp?: number;
+}
+```
+
+#### Component Documentation Template
+```typescript
+/**
+ * Component description and architectural purpose.
+ * 
+ * **Architecture:**
+ * - Key design patterns used
+ * - State management approach
+ * - Integration points
+ * 
+ * **Usage Context:**
+ * - When to use this component
+ * - Props requirements
+ * - Performance considerations
+ * 
+ * @param props - Component props with detailed descriptions
+ * 
+ * @example
+ * ```tsx
+ * <ComponentName
+ *   requiredProp="value"
+ *   optionalProp={123}
+ * />
+ * ```
+ */
+```
+
+### Required Documentation Areas
+1. **Server-side functions** (`src/lib/server/`) - Include Firestore query details, caching strategy, error handling
+2. **Service layer** (`src/lib/services/`) - Document API contracts, caching behavior, client/server boundaries  
+3. **Complex components** - URL management, state synchronization, responsive behavior
+4. **Business logic** - Cart calculations, pricing rules, search algorithms
+5. **Type definitions** - Field descriptions, computed properties, validation rules
+
+### Documentation Quality Guidelines
+- **Be specific**: Include exact parameter types, return shapes, error conditions
+- **Include examples**: Show real usage patterns with actual data
+- **Explain "why"**: Document business rules, architectural decisions, performance optimizations
+- **Update with code**: Keep documentation in sync with implementation changes
+- **Link concepts**: Reference related functions, components, or architectural docs
+
 ## Route Structure (unchanged)
 ```
 /products                    # All products (server page uses server module)

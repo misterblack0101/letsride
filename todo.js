@@ -55,3 +55,4 @@ top accesories etc.
 // - add out of stock label to products that have no inventory
 // - add the cycle loader lottie wherever applicable
 // - check code quality/optimization
+// - db throttling/debouncing to avoid excessive reads/writes

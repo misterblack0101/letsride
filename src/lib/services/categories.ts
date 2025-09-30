@@ -2,35 +2,86 @@ import { adminDb } from '../firebase/admin';
 import { cache } from 'react';
 
 /**
- * Type definitions for category data structure
- * All category data is stored and fetched from Firestore (not Realtime DB)
+ * Type definitions for category data structure.
+ * All category data is stored and fetched from Firestore (not Realtime DB).
+ * 
+ * **Data Architecture:**
+ * - Categories contain multiple subcategories
+ * - Each subcategory has associated brands
+ * - Pre-computed lookups for performance optimization
  */
+
+/** Individual brand entity */
 export interface Brand {
     name: string;
 }
 
+/** Subcategory with associated brands */
 export interface Subcategory {
     name: string;
     brands: string[];
 }
 
+/** Category containing subcategories and their brands */
 export interface Category {
     name: string;
     subcategories: Record<string, { brands: string[] }>;
 }
 
+/**
+ * Complete category data structure with pre-computed lookups.
+ * 
+ * **Pre-computed Fields:**
+ * - `allBrands`: Unique list of all brands across categories
+ * - `brandsByCategory`: Brands organized by top-level category
+ * - `subcategoriesByCategory`: Subcategories organized by category
+ * - `brandsBySubcategory`: Brands organized by category > subcategory
+ */
 export interface CategoriesData {
+    /** Raw category data from Firestore */
     categories: Record<string, Category>;
+    /** Subcategories grouped by parent category */
     subcategoriesByCategory: Record<string, string[]>;
+    /** Brands organized by category and subcategory */
     brandsBySubcategory: Record<string, Record<string, string[]>>;
-    // Pre-computed data
+    /** All unique brands across the entire catalog */
     allBrands: string[];
+    /** All brands within each top-level category */
     brandsByCategory: Record<string, string[]>;
 }
 
 /**
- * Gets all categories with subcategories and brands from Firestore.
- * Uses React's cache to ensure data is only fetched once per session.
+ * Fetches and processes category data from Firestore with React caching.
+ * 
+ * **Caching Strategy:**
+ * - Uses React's `cache()` for request-level deduplication
+ * - Data cached for the duration of the server request
+ * - Reduces Firestore reads for multiple category queries
+ * 
+ * **Data Processing:**
+ * 1. Fetches raw category document from Firestore
+ * 2. Pre-computes lookup tables for efficient filtering
+ * 3. Generates flat brand lists for search functionality
+ * 
+ * **Error Handling:**
+ * - Returns empty data structure if document doesn't exist
+ * - Logs errors for debugging while maintaining app stability
+ * 
+ * @returns Promise resolving to complete category data with pre-computed lookups
+ * 
+ * @example
+ * ```typescript
+ * const categoryData = await getCategoriesFromDB();
+ * 
+ * // Get all bike subcategories
+ * const bikeSubcats = categoryData.subcategoriesByCategory['Bikes'];
+ * 
+ * // Get brands for mountain bikes
+ * const mountainBikeBrands = categoryData.brandsBySubcategory['Bikes']['Mountain'];
+ * 
+ * // Get all brands in accessories category
+ * const accessoryBrands = categoryData.brandsByCategory['Accessories'];
+ * ```
  */
 export const getCategoriesFromDB = cache(async (): Promise<CategoriesData> => {
     try {
@@ -108,7 +159,17 @@ export const getCategoriesFromDB = cache(async (): Promise<CategoriesData> => {
 
 
 /**
- * Gets all brands for a specific subcategory
+ * Gets all brands available for a specific subcategory.
+ * 
+ * @param category - Parent category name (e.g., "Bikes")
+ * @param subcategory - Subcategory name (e.g., "Mountain")
+ * @returns Promise resolving to array of brand names in that subcategory
+ * 
+ * @example
+ * ```typescript
+ * const mountainBikeBrands = await getBrandsForSubcategory('Bikes', 'Mountain');
+ * // Returns: ['Trek', 'Giant', 'Specialized', ...]
+ * ```
  */
 export const getBrandsForSubcategory = cache(async (category: string, subcategory: string): Promise<string[]> => {
     const { brandsBySubcategory } = await getCategoriesFromDB();
@@ -116,7 +177,19 @@ export const getBrandsForSubcategory = cache(async (category: string, subcategor
 });
 
 /**
- * Gets all brands for a specific category using pre-computed data
+ * Gets all brands available in a top-level category.
+ * 
+ * Returns a deduplicated list of all brands across all subcategories
+ * within the specified category.
+ * 
+ * @param category - Category name (e.g., "Bikes", "Accessories")
+ * @returns Promise resolving to array of brand names in that category
+ * 
+ * @example
+ * ```typescript
+ * const bikeBrands = await getBrandsForCategory('Bikes');
+ * // Returns all brands that make any type of bike
+ * ```
  */
 export const getBrandsForCategory = cache(async (category: string): Promise<string[]> => {
     const { brandsByCategory } = await getCategoriesFromDB();
@@ -124,7 +197,18 @@ export const getBrandsForCategory = cache(async (category: string): Promise<stri
 });
 
 /**
- * Gets all available brands across all categories using pre-computed data
+ * Gets all available brands across the entire product catalog.
+ * 
+ * Returns a sorted, deduplicated list of every brand name
+ * that appears in any category or subcategory.
+ * 
+ * @returns Promise resolving to array of all brand names
+ * 
+ * @example
+ * ```typescript
+ * const allBrands = await getAllBrands();
+ * // Returns: ['Cannondale', 'Giant', 'Specialized', 'Trek', ...]
+ * ```
  */
 export const getAllBrands = cache(async (): Promise<string[]> => {
     const { allBrands } = await getCategoriesFromDB();

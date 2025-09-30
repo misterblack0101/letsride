@@ -9,21 +9,44 @@ import { ProductGridSkeleton } from '@/components/ui/loading';
 import type { Product } from '@/lib/models/Product';
 import ProductCount from './ProductCount';
 
+/**
+ * Props interface for the main ProductPage component.
+ * 
+ * This interface defines all the data and configuration needed to render
+ * a complete product listing page with filtering, sorting, and pagination.
+ * 
+ * @interface ProductPageProps
+ */
 interface ProductPageProps {
+    /** Page title displayed in the header */
     title: string;
+    /** Page description displayed below the title */
     description: string;
+    /** Array of products to display (already filtered and paginated) */
     products: Product[];
+    /** Available brand options for the filter sidebar */
     availableBrands: string[];
+    /** Current category context (for category-specific pages) */
     currentCategory?: string;
+    /** Current subcategory context (for subcategory-specific pages) */
     currentSubcategory?: string;
+    /** Available subcategories in the current category */
     currentSubcategories?: string[];
+    /** Currently selected brands in the filter */
     selectedBrands: string[];
+    /** Current minimum price filter value */
     selectedMinPrice?: number;
+    /** Current maximum price filter value */
     selectedMaxPrice?: number;
+    /** Current sort order applied to products */
     sortBy: 'name' | 'price_low' | 'price_high' | 'rating';
+    /** Current view mode (grid or list layout) */
     viewMode: 'grid' | 'list';
+    /** Total number of products matching current filters (for pagination) */
     totalCount: number;
+    /** Current page number (1-based) */
     currentPage: number;
+    /** Number of products per page */
     pageSize: number;
 }export default function ProductPage({
     title,
