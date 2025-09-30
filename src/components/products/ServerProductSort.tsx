@@ -1,6 +1,6 @@
 'use client';
 
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import {
     Select,
     SelectContent,
@@ -16,12 +16,19 @@ type ServerProductSortProps = {
 
 export default function ServerProductSort({ currentSort }: ServerProductSortProps) {
     const router = useRouter();
+    const pathname = usePathname();
     const searchParams = useSearchParams();
     const isMobile = useIsMobile();
+
     const handleSortChange = (value: string) => {
         const params = new URLSearchParams(searchParams);
         params.set('sort', value);
-        router.push(`/products?${params.toString()}`);
+
+        // Reset pagination when sort changes
+        params.delete('page');
+        params.delete('lastId');
+
+        router.push(`${pathname}?${params.toString()}`);
     };
 
     const getSortLabel = (sort: string) => {

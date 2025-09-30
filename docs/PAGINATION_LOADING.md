@@ -1,6 +1,27 @@
-# Loading State and Out-of-Range Page Number Handling
+# Pagination System Documentation
 
-This document explains the handling of loading states during pagination and how out-of-range page numbers are handled in the Let's Ride e-commerce platform.
+This document explains the hybrid pagination system, loading states, and out-of-range page handling in the Let's Ride e-commerce platform.
+
+## Hybrid Pagination Strategy
+
+The platform implements a **hybrid cursor/offset pagination system** that intelligently selects the optimal strategy based on navigation patterns:
+
+### Cursor-Based Pagination (Primary Strategy)
+- **When**: Sequential forward navigation (Page 1 → Page 2 → Page 3)
+- **How**: Uses Firestore's `startAfter(lastProductId)` for efficient document skipping
+- **Performance**: Optimal - Firestore only processes documents after the cursor
+- **Example**: Page 2 → Page 3 with `lastId="product_48_id"`
+
+### Offset-Based Pagination (Fallback Strategy)
+- **When**: Page jumps, backward navigation, or missing cursor
+- **How**: Fetch `offset + pageSize` documents, then slice client-side
+- **Performance**: Less efficient but handles all edge cases reliably
+- **Examples**: Page 1 → Page 5 (jump), Page 3 → Page 1 (backward), direct URL access
+
+### Implementation Files
+- `src/lib/server/products.server.ts` - Server-side pagination logic with hybrid strategy
+- `src/components/products/ServerPagination.tsx` - Client-side navigation with intelligent cursor management
+- `src/lib/models/Product.ts` - ProductFilterOptions interface with offset parameter
 
 ## Loading States
 

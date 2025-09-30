@@ -75,6 +75,7 @@ export default async function SubcategoryPage({ params, searchParams }: Props) {
 
     // Only use startAfterId for valid pages beyond the first
     const startAfterId = page > 1 && lastId ? lastId : undefined;
+    const useOffsetPagination = page > 1 && !lastId;
 
     // Get products for this category/subcategory combination with any additional filters
     const products = await getFilteredProductsViaCategory(
@@ -82,11 +83,12 @@ export default async function SubcategoryPage({ params, searchParams }: Props) {
         decodedSubcategory,
         {
             sortBy: sortBy as 'name' | 'price_low' | 'price_high' | 'rating',
+            pageSize,
+            startAfterId,
+            offset: useOffsetPagination ? (page - 1) * pageSize : undefined,
             brands: brands.length > 0 ? brands : undefined,
             minPrice,
-            maxPrice,
-            pageSize,
-            startAfterId
+            maxPrice
         }
     );
 
@@ -112,6 +114,7 @@ export default async function SubcategoryPage({ params, searchParams }: Props) {
             totalCount={totalCount}
             currentPage={page}
             pageSize={pageSize}
+            lastProductId={lastProductId}
         />
     );
 }

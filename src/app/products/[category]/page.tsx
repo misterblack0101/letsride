@@ -57,7 +57,9 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
     } = parseProductFilterParams(awaitedSearchParams as Record<string, string | string[]>);
 
     const pageSize = 24; // Number of products per page
+    // Pagination logic: hybrid cursor and offset-based
     const startAfterId = page > 1 && lastId ? lastId : undefined;
+    const useOffsetPagination = page > 1 && !lastId;
 
     // Always filter by the current category
     const products = await fetchFilteredProducts({
@@ -67,7 +69,8 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
         maxPrice,
         sortBy: sortBy as 'name' | 'price_low' | 'price_high' | 'rating',
         pageSize,
-        startAfterId
+        startAfterId,
+        offset: useOffsetPagination ? (page - 1) * pageSize : undefined,
     });
 
     // Get the total count for pagination using a proper count query
@@ -82,6 +85,9 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
 
     // Get brands specific to this category
     const categoryBrands = await getBrandsForCategory(decodedCategory);
+
+    // Get the ID of the last product for cursor-based pagination
+    const lastProductId = products.length > 0 ? products[products.length - 1].id : undefined;
 
     return (
         <ProductPage
@@ -99,6 +105,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
             totalCount={totalCount}
             currentPage={page}
             pageSize={pageSize}
+            lastProductId={lastProductId}
         />
     );
 }

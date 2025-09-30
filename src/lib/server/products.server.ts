@@ -10,7 +10,28 @@ if (typeof window !== 'undefined') {
 
 /**
  * Filter and pagination options for product queries.
- * Supports complex filtering with Firestore composite indexes.
+ * Supports complex filtering with Firestore composite indexes and hybrid pagination.
+ * 
+ * **Pagination Strategy:**
+ * This system implements a hybrid pagination approach combining cursor-based and offset-based pagination:
+ * 
+ * 1. **Cursor-based pagination** (preferred, efficient):
+ *    - Used for sequential navigation (page 1 → 2 → 3)
+ *    - Requires `startAfterId` parameter
+ *    - Firestore processes only the required documents
+ *    - Example: `{ pageSize: 24, startAfterId: "product_24_id" }`
+ * 
+ * 2. **Offset-based pagination** (fallback, less efficient):
+ *    - Used for page jumps (page 1 → 5) or backward navigation (page 3 → 1)
+ *    - Uses `offset` parameter when `startAfterId` is not available
+ *    - Firestore fetches `offset + pageSize` documents, then slices client-side
+ *    - Example: `{ pageSize: 24, offset: 48 }` for page 3
+ * 
+ * **Implementation Details:**
+ * - Frontend determines which strategy to use based on navigation type
+ * - Sequential next navigation: uses cursor (`startAfterId`)
+ * - Page jumps/backward nav: uses offset (removes `startAfterId`)
+ * - Server automatically applies appropriate strategy based on parameters
  * 
  * @interface ProductFilterOptions
  */
@@ -25,16 +46,66 @@ export interface ProductFilterOptions {
     maxPrice?: number;
     /** Sort order for results. Affects Firestore index requirements when combined with filters. */
     sortBy?: 'name' | 'price_low' | 'price_high' | 'rating';
-    /** Number of products to return per page. Default: 20. Used for cursor-based pagination. */
+    /** Number of products to return per page. Default: 20. Used for both pagination strategies. */
     pageSize?: number;
-    /** Document ID to start after for cursor-based pagination. Enables efficient large dataset navigation. */
+    /** 
+     * Document ID to start after for cursor-based pagination. 
+     * When provided, enables efficient sequential navigation.
+     * Should be the ID of the last document from the previous page.
+     */
     startAfterId?: string;
+    /** 
+     * Number of documents to skip for offset-based pagination.
+     * Used when startAfterId is not available (page jumps, backward navigation).
+     * Calculated as: (page - 1) * pageSize.
+     * Note: Less efficient for large offsets due to Firestore limitations.
+     */
+    offset?: number;
 }
 
 import { createQueryBuilder } from './firestore-query-builder';
 
 /**
- * Fetches filtered products from Firestore with advanced filtering and pagination.
+ * Fetches filtered products from Firestore with advanced filtering and hybrid pagination.
+ * 
+ * **Pagination Logic:**
+ * This function implements a hybrid pagination system that automatically selects the most
+ * appropriate strategy based on the provided parameters:
+ * 
+ * 1. **Cursor-based pagination** (when `startAfterId` is provided):
+ *    ```typescript
+ *    const products = await fetchFilteredProducts({
+ *      pageSize: 24,
+ *      startAfterId: "product_24_id",  // ID of last product from previous page
+ *      brands: ["Trek", "Specialized"]
+ *    });
+ *    ```
+ *    - Uses Firestore's `startAfter()` method for efficient pagination
+ *    - Only processes documents after the cursor position
+ *    - Optimal for sequential navigation (page 1 → 2 → 3)
+ * 
+ * 2. **Offset-based pagination** (when `offset` is provided without `startAfterId`):
+ *    ```typescript
+ *    const products = await fetchFilteredProducts({
+ *      pageSize: 24,
+ *      offset: 48,  // Skip first 48 products (for page 3)
+ *      brands: ["Trek", "Specialized"]
+ *    });
+ *    ```
+ *    - Fetches `offset + pageSize` documents from Firestore
+ *    - Slices results client-side to get the correct page
+ *    - Used for page jumps (1 → 5) or backward navigation (3 → 1)
+ *    - Less efficient for large offsets but ensures reliability
+ * 
+ * **Performance Characteristics:**
+ * - Cursor pagination: O(1) regardless of page number
+ * - Offset pagination: O(offset) - degrades with larger page numbers
+ * - Hybrid approach optimizes for common use cases while maintaining reliability
+ * 
+ * **Error Handling:**
+ * - Invalid `startAfterId` falls back to first page
+ * - Malformed documents are logged and filtered out
+ * - Query builder handles Firestore index requirements automatically
  * 
  * This function builds complex Firestore queries using the query builder pattern.
  * It supports category/brand filtering, price ranges, sorting, and cursor-based pagination.
@@ -134,7 +205,7 @@ export async function fetchFilteredProducts(filters: ProductFilterOptions = {}):
             queryBuilder.orderBy('rating', 'desc');
         }
 
-        // Apply pagination with cursor (startAfter)
+        // Apply pagination with cursor (startAfter) or offset
         if (filters.startAfterId) {
             try {
                 const startDoc = await db.collection('products').doc(filters.startAfterId).get();
@@ -147,16 +218,25 @@ export async function fetchFilteredProducts(filters: ProductFilterOptions = {}):
         }
 
         // Apply page size limit
-        if (filters.pageSize && Number.isFinite(filters.pageSize)) {
-            queryBuilder.limit(filters.pageSize);
+        let limitSize = filters.pageSize && Number.isFinite(filters.pageSize) ? filters.pageSize : 20;
+
+        // **HYBRID PAGINATION STRATEGY:**
+        // If offset is specified but no cursor (startAfterId), use "fetch more, slice client-side" approach
+        // This handles page jumps and backward navigation where cursor pagination isn't available
+        if (filters.offset && filters.offset > 0 && !filters.startAfterId) {
+            // Fetch extra documents to account for offset: skip N documents + get pageSize documents
+            // Example: Page 3 (offset=40, pageSize=20) → fetch 60 documents, slice [40:60]
+            limitSize = filters.offset + limitSize;
         }
+
+        queryBuilder.limit(limitSize);
 
         // Execute the query
         const query = queryBuilder.build();
         const productDocs = await query.get();
 
         // Map and validate documents
-        const products = productDocs.docs.map((doc: any) => {
+        let products = productDocs.docs.map((doc: any) => {
             const raw = { ...doc.data(), id: doc.id };
             const parsed = ProductSchema.safeParse(raw);
             if (!parsed.success) {
@@ -165,6 +245,16 @@ export async function fetchFilteredProducts(filters: ProductFilterOptions = {}):
             }
             return parsed.data;
         }).filter(Boolean) as Product[];
+
+        // **OFFSET PAGINATION IMPLEMENTATION:**
+        // Client-side slicing for non-cursor pagination scenarios
+        // This ensures correct pagination when Firestore cursor (startAfter) isn't available
+        if (filters.offset && filters.offset > 0 && !filters.startAfterId) {
+            const pageSize = filters.pageSize && Number.isFinite(filters.pageSize) ? filters.pageSize : 20;
+            // Slice the oversized result to get the exact page range
+            // Example: From 60 documents, extract documents [40:60] for page 3
+            products = products.slice(filters.offset, filters.offset + pageSize);
+        }
 
         // All filtering, sorting, and pagination has been handled server-side by the query builder
         return products;
@@ -290,6 +380,7 @@ export async function getFilteredProductsViaCategory(
         sortBy?: ProductFilterOptions['sortBy'];
         pageSize?: number;
         startAfterId?: string;
+        offset?: number;
         brands?: string[];
         minPrice?: number;
         maxPrice?: number;
@@ -361,16 +452,21 @@ export async function getFilteredProductsViaCategory(
         }
 
         // Apply limit if provided
-        if (options.pageSize && Number.isFinite(options.pageSize)) {
-            queryBuilder.limit(options.pageSize);
+        let limitSize = options.pageSize && Number.isFinite(options.pageSize) ? options.pageSize : 20;
+
+        // For offset-based pagination, we need to fetch offset + pageSize documents
+        if (options.offset && options.offset > 0 && !options.startAfterId) {
+            limitSize = options.offset + limitSize;
         }
+
+        queryBuilder.limit(limitSize);
 
         // Execute the query
         const query = queryBuilder.build();
         const querySnapshot = await query.get();
 
         // Map and validate the results
-        const products = querySnapshot.docs.map((doc: any) => {
+        let products = querySnapshot.docs.map((doc: any) => {
             const raw = { ...doc.data(), id: doc.id };
             const parsed = ProductSchema.safeParse(raw);
             if (!parsed.success) {
@@ -380,7 +476,15 @@ export async function getFilteredProductsViaCategory(
             return parsed.data;
         });
 
-        return products.filter(Boolean) as Product[];
+        let validProducts = products.filter(Boolean) as Product[];
+
+        // Apply offset-based pagination if offset is specified and no startAfterId
+        if (options.offset && options.offset > 0 && !options.startAfterId) {
+            const pageSize = options.pageSize && Number.isFinite(options.pageSize) ? options.pageSize : 20;
+            validProducts = validProducts.slice(options.offset, options.offset + pageSize);
+        }
+
+        return validProducts;
     });
 }
 

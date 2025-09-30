@@ -1,6 +1,6 @@
 'use client';
 
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Grid3X3, List } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -11,6 +11,7 @@ type ServerViewToggleProps = {
 
 export default function ServerViewToggle({ currentView }: ServerViewToggleProps) {
     const router = useRouter();
+    const pathname = usePathname();
     const searchParams = useSearchParams();
     const isMobile = useIsMobile();
 
@@ -23,7 +24,7 @@ export default function ServerViewToggle({ currentView }: ServerViewToggleProps)
             params.set('view', mode);
         }
 
-        router.push(`/products?${params.toString()}`);
+        router.push(`${pathname}?${params.toString()}`);
     };
 
     return (

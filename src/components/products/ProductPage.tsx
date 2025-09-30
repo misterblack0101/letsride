@@ -48,6 +48,8 @@ interface ProductPageProps {
     currentPage: number;
     /** Number of products per page */
     pageSize: number;
+    /** ID of the last product on current page (for cursor-based pagination) */
+    lastProductId?: string;
 }export default function ProductPage({
     title,
     description,
@@ -63,7 +65,8 @@ interface ProductPageProps {
     viewMode,
     totalCount,
     currentPage,
-    pageSize
+    pageSize,
+    lastProductId
 }: ProductPageProps) {
     return (
         <div className="container mx-auto px-4 py-8">
@@ -111,6 +114,7 @@ interface ProductPageProps {
                             totalCount={totalCount}
                             currentPage={currentPage}
                             pageSize={pageSize}
+                            actualProductsCount={products.length}
                             currentCategory={currentCategory}
                             currentSubcategory={currentSubcategory}
                         />
@@ -122,7 +126,7 @@ interface ProductPageProps {
                         </div>
                     </div>
 
-                    {/* Products Grid with automatic loading state */}
+                    {/* Products Grid */}
                     <ProductGrid products={products} viewMode={viewMode} />
 
                     {/* Pagination */}
@@ -131,6 +135,7 @@ interface ProductPageProps {
                         totalPages={Math.ceil(totalCount / pageSize)}
                         totalItems={totalCount}
                         pageSize={pageSize}
+                        lastProductId={lastProductId}
                     />
                 </div>
             </div>

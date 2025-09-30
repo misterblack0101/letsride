@@ -123,6 +123,16 @@ export default function ServerProductFilters({
             }
         });
 
+        // Reset pagination when filters change (except when only page/lastId is being updated)
+        const isOnlyPaginationUpdate = Object.keys(updates).every(key =>
+            key === 'page' || key === 'lastId'
+        );
+
+        if (!isOnlyPaginationUpdate) {
+            params.delete('page');
+            params.delete('lastId');
+        }
+
         // Determine the base URL based on context
         let baseUrl = '/products';
 

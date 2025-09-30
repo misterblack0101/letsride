@@ -23,9 +23,9 @@ export default function ProductGrid({ products, viewMode }: ProductGridProps) {
   // Store a unique product ID string for comparison
   const productIdsString = products.map(p => p.id).join('|');
 
-  // Setup pagination event handling
+  // Setup pagination and price filter event handling
   useEffect(() => {
-    // Function to handle pagination events
+    // Function to handle pagination and price filter events
     const handlePageChange = () => {
       setIsLoading(true);
 
@@ -36,12 +36,14 @@ export default function ProductGrid({ products, viewMode }: ProductGridProps) {
       safetyTimerRef.current = setTimeout(() => setIsLoading(false), 3000);
     };
 
-    // Listen for pagination events
+    // Listen for pagination and price filter events
     window.addEventListener('paginationStart', handlePageChange);
+    window.addEventListener('priceFilterStart', handlePageChange);
 
     // Cleanup event listeners
     return () => {
       window.removeEventListener('paginationStart', handlePageChange);
+      window.removeEventListener('priceFilterStart', handlePageChange);
       if (safetyTimerRef.current) clearTimeout(safetyTimerRef.current);
     };
   }, []);

@@ -29,9 +29,13 @@ export async function getProductCount(filters: {
             query = query.where('subCategory', '==', filters.subcategory);
         }
 
-        // Apply brand filter if it's a single brand
-        if (filters.brands && filters.brands.length === 1) {
-            query = query.where('brand', '==', filters.brands[0]);
+        // Apply brand filter - handle both single and multiple brands like fetchFilteredProducts does
+        if (filters.brands && filters.brands.length > 0) {
+            if (filters.brands.length === 1) {
+                query = query.where('brand', '==', filters.brands[0]);
+            } else {
+                query = query.where('brand', 'in', filters.brands);
+            }
         }
 
         // Apply price range filters

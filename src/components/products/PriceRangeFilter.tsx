@@ -1,12 +1,12 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useTransition } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
-import { Check, X } from 'lucide-react';
+import { Check, X, Loader2 } from 'lucide-react';
 
 interface PriceRangeFilterProps {
     minPrice?: number;
@@ -25,6 +25,9 @@ export default function PriceRangeFilter({
     onPriceChange,
     disabled = false
 }: PriceRangeFilterProps) {
+    // Transition state for loading
+    const [isPending, startTransition] = useTransition();
+
     // Local state for immediate UI updates
     const [localMinPrice, setLocalMinPrice] = useState<string>(minPrice?.toString() || '');
     const [localMaxPrice, setLocalMaxPrice] = useState<string>(maxPrice?.toString() || '');
@@ -33,9 +36,7 @@ export default function PriceRangeFilter({
     const [sliderValue, setSliderValue] = useState<[number, number]>([
         minPrice || MIN_PRICE,
         maxPrice || MAX_PRICE
-    ]);
-
-    // Update local state when props change
+    ]);    // Update local state when props change
     useEffect(() => {
         setLocalMinPrice(minPrice?.toString() || '');
         setLocalMaxPrice(maxPrice?.toString() || '');
@@ -80,6 +81,8 @@ export default function PriceRangeFilter({
     };
 
     const applyPriceFilter = () => {
+        if (isPending) return; // Prevent multiple concurrent requests
+
         const minVal = localMinPrice === '' ? undefined : Math.max(MIN_PRICE, parseInt(localMinPrice) || MIN_PRICE);
         const maxVal = localMaxPrice === '' ? undefined : Math.min(MAX_PRICE, parseInt(localMaxPrice) || MAX_PRICE);
 
@@ -92,13 +95,18 @@ export default function PriceRangeFilter({
         if (validMax !== undefined) setLocalMaxPrice(validMax.toString());
 
         setSliderValue([validMin || MIN_PRICE, validMax || MAX_PRICE]);
-        onPriceChange(
-            validMin === MIN_PRICE ? undefined : validMin,
-            validMax === MAX_PRICE ? undefined : validMax
-        );
-    };
 
-    const clearFilters = () => {
+        // Dispatch event to trigger loading state in ProductGrid (same pattern as pagination)
+        window.dispatchEvent(new CustomEvent('priceFilterStart'));
+
+        // Use React's startTransition to mark this as a non-urgent update
+        startTransition(() => {
+            onPriceChange(
+                validMin === MIN_PRICE ? undefined : validMin,
+                validMax === MAX_PRICE ? undefined : validMax
+            );
+        });
+    }; const clearFilters = () => {
         setLocalMinPrice('');
         setLocalMaxPrice('');
         setSliderValue([MIN_PRICE, MAX_PRICE]);
@@ -160,7 +168,7 @@ export default function PriceRangeFilter({
             </div>
 
             {/* Min/Max Input Fields */}
-            <div className="grid grid-cols-2 gap-2">
+            <div className="space-y-3">
                 <div className="space-y-1">
                     <Label htmlFor="min-price" className="text-xs text-muted-foreground">
                         Min Price
@@ -182,7 +190,7 @@ export default function PriceRangeFilter({
                             min={MIN_PRICE}
                             max={MAX_PRICE}
                             step={STEP}
-                            className={`pl-7 pr-2 ${getInputFontSize(localMinPrice)} font-mono leading-tight`}
+                            className={`pl-7 pr-2 ${getInputFontSize(localMinPrice)} font-mono leading-tight w-full`}
                             disabled={disabled}
                         />
                     </div>
@@ -209,7 +217,7 @@ export default function PriceRangeFilter({
                             min={MIN_PRICE}
                             max={MAX_PRICE}
                             step={STEP}
-                            className={`pl-7 pr-2 ${getInputFontSize(localMaxPrice)} font-mono leading-tight`}
+                            className={`pl-7 pr-2 ${getInputFontSize(localMaxPrice)} font-mono leading-tight w-full`}
                             disabled={disabled}
                         />
                     </div>
@@ -220,12 +228,19 @@ export default function PriceRangeFilter({
             <div className="flex justify-center">
                 <Button
                     onClick={applyPriceFilter}
-                    disabled={disabled || !hasChanges}
+                    disabled={disabled || !hasChanges || isPending}
                     variant="outline"
                     size="sm"
                     className="px-6"
                 >
-                    Go
+                    {isPending ? (
+                        <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Loading...
+                        </>
+                    ) : (
+                        'Go'
+                    )}
                 </Button>
             </div>
 

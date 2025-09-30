@@ -6,6 +6,7 @@ interface ProductCountProps {
     totalCount: number;
     currentPage: number;
     pageSize: number;
+    actualProductsCount: number; // Add actual count of products being displayed
     currentSubcategory?: string;
     currentCategory?: string;
 }
@@ -14,6 +15,7 @@ export default function ProductCount({
     totalCount,
     currentPage,
     pageSize,
+    actualProductsCount,
     currentCategory,
     currentSubcategory,
 }: ProductCountProps) {
@@ -21,7 +23,7 @@ export default function ProductCount({
     const safetyTimerRef = useRef<NodeJS.Timeout | null>(null);
 
     // Create a dependency string to detect when props change
-    const depString = `${totalCount}-${currentPage}-${pageSize}-${currentCategory}-${currentSubcategory}`;
+    const depString = `${totalCount}-${currentPage}-${pageSize}-${actualProductsCount}-${currentCategory}-${currentSubcategory}`;
 
     // Setup pagination event handling
     useEffect(() => {
@@ -57,9 +59,13 @@ export default function ProductCount({
         );
     }
 
+    // Calculate the correct range based on actual products displayed
+    const startIndex = Math.min(pageSize * (currentPage - 1) + 1, totalCount);
+    const endIndex = Math.min(pageSize * (currentPage - 1) + actualProductsCount, totalCount);
+
     return (
         <p className="text-sm text-muted-foreground order-2 sm:order-1">
-            Showing {Math.min(pageSize * (currentPage - 1) + 1, totalCount)} to {Math.min(pageSize * currentPage, totalCount)} of {totalCount} products
+            Showing {startIndex} to {endIndex} of {totalCount} products
             {currentSubcategory ? ` in ${currentSubcategory}` : currentCategory ? ` in ${currentCategory}` : ''}
         </p>
     );
