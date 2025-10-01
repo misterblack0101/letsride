@@ -1,0 +1,1422 @@
+[
+    {
+        "id": "c415515f-f80a-46a1-876b-f8ef02554207",
+        "name": "Bontrager Ion Pro RT Front Light",
+        "category": "Accessories",
+        "subCategory": "Lights",
+        "brand": "Bontrager",
+        "actualPrice": 5936,
+        "discountPercentage": 10,
+        "rating": 4.6,
+        "shortDescription": "Premium front light by Bontrager.",
+        "details": "This is a high-quality front light suitable for all terrains and weather conditions. Made by Bontrager.",
+        "images": [
+            "https://picsum.photos/seed/415515/800/600",
+            "https://picsum.photos/seed/415615/800/600",
+            "https://picsum.photos/seed/415715/800/600"
+        ],
+        "price": 5342,
+        "inventory": 22,
+        "isFeatured": true
+    },
+    {
+        "id": "98ef3b1b-c4a4-488c-ae27-47862a84d607",
+        "name": "Light & Motion Urban 900",
+        "category": "Accessories",
+        "subCategory": "Lights",
+        "brand": "Light & Motion",
+        "actualPrice": 3818,
+        "discountPercentage": 5,
+        "rating": 4.5,
+        "shortDescription": "Premium urban light by Light & Motion.",
+        "details": "This is a high-quality urban light suitable for all terrains and weather conditions. Made by Light & Motion.",
+        "images": [
+            "https://picsum.photos/seed/9831/800/600",
+            "https://picsum.photos/seed/9931/800/600",
+            "https://picsum.photos/seed/10031/800/600"
+        ],
+        "price": 3627,
+        "inventory": 71,
+        "isFeatured": false
+    },
+    {
+        "id": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+        "name": "NiteRider Lumina Micro 900",
+        "category": "Accessories",
+        "subCategory": "Lights",
+        "brand": "NiteRider",
+        "actualPrice": 4250,
+        "discountPercentage": 15,
+        "rating": 4.7,
+        "shortDescription": "Compact LED light by NiteRider.",
+        "details": "This is a high-quality compact light suitable for all terrains and weather conditions. Made by NiteRider.",
+        "images": [
+            "https://picsum.photos/seed/1234/800/600",
+            "https://picsum.photos/seed/1334/800/600",
+            "https://picsum.photos/seed/1434/800/600"
+        ],
+        "price": 3613,
+        "inventory": 57,
+        "isFeatured": true
+    },
+    {
+        "id": "b2c3d4e5-f6g7-8901-2345-678901bcdefg",
+        "name": "Ortlieb Sport-Roller Classic",
+        "category": "Accessories",
+        "subCategory": "Bags",
+        "brand": "Ortlieb",
+        "actualPrice": 8950,
+        "discountPercentage": 8,
+        "rating": 4.8,
+        "shortDescription": "Waterproof pannier bag by Ortlieb.",
+        "details": "This is a high-quality waterproof bag suitable for all terrains and weather conditions. Made by Ortlieb.",
+        "images": [
+            "https://picsum.photos/seed/2345/800/600",
+            "https://picsum.photos/seed/2445/800/600",
+            "https://picsum.photos/seed/2545/800/600"
+        ],
+        "price": 8234,
+        "inventory": 22,
+        "isFeatured": false
+    },
+    {
+        "id": "c3d4e5f6-g7h8-9012-3456-789012cdefgh",
+        "name": "Topeak MTX TrunkBag DX",
+        "category": "Accessories",
+        "subCategory": "Bags",
+        "brand": "Topeak",
+        "actualPrice": 3450,
+        "discountPercentage": 12,
+        "rating": 4.4,
+        "shortDescription": "Expandable trunk bag by Topeak.",
+        "details": "This is a high-quality expandable bag suitable for all terrains and weather conditions. Made by Topeak.",
+        "images": [
+            "https://picsum.photos/seed/3456/800/600",
+            "https://picsum.photos/seed/3556/800/600",
+            "https://picsum.photos/seed/3656/800/600"
+        ],
+        "price": 3036,
+        "inventory": 28,
+        "isFeatured": false
+    },
+    {
+        "id": "d4e5f6g7-h8i9-0123-4567-890123defghi",
+        "name": "Revelate Designs Tangle",
+        "category": "Accessories",
+        "subCategory": "Bags",
+        "brand": "Revelate Designs",
+        "actualPrice": 6780,
+        "discountPercentage": 6,
+        "rating": 4.6,
+        "shortDescription": "Frame bag by Revelate Designs.",
+        "details": "This is a high-quality frame bag suitable for all terrains and weather conditions. Made by Revelate Designs.",
+        "images": [
+            "https://picsum.photos/seed/4567/800/600",
+            "https://picsum.photos/seed/4667/800/600",
+            "https://picsum.photos/seed/4767/800/600"
+        ],
+        "price": 6373,
+        "inventory": 88,
+        "isFeatured": false
+    },
+    {
+        "id": "e5f6g7h8-i9j0-1234-5678-901234efghij",
+        "name": "SKS Bluemels 35",
+        "category": "Accessories",
+        "subCategory": "Fenders",
+        "brand": "SKS",
+        "actualPrice": 2890,
+        "discountPercentage": 18,
+        "rating": 4.3,
+        "shortDescription": "Full coverage fenders by SKS.",
+        "details": "This is a high-quality fender set suitable for all terrains and weather conditions. Made by SKS.",
+        "images": [
+            "https://picsum.photos/seed/5678/800/600",
+            "https://picsum.photos/seed/5778/800/600",
+            "https://picsum.photos/seed/5878/800/600"
+        ],
+        "price": 2370,
+        "inventory": 60,
+        "isFeatured": false
+    },
+    {
+        "id": "f6g7h8i9-j0k1-2345-6789-012345fghijk",
+        "name": "Planet Bike Speedez",
+        "category": "Accessories",
+        "subCategory": "Fenders",
+        "brand": "Planet Bike",
+        "actualPrice": 1950,
+        "discountPercentage": 22,
+        "rating": 4.1,
+        "shortDescription": "Quick-release fenders by Planet Bike.",
+        "details": "This is a high-quality quick-release fender suitable for all terrains and weather conditions. Made by Planet Bike.",
+        "images": [
+            "https://picsum.photos/seed/6789/800/600",
+            "https://picsum.photos/seed/6889/800/600",
+            "https://picsum.photos/seed/6989/800/600"
+        ],
+        "price": 1521,
+        "inventory": 27,
+        "isFeatured": false
+    },
+    {
+        "id": "g7h8i9j0-k1l2-3456-7890-123456ghijkl",
+        "name": "Topeak DeFender M33",
+        "category": "Accessories",
+        "subCategory": "Fenders",
+        "brand": "Topeak",
+        "actualPrice": 2350,
+        "discountPercentage": 14,
+        "rating": 4.2,
+        "shortDescription": "Mountain bike fenders by Topeak.",
+        "details": "This is a high-quality MTB fender suitable for all terrains and weather conditions. Made by Topeak.",
+        "images": [
+            "https://picsum.photos/seed/7890/800/600",
+            "https://picsum.photos/seed/7990/800/600",
+            "https://picsum.photos/seed/8090/800/600"
+        ],
+        "price": 2021,
+        "inventory": 40,
+        "isFeatured": false
+    },
+    {
+        "id": "h8i9j0k1-l2m3-4567-8901-234567hijklm",
+        "name": "Giro QuadLock Phone Mount",
+        "category": "Accessories",
+        "subCategory": "Phone Case/Mount",
+        "brand": "Giro",
+        "actualPrice": 1890,
+        "discountPercentage": 25,
+        "rating": 4.4,
+        "shortDescription": "Secure phone mount by Giro.",
+        "details": "This is a high-quality phone mount suitable for all terrains and weather conditions. Made by Giro.",
+        "images": [
+            "https://picsum.photos/seed/8901/800/600",
+            "https://picsum.photos/seed/9001/800/600",
+            "https://picsum.photos/seed/9101/800/600"
+        ],
+        "price": 1418,
+        "inventory": 98,
+        "isFeatured": false
+    },
+    {
+        "id": "i9j0k1l2-m3n4-5678-9012-345678ijklmn",
+        "name": "Bell Bike Phone Holder",
+        "category": "Accessories",
+        "subCategory": "Phone Case/Mount",
+        "brand": "Bell",
+        "actualPrice": 1450,
+        "discountPercentage": 20,
+        "rating": 4,
+        "shortDescription": "Universal phone holder by Bell.",
+        "details": "This is a high-quality universal phone holder suitable for all terrains and weather conditions. Made by Bell.",
+        "images": [
+            "https://picsum.photos/seed/9012/800/600",
+            "https://picsum.photos/seed/9112/800/600",
+            "https://picsum.photos/seed/9212/800/600"
+        ],
+        "price": 1160,
+        "inventory": 52,
+        "isFeatured": true
+    },
+    {
+        "id": "j0k1l2m3-n4o5-6789-0123-456789jklmno",
+        "name": "Specialized SWAT Phone Case",
+        "category": "Accessories",
+        "subCategory": "Phone Case/Mount",
+        "brand": "Specialized",
+        "actualPrice": 2100,
+        "discountPercentage": 16,
+        "rating": 4.5,
+        "shortDescription": "Integrated phone case by Specialized.",
+        "details": "This is a high-quality integrated phone case suitable for all terrains and weather conditions. Made by Specialized.",
+        "images": [
+            "https://picsum.photos/seed/123/800/600",
+            "https://picsum.photos/seed/223/800/600",
+            "https://picsum.photos/seed/323/800/600"
+        ],
+        "price": 1764,
+        "inventory": 21,
+        "isFeatured": false
+    },
+    {
+        "id": "k1l2m3n4-o5p6-7890-1234-567890klmnop",
+        "name": "Pearl Izumi Quest Jersey",
+        "category": "Apparel",
+        "subCategory": "Topwear",
+        "brand": "Pearl Izumi",
+        "actualPrice": 4580,
+        "discountPercentage": 30,
+        "rating": 4.6,
+        "shortDescription": "Performance cycling jersey by Pearl Izumi.",
+        "details": "This is a high-quality cycling jersey suitable for all terrains and weather conditions. Made by Pearl Izumi.",
+        "images": [
+            "https://picsum.photos/seed/1234/800/600",
+            "https://picsum.photos/seed/1334/800/600",
+            "https://picsum.photos/seed/1434/800/600"
+        ],
+        "price": 3206,
+        "inventory": 48,
+        "isFeatured": false
+    },
+    {
+        "id": "l2m3n4o5-p6q7-8901-2345-678901lmnopq",
+        "name": "Castelli Perfetto RoS Vest",
+        "category": "Apparel",
+        "subCategory": "Topwear",
+        "brand": "Castelli",
+        "actualPrice": 8950,
+        "discountPercentage": 12,
+        "rating": 4.8,
+        "shortDescription": "Wind-resistant vest by Castelli.",
+        "details": "This is a high-quality wind-resistant vest suitable for all terrains and weather conditions. Made by Castelli.",
+        "images": [
+            "https://picsum.photos/seed/2345/800/600",
+            "https://picsum.photos/seed/2445/800/600",
+            "https://picsum.photos/seed/2545/800/600"
+        ],
+        "price": 7876,
+        "inventory": 99,
+        "isFeatured": false
+    },
+    {
+        "id": "m3n4o5p6-q7r8-9012-3456-789012mnopqr",
+        "name": "Gore Wear C5 Jersey",
+        "category": "Apparel",
+        "subCategory": "Topwear",
+        "brand": "Gore Wear",
+        "actualPrice": 6750,
+        "discountPercentage": 18,
+        "rating": 4.7,
+        "shortDescription": "Breathable cycling jersey by Gore Wear.",
+        "details": "This is a high-quality breathable jersey suitable for all terrains and weather conditions. Made by Gore Wear.",
+        "images": [
+            "https://picsum.photos/seed/3456/800/600",
+            "https://picsum.photos/seed/3556/800/600",
+            "https://picsum.photos/seed/3656/800/600"
+        ],
+        "price": 5535,
+        "inventory": 25,
+        "isFeatured": true
+    },
+    {
+        "id": "n4o5p6q7-r8s9-0123-4567-890123nopqrs",
+        "name": "Assos Mille GT Shorts",
+        "category": "Apparel",
+        "subCategory": "Bottomwear",
+        "brand": "Assos",
+        "actualPrice": 12580,
+        "discountPercentage": 8,
+        "rating": 4.9,
+        "shortDescription": "Premium cycling shorts by Assos.",
+        "details": "This is a high-quality premium shorts suitable for all terrains and weather conditions. Made by Assos.",
+        "images": [
+            "https://picsum.photos/seed/4567/800/600",
+            "https://picsum.photos/seed/4667/800/600",
+            "https://picsum.photos/seed/4767/800/600"
+        ],
+        "price": 11574,
+        "inventory": 40,
+        "isFeatured": true
+    },
+    {
+        "id": "o5p6q7r8-s9t0-1234-5678-901234opqrst",
+        "name": "Endura Pro SL Bibshorts",
+        "category": "Apparel",
+        "subCategory": "Bottomwear",
+        "brand": "Endura",
+        "actualPrice": 8950,
+        "discountPercentage": 15,
+        "rating": 4.5,
+        "shortDescription": "Professional bibshorts by Endura.",
+        "details": "This is a high-quality professional bibshorts suitable for all terrains and weather conditions. Made by Endura.",
+        "images": [
+            "https://picsum.photos/seed/5678/800/600",
+            "https://picsum.photos/seed/5778/800/600",
+            "https://picsum.photos/seed/5878/800/600"
+        ],
+        "price": 7608,
+        "inventory": 78,
+        "isFeatured": false
+    },
+    {
+        "id": "p6q7r8s9-t0u1-2345-6789-012345pqrstu",
+        "name": "Sugoi Evolution Zap Tight",
+        "category": "Apparel",
+        "subCategory": "Bottomwear",
+        "brand": "Sugoi",
+        "actualPrice": 5690,
+        "discountPercentage": 22,
+        "rating": 4.3,
+        "shortDescription": "Thermal cycling tight by Sugoi.",
+        "details": "This is a high-quality thermal tight suitable for all terrains and weather conditions. Made by Sugoi.",
+        "images": [
+            "https://picsum.photos/seed/6789/800/600",
+            "https://picsum.photos/seed/6889/800/600",
+            "https://picsum.photos/seed/6989/800/600"
+        ],
+        "price": 4438,
+        "inventory": 92,
+        "isFeatured": false
+    },
+    {
+        "id": "q7r8s9t0-u1v2-3456-7890-123456qrstuv",
+        "name": "Sidi Genius 10 Road Shoes",
+        "category": "Apparel",
+        "subCategory": "Footwear",
+        "brand": "Sidi",
+        "actualPrice": 24950,
+        "discountPercentage": 5,
+        "rating": 4.8,
+        "shortDescription": "Professional road shoes by Sidi.",
+        "details": "This is a high-quality professional road shoes suitable for all terrains and weather conditions. Made by Sidi.",
+        "images": [
+            "https://picsum.photos/seed/7890/800/600",
+            "https://picsum.photos/seed/7990/800/600",
+            "https://picsum.photos/seed/8090/800/600"
+        ],
+        "price": 23703,
+        "inventory": 84,
+        "isFeatured": true
+    },
+    {
+        "id": "r8s9t0u1-v2w3-4567-8901-234567rstuvw",
+        "name": "Shimano XC7 MTB Shoes",
+        "category": "Apparel",
+        "subCategory": "Footwear",
+        "brand": "Shimano",
+        "actualPrice": 14750,
+        "discountPercentage": 12,
+        "rating": 4.6,
+        "shortDescription": "Mountain bike shoes by Shimano.",
+        "details": "This is a high-quality MTB shoes suitable for all terrains and weather conditions. Made by Shimano.",
+        "images": [
+            "https://picsum.photos/seed/8901/800/600",
+            "https://picsum.photos/seed/9001/800/600",
+            "https://picsum.photos/seed/9101/800/600"
+        ],
+        "price": 12980,
+        "inventory": 40,
+        "isFeatured": false
+    },
+    {
+        "id": "s9t0u1v2-w3x4-5678-9012-345678stuvwx",
+        "name": "Giro Empire E70 Knit",
+        "category": "Apparel",
+        "subCategory": "Footwear",
+        "brand": "Giro",
+        "actualPrice": 18950,
+        "discountPercentage": 8,
+        "rating": 4.7,
+        "shortDescription": "Knit upper cycling shoes by Giro.",
+        "details": "This is a high-quality knit cycling shoes suitable for all terrains and weather conditions. Made by Giro.",
+        "images": [
+            "https://picsum.photos/seed/9012/800/600",
+            "https://picsum.photos/seed/9112/800/600",
+            "https://picsum.photos/seed/9212/800/600"
+        ],
+        "price": 17434,
+        "inventory": 98,
+        "isFeatured": true
+    },
+    {
+        "id": "t0u1v2w3-x4y5-6789-0123-456789tuvwxy",
+        "name": "Giro Aether MIPS Helmet",
+        "category": "Apparel",
+        "subCategory": "Helmet",
+        "brand": "Giro",
+        "actualPrice": 19950,
+        "discountPercentage": 10,
+        "rating": 4.9,
+        "shortDescription": "Premium MIPS helmet by Giro.",
+        "details": "This is a high-quality MIPS helmet suitable for all terrains and weather conditions. Made by Giro.",
+        "images": [
+            "https://picsum.photos/seed/123/800/600",
+            "https://picsum.photos/seed/223/800/600",
+            "https://picsum.photos/seed/323/800/600"
+        ],
+        "price": 17955,
+        "inventory": 37,
+        "isFeatured": true
+    },
+    {
+        "id": "u1v2w3x4-y5z6-7890-1234-567890uvwxyz",
+        "name": "Bell Z20 MIPS Helmet",
+        "category": "Apparel",
+        "subCategory": "Helmet",
+        "brand": "Bell",
+        "actualPrice": 15750,
+        "discountPercentage": 15,
+        "rating": 4.6,
+        "shortDescription": "Aerodynamic MIPS helmet by Bell.",
+        "details": "This is a high-quality aerodynamic helmet suitable for all terrains and weather conditions. Made by Bell.",
+        "images": [
+            "https://picsum.photos/seed/1234/800/600",
+            "https://picsum.photos/seed/1334/800/600",
+            "https://picsum.photos/seed/1434/800/600"
+        ],
+        "price": 13388,
+        "inventory": 63,
+        "isFeatured": false
+    },
+    {
+        "id": "v2w3x4y5-z6a7-8901-2345-678901vwxyza",
+        "name": "Specialized S-Works Prevail III",
+        "category": "Apparel",
+        "subCategory": "Helmet",
+        "brand": "Specialized",
+        "actualPrice": 22950,
+        "discountPercentage": 6,
+        "rating": 4.8,
+        "shortDescription": "Professional helmet by Specialized.",
+        "details": "This is a high-quality professional helmet suitable for all terrains and weather conditions. Made by Specialized.",
+        "images": [
+            "https://picsum.photos/seed/2345/800/600",
+            "https://picsum.photos/seed/2445/800/600",
+            "https://picsum.photos/seed/2545/800/600"
+        ],
+        "price": 21573,
+        "inventory": 70,
+        "isFeatured": false
+    },
+    {
+        "id": "w3x4y5z6-a7b8-9012-3456-789012wxyzab",
+        "name": "Oakley Radar EV Path",
+        "category": "Apparel",
+        "subCategory": "Eyewear",
+        "brand": "Oakley",
+        "actualPrice": 12950,
+        "discountPercentage": 20,
+        "rating": 4.7,
+        "shortDescription": "Performance eyewear by Oakley.",
+        "details": "This is a high-quality performance eyewear suitable for all terrains and weather conditions. Made by Oakley.",
+        "images": [
+            "https://picsum.photos/seed/3456/800/600",
+            "https://picsum.photos/seed/3556/800/600",
+            "https://picsum.photos/seed/3656/800/600"
+        ],
+        "price": 10360,
+        "inventory": 86,
+        "isFeatured": false
+    },
+    {
+        "id": "x4y5z6a7-b8c9-0123-4567-890123xyzabc",
+        "name": "Smith Attack MAG",
+        "category": "Apparel",
+        "subCategory": "Eyewear",
+        "brand": "Smith",
+        "actualPrice": 14750,
+        "discountPercentage": 12,
+        "rating": 4.5,
+        "shortDescription": "Magnetic lens eyewear by Smith.",
+        "details": "This is a high-quality magnetic lens eyewear suitable for all terrains and weather conditions. Made by Smith.",
+        "images": [
+            "https://picsum.photos/seed/4567/800/600",
+            "https://picsum.photos/seed/4667/800/600",
+            "https://picsum.photos/seed/4767/800/600"
+        ],
+        "price": 12980,
+        "inventory": 100,
+        "isFeatured": false
+    },
+    {
+        "id": "y5z6a7b8-c9d0-1234-5678-901234yzabcd",
+        "name": "Tifosi Podium XC",
+        "category": "Apparel",
+        "subCategory": "Eyewear",
+        "brand": "Tifosi",
+        "actualPrice": 4950,
+        "discountPercentage": 25,
+        "rating": 4.2,
+        "shortDescription": "Affordable sports eyewear by Tifosi.",
+        "details": "This is a high-quality affordable eyewear suitable for all terrains and weather conditions. Made by Tifosi.",
+        "images": [
+            "https://picsum.photos/seed/5678/800/600",
+            "https://picsum.photos/seed/5778/800/600",
+            "https://picsum.photos/seed/5878/800/600"
+        ],
+        "price": 3713,
+        "inventory": 81,
+        "isFeatured": false
+    },
+    {
+        "id": "z6a7b8c9-d0e1-2345-6789-012345zabcde",
+        "name": "Giro DND Gloves",
+        "category": "Apparel",
+        "subCategory": "Gloves",
+        "brand": "Giro",
+        "actualPrice": 2950,
+        "discountPercentage": 18,
+        "rating": 4.4,
+        "shortDescription": "Mountain bike gloves by Giro.",
+        "details": "This is a high-quality MTB gloves suitable for all terrains and weather conditions. Made by Giro.",
+        "images": [
+            "https://picsum.photos/seed/6789/800/600",
+            "https://picsum.photos/seed/6889/800/600",
+            "https://picsum.photos/seed/6989/800/600"
+        ],
+        "price": 2419,
+        "inventory": 39,
+        "isFeatured": false
+    },
+    {
+        "id": "a7b8c9d0-e1f2-3456-7890-123456abcdef",
+        "name": "Pearl Izumi Elite Gel Gloves",
+        "category": "Apparel",
+        "subCategory": "Gloves",
+        "brand": "Pearl Izumi",
+        "actualPrice": 3450,
+        "discountPercentage": 22,
+        "rating": 4.3,
+        "shortDescription": "Gel-padded gloves by Pearl Izumi.",
+        "details": "This is a high-quality gel-padded gloves suitable for all terrains and weather conditions. Made by Pearl Izumi.",
+        "images": [
+            "https://picsum.photos/seed/7890/800/600",
+            "https://picsum.photos/seed/7990/800/600",
+            "https://picsum.photos/seed/8090/800/600"
+        ],
+        "price": 2691,
+        "inventory": 43,
+        "isFeatured": false
+    },
+    {
+        "id": "b8c9d0e1-f2g3-4567-8901-234567bcdefg",
+        "name": "Castelli Competizione Gloves",
+        "category": "Apparel",
+        "subCategory": "Gloves",
+        "brand": "Castelli",
+        "actualPrice": 4150,
+        "discountPercentage": 15,
+        "rating": 4.6,
+        "shortDescription": "Racing gloves by Castelli.",
+        "details": "This is a high-quality racing gloves suitable for all terrains and weather conditions. Made by Castelli.",
+        "images": [
+            "https://picsum.photos/seed/8901/800/600",
+            "https://picsum.photos/seed/9001/800/600",
+            "https://picsum.photos/seed/9101/800/600"
+        ],
+        "price": 3528,
+        "inventory": 38,
+        "isFeatured": false
+    },
+    {
+        "id": "c9d0e1f2-g3h4-5678-9012-345678cdefgh",
+        "name": "Trek Fuel EX 9.9 XTR",
+        "category": "Bikes",
+        "subCategory": "Mountain Bikes",
+        "brand": "Trek",
+        "actualPrice": 489500,
+        "discountPercentage": 5,
+        "rating": 4.9,
+        "shortDescription": "Premium mountain bike by Trek.",
+        "details": "This is a high-quality premium MTB suitable for all terrains and weather conditions. Made by Trek.",
+        "images": [
+            "https://picsum.photos/seed/9012/800/600",
+            "https://picsum.photos/seed/9112/800/600",
+            "https://picsum.photos/seed/9212/800/600"
+        ],
+        "price": 465025,
+        "inventory": 5,
+        "isFeatured": true
+    },
+    {
+        "id": "d0e1f2g3-h4i5-6789-0123-456789defghi",
+        "name": "Specialized Stumpjumper Expert",
+        "category": "Bikes",
+        "subCategory": "Mountain Bikes",
+        "brand": "Specialized",
+        "actualPrice": 395000,
+        "discountPercentage": 8,
+        "rating": 4.8,
+        "shortDescription": "Expert-level mountain bike by Specialized.",
+        "details": "This is a high-quality expert MTB suitable for all terrains and weather conditions. Made by Specialized.",
+        "images": [
+            "https://picsum.photos/seed/123/800/600",
+            "https://picsum.photos/seed/223/800/600",
+            "https://picsum.photos/seed/323/800/600"
+        ],
+        "price": 363400,
+        "inventory": 14,
+        "isFeatured": true
+    },
+    {
+        "id": "e1f2g3h4-i5j6-7890-1234-567890efghij",
+        "name": "Giant Trance X 29 1",
+        "category": "Bikes",
+        "subCategory": "Mountain Bikes",
+        "brand": "Giant",
+        "actualPrice": 285000,
+        "discountPercentage": 12,
+        "rating": 4.6,
+        "shortDescription": "All-mountain bike by Giant.",
+        "details": "This is a high-quality all-mountain bike suitable for all terrains and weather conditions. Made by Giant.",
+        "images": [
+            "https://picsum.photos/seed/1234/800/600",
+            "https://picsum.photos/seed/1334/800/600",
+            "https://picsum.photos/seed/1434/800/600"
+        ],
+        "price": 250800,
+        "inventory": 5,
+        "isFeatured": false
+    },
+    {
+        "id": "f2g3h4i5-j6k7-8901-2345-678901fghijk",
+        "name": "Cannondale SuperSix EVO Hi-MOD",
+        "category": "Bikes",
+        "subCategory": "Road Bikes",
+        "brand": "Cannondale",
+        "actualPrice": 445000,
+        "discountPercentage": 6,
+        "rating": 4.9,
+        "shortDescription": "High-modulus road bike by Cannondale.",
+        "details": "This is a high-quality high-modulus road bike suitable for all terrains and weather conditions. Made by Cannondale.",
+        "images": [
+            "https://picsum.photos/seed/2345/800/600",
+            "https://picsum.photos/seed/2445/800/600",
+            "https://picsum.photos/seed/2545/800/600"
+        ],
+        "price": 418300,
+        "inventory": 7,
+        "isFeatured": false
+    },
+    {
+        "id": "g3h4i5j6-k7l8-9012-3456-789012ghijkl",
+        "name": "Bianchi Oltre XR4 Disc",
+        "category": "Bikes",
+        "subCategory": "Road Bikes",
+        "brand": "Bianchi",
+        "actualPrice": 425000,
+        "discountPercentage": 7,
+        "rating": 4.8,
+        "shortDescription": "Italian road bike by Bianchi.",
+        "details": "This is a high-quality Italian road bike suitable for all terrains and weather conditions. Made by Bianchi.",
+        "images": [
+            "https://picsum.photos/seed/3456/800/600",
+            "https://picsum.photos/seed/3556/800/600",
+            "https://picsum.photos/seed/3656/800/600"
+        ],
+        "price": 395250,
+        "inventory": 11,
+        "isFeatured": false
+    },
+    {
+        "id": "h4i5j6k7-l8m9-0123-4567-890123hijklm",
+        "name": "Cervelo R5 Disc",
+        "category": "Bikes",
+        "subCategory": "Road Bikes",
+        "brand": "Cervelo",
+        "actualPrice": 385000,
+        "discountPercentage": 10,
+        "rating": 4.7,
+        "shortDescription": "Performance road bike by Cervelo.",
+        "details": "This is a high-quality performance road bike suitable for all terrains and weather conditions. Made by Cervelo.",
+        "images": [
+            "https://picsum.photos/seed/4567/800/600",
+            "https://picsum.photos/seed/4667/800/600",
+            "https://picsum.photos/seed/4767/800/600"
+        ],
+        "price": 346500,
+        "inventory": 6,
+        "isFeatured": true
+    },
+    {
+        "id": "i5j6k7l8-m9n0-1234-5678-901234ijklmn",
+        "name": "Trek FX 3 Disc",
+        "category": "Bikes",
+        "subCategory": "Hybrid Bikes",
+        "brand": "Trek",
+        "actualPrice": 95000,
+        "discountPercentage": 15,
+        "rating": 4.5,
+        "shortDescription": "Versatile hybrid bike by Trek.",
+        "details": "This is a high-quality versatile hybrid bike suitable for all terrains and weather conditions. Made by Trek.",
+        "images": [
+            "https://picsum.photos/seed/5678/800/600",
+            "https://picsum.photos/seed/5778/800/600",
+            "https://picsum.photos/seed/5878/800/600"
+        ],
+        "price": 80750,
+        "inventory": 37,
+        "isFeatured": false
+    },
+    {
+        "id": "j6k7l8m9-n0o1-2345-6789-012345jklmno",
+        "name": "Giant Escape 3 Disc",
+        "category": "Bikes",
+        "subCategory": "Hybrid Bikes",
+        "brand": "Giant",
+        "actualPrice": 65000,
+        "discountPercentage": 18,
+        "rating": 4.3,
+        "shortDescription": "Urban hybrid bike by Giant.",
+        "details": "This is a high-quality urban hybrid bike suitable for all terrains and weather conditions. Made by Giant.",
+        "images": [
+            "https://picsum.photos/seed/6789/800/600",
+            "https://picsum.photos/seed/6889/800/600",
+            "https://picsum.photos/seed/6989/800/600"
+        ],
+        "price": 53300,
+        "inventory": 30,
+        "isFeatured": false
+    },
+    {
+        "id": "k7l8m9n0-o1p2-3456-7890-123456klmnop",
+        "name": "Specialized Sirrus X 4.0",
+        "category": "Bikes",
+        "subCategory": "Hybrid Bikes",
+        "brand": "Specialized",
+        "actualPrice": 85000,
+        "discountPercentage": 12,
+        "rating": 4.4,
+        "shortDescription": "Adventure hybrid bike by Specialized.",
+        "details": "This is a high-quality adventure hybrid bike suitable for all terrains and weather conditions. Made by Specialized.",
+        "images": [
+            "https://picsum.photos/seed/7890/800/600",
+            "https://picsum.photos/seed/7990/800/600",
+            "https://picsum.photos/seed/8090/800/600"
+        ],
+        "price": 74800,
+        "inventory": 45,
+        "isFeatured": false
+    },
+    {
+        "id": "l8m9n0o1-p2q3-4567-8901-234567lmnopq",
+        "name": "Specialized Diverge Expert",
+        "category": "Bikes",
+        "subCategory": "Gravel Bikes",
+        "brand": "Specialized",
+        "actualPrice": 325000,
+        "discountPercentage": 8,
+        "rating": 4.7,
+        "shortDescription": "Premium gravel bike by Specialized.",
+        "details": "This is a high-quality premium gravel bike suitable for all terrains and weather conditions. Made by Specialized.",
+        "images": [
+            "https://picsum.photos/seed/8901/800/600",
+            "https://picsum.photos/seed/9001/800/600",
+            "https://picsum.photos/seed/9101/800/600"
+        ],
+        "price": 299000,
+        "inventory": 12,
+        "isFeatured": false
+    },
+    {
+        "id": "m9n0o1p2-q3r4-5678-9012-345678mnopqr",
+        "name": "Canyon Grail CF SL 8",
+        "category": "Bikes",
+        "subCategory": "Gravel Bikes",
+        "brand": "Canyon",
+        "actualPrice": 285000,
+        "discountPercentage": 10,
+        "rating": 4.6,
+        "shortDescription": "Carbon gravel bike by Canyon.",
+        "details": "This is a high-quality carbon gravel bike suitable for all terrains and weather conditions. Made by Canyon.",
+        "images": [
+            "https://picsum.photos/seed/9012/800/600",
+            "https://picsum.photos/seed/9112/800/600",
+            "https://picsum.photos/seed/9212/800/600"
+        ],
+        "price": 256500,
+        "inventory": 15,
+        "isFeatured": true
+    },
+    {
+        "id": "n0o1p2q3-r4s5-6789-0123-456789nopqrs",
+        "name": "Giant Revolt Advanced 1",
+        "category": "Bikes",
+        "subCategory": "Gravel Bikes",
+        "brand": "Giant",
+        "actualPrice": 245000,
+        "discountPercentage": 12,
+        "rating": 4.5,
+        "shortDescription": "Advanced gravel bike by Giant.",
+        "details": "This is a high-quality advanced gravel bike suitable for all terrains and weather conditions. Made by Giant.",
+        "images": [
+            "https://picsum.photos/seed/123/800/600",
+            "https://picsum.photos/seed/223/800/600",
+            "https://picsum.photos/seed/323/800/600"
+        ],
+        "price": 215600,
+        "inventory": 8,
+        "isFeatured": false
+    },
+    {
+        "id": "o1p2q3r4-s5t6-7890-1234-567890opqrst",
+        "name": "Radio Flyer Classic Red Tricycle",
+        "category": "Kids",
+        "subCategory": "Tricycles",
+        "brand": "Radio Flyer",
+        "actualPrice": 8950,
+        "discountPercentage": 20,
+        "rating": 4.6,
+        "shortDescription": "Classic tricycle by Radio Flyer.",
+        "details": "This is a high-quality classic tricycle suitable for all terrains and weather conditions. Made by Radio Flyer.",
+        "images": [
+            "https://picsum.photos/seed/1234/800/600",
+            "https://picsum.photos/seed/1334/800/600",
+            "https://picsum.photos/seed/1434/800/600"
+        ],
+        "price": 7160,
+        "inventory": 31,
+        "isFeatured": false
+    },
+    {
+        "id": "p2q3r4s5-t6u7-8901-2345-678901pqrstu",
+        "name": "Fisher-actualPrice Rock, Roll 'n Ride Trike",
+        "category": "Kids",
+        "subCategory": "Tricycles",
+        "brand": "Fisher-actualPrice",
+        "actualPrice": 6750,
+        "discountPercentage": 25,
+        "rating": 4.4,
+        "shortDescription": "Interactive tricycle by Fisher-actualPrice.",
+        "details": "This is a high-quality interactive tricycle suitable for all terrains and weather conditions. Made by Fisher-actualPrice.",
+        "images": [
+            "https://picsum.photos/seed/2345/800/600",
+            "https://picsum.photos/seed/2445/800/600",
+            "https://picsum.photos/seed/2545/800/600"
+        ],
+        "price": 5063,
+        "inventory": 90,
+        "isFeatured": false
+    },
+    {
+        "id": "q3r4s5t6-u7v8-9012-3456-789012qrstuv",
+        "name": "Little Tikes Perfect Fit 4-in-1 Trike",
+        "category": "Kids",
+        "subCategory": "Tricycles",
+        "brand": "Little Tikes",
+        "actualPrice": 12950,
+        "discountPercentage": 15,
+        "rating": 4.7,
+        "shortDescription": "Growing tricycle by Little Tikes.",
+        "details": "This is a high-quality growing tricycle suitable for all terrains and weather conditions. Made by Little Tikes.",
+        "images": [
+            "https://picsum.photos/seed/3456/800/600",
+            "https://picsum.photos/seed/3556/800/600",
+            "https://picsum.photos/seed/3656/800/600"
+        ],
+        "price": 11008,
+        "inventory": 65,
+        "isFeatured": true
+    },
+    {
+        "id": "r4s5t6u7-v8w9-0123-4567-890123rstuvw",
+        "name": "Power Wheels Dune Racer",
+        "category": "Kids",
+        "subCategory": "Electric Car/Bike",
+        "brand": "Power Wheels",
+        "actualPrice": 24950,
+        "discountPercentage": 10,
+        "rating": 4.5,
+        "shortDescription": "Electric ride-on by Power Wheels.",
+        "details": "This is a high-quality electric ride-on suitable for all terrains and weather conditions. Made by Power Wheels.",
+        "images": [
+            "https://picsum.photos/seed/4567/800/600",
+            "https://picsum.photos/seed/4667/800/600",
+            "https://picsum.photos/seed/4767/800/600"
+        ],
+        "price": 22455,
+        "inventory": 77,
+        "isFeatured": false
+    },
+    {
+        "id": "s5t6u7v8-w9x0-1234-5678-901234stuvwx",
+        "name": "Razor MX350 Dirt Rocket",
+        "category": "Kids",
+        "subCategory": "Electric Car/Bike",
+        "brand": "Razor",
+        "actualPrice": 18950,
+        "discountPercentage": 12,
+        "rating": 4.3,
+        "shortDescription": "Electric dirt bike by Razor.",
+        "details": "This is a high-quality electric dirt bike suitable for all terrains and weather conditions. Made by Razor.",
+        "images": [
+            "https://picsum.photos/seed/5678/800/600",
+            "https://picsum.photos/seed/5778/800/600",
+            "https://picsum.photos/seed/5878/800/600"
+        ],
+        "price": 16676,
+        "inventory": 26,
+        "isFeatured": false
+    },
+    {
+        "id": "t6u7v8w9-x0y1-2345-6789-012345tuvwxy",
+        "name": "Best Choice Products 12V Lamborghini",
+        "category": "Kids",
+        "subCategory": "Electric Car/Bike",
+        "brand": "Best Choice Products",
+        "actualPrice": 32950,
+        "discountPercentage": 8,
+        "rating": 4.2,
+        "shortDescription": "Electric sports car by Best Choice Products.",
+        "details": "This is a high-quality electric sports car suitable for all terrains and weather conditions. Made by Best Choice Products.",
+        "images": [
+            "https://picsum.photos/seed/6789/800/600",
+            "https://picsum.photos/seed/6889/800/600",
+            "https://picsum.photos/seed/6989/800/600"
+        ],
+        "price": 30314,
+        "inventory": 41,
+        "isFeatured": false
+    },
+    {
+        "id": "u7v8w9x0-y1z2-3456-7890-123456uvwxyz",
+        "name": "Step2 Push Around Buggy GT",
+        "category": "Kids",
+        "subCategory": "Ride-Ons",
+        "brand": "Step2",
+        "actualPrice": 8950,
+        "discountPercentage": 18,
+        "rating": 4.4,
+        "shortDescription": "Push ride-on by Step2.",
+        "details": "This is a high-quality push ride-on suitable for all terrains and weather conditions. Made by Step2.",
+        "images": [
+            "https://picsum.photos/seed/7890/800/600",
+            "https://picsum.photos/seed/7990/800/600",
+            "https://picsum.photos/seed/8090/800/600"
+        ],
+        "price": 7339,
+        "inventory": 91,
+        "isFeatured": false
+    },
+    {
+        "id": "v8w9x0y1-z2a3-4567-8901-234567vwxyza",
+        "name": "Little Tikes Cozy Coupe",
+        "category": "Kids",
+        "subCategory": "Ride-Ons",
+        "brand": "Little Tikes",
+        "actualPrice": 6750,
+        "discountPercentage": 22,
+        "rating": 4.6,
+        "shortDescription": "Classic ride-on by Little Tikes.",
+        "details": "This is a high-quality classic ride-on suitable for all terrains and weather conditions. Made by Little Tikes.",
+        "images": [
+            "https://picsum.photos/seed/8901/800/600",
+            "https://picsum.photos/seed/9001/800/600",
+            "https://picsum.photos/seed/9101/800/600"
+        ],
+        "price": 5265,
+        "inventory": 47,
+        "isFeatured": false
+    },
+    {
+        "id": "w9x0y1z2-a3b4-5678-9012-345678wxyzab",
+        "name": "Fisher-actualPrice Laugh & Learn Smart Stages Scooter",
+        "category": "Kids",
+        "subCategory": "Ride-Ons",
+        "brand": "Fisher-actualPrice",
+        "actualPrice": 4950,
+        "discountPercentage": 25,
+        "rating": 4.3,
+        "shortDescription": "Learning scooter by Fisher-actualPrice.",
+        "details": "This is a high-quality learning scooter suitable for all terrains and weather conditions. Made by Fisher-actualPrice.",
+        "images": [
+            "https://picsum.photos/seed/9012/800/600",
+            "https://picsum.photos/seed/9112/800/600",
+            "https://picsum.photos/seed/9212/800/600"
+        ],
+        "price": 3713,
+        "inventory": 37,
+        "isFeatured": true
+    },
+    {
+        "id": "x0y1z2a3-b4c5-6789-0123-456789xyzabc",
+        "name": "UPPAbaby Vista V2",
+        "category": "Kids",
+        "subCategory": "Prams",
+        "brand": "UPPAbaby",
+        "actualPrice": 94950,
+        "discountPercentage": 5,
+        "rating": 4.8,
+        "shortDescription": "Premium stroller by UPPAbaby.",
+        "details": "This is a high-quality premium stroller suitable for all terrains and weather conditions. Made by UPPAbaby.",
+        "images": [
+            "https://picsum.photos/seed/123/800/600",
+            "https://picsum.photos/seed/223/800/600",
+            "https://picsum.photos/seed/323/800/600"
+        ],
+        "price": 90203,
+        "inventory": 22,
+        "isFeatured": false
+    },
+    {
+        "id": "y1z2a3b4-c5d6-7890-1234-567890yzabcd",
+        "name": "Bugaboo Fox 3",
+        "category": "Kids",
+        "subCategory": "Prams",
+        "brand": "Bugaboo",
+        "actualPrice": 124950,
+        "discountPercentage": 8,
+        "rating": 4.7,
+        "shortDescription": "All-terrain stroller by Bugaboo.",
+        "details": "This is a high-quality all-terrain stroller suitable for all terrains and weather conditions. Made by Bugaboo.",
+        "images": [
+            "https://picsum.photos/seed/1234/800/600",
+            "https://picsum.photos/seed/1334/800/600",
+            "https://picsum.photos/seed/1434/800/600"
+        ],
+        "price": 114954,
+        "inventory": 50,
+        "isFeatured": false
+    },
+    {
+        "id": "z2a3b4c5-d6e7-8901-2345-678901zabcde",
+        "name": "Chicco Bravo For2 LE",
+        "category": "Kids",
+        "subCategory": "Prams",
+        "brand": "Chicco",
+        "actualPrice": 34950,
+        "discountPercentage": 15,
+        "rating": 4.4,
+        "shortDescription": "Double stroller by Chicco.",
+        "details": "This is a high-quality double stroller suitable for all terrains and weather conditions. Made by Chicco.",
+        "images": [
+            "https://picsum.photos/seed/2345/800/600",
+            "https://picsum.photos/seed/2445/800/600",
+            "https://picsum.photos/seed/2545/800/600"
+        ],
+        "price": 29708,
+        "inventory": 52,
+        "isFeatured": false
+    },
+    {
+        "id": "a3b4c5d6-e7f8-9012-3456-789012abcdef",
+        "name": "Fisher-actualPrice Sweet Snugapuppy Dreams Swing",
+        "category": "Kids",
+        "subCategory": "Baby Swing",
+        "brand": "Fisher-actualPrice",
+        "actualPrice": 12950,
+        "discountPercentage": 20,
+        "rating": 4.5,
+        "shortDescription": "Baby swing by Fisher-actualPrice.",
+        "details": "This is a high-quality baby swing suitable for all terrains and weather conditions. Made by Fisher-actualPrice.",
+        "images": [
+            "https://picsum.photos/seed/3456/800/600",
+            "https://picsum.photos/seed/3556/800/600",
+            "https://picsum.photos/seed/3656/800/600"
+        ],
+        "price": 10360,
+        "inventory": 88,
+        "isFeatured": false
+    },
+    {
+        "id": "b4c5d6e7-f8g9-0123-4567-890123bcdefg",
+        "name": "Graco Simple Sway Swing",
+        "category": "Kids",
+        "subCategory": "Baby Swing",
+        "brand": "Graco",
+        "actualPrice": 8950,
+        "discountPercentage": 25,
+        "rating": 4.2,
+        "shortDescription": "Portable baby swing by Graco.",
+        "details": "This is a high-quality portable baby swing suitable for all terrains and weather conditions. Made by Graco.",
+        "images": [
+            "https://picsum.photos/seed/4567/800/600",
+            "https://picsum.photos/seed/4667/800/600",
+            "https://picsum.photos/seed/4767/800/600"
+        ],
+        "price": 6713,
+        "inventory": 58,
+        "isFeatured": false
+    },
+    {
+        "id": "c5d6e7f8-g9h0-1234-5678-901234cdefgh",
+        "name": "4moms mamaRoo 5",
+        "category": "Kids",
+        "subCategory": "Baby Swing",
+        "brand": "4moms",
+        "actualPrice": 24950,
+        "discountPercentage": 12,
+        "rating": 4.6,
+        "shortDescription": "Smart baby swing by 4moms.",
+        "details": "This is a high-quality smart baby swing suitable for all terrains and weather conditions. Made by 4moms.",
+        "images": [
+            "https://picsum.photos/seed/5678/800/600",
+            "https://picsum.photos/seed/5778/800/600",
+            "https://picsum.photos/seed/5878/800/600"
+        ],
+        "price": 21956,
+        "inventory": 63,
+        "isFeatured": false
+    },
+    {
+        "id": "d6e7f8g9-h0i1-2345-6789-012345defghi",
+        "name": "Pampers Baby Dry Night",
+        "category": "Kids",
+        "subCategory": "Baby Essentials",
+        "brand": "Pampers",
+        "actualPrice": 2950,
+        "discountPercentage": 30,
+        "rating": 4.4,
+        "shortDescription": "Night diapers by Pampers.",
+        "details": "This is a high-quality night diapers suitable for all terrains and weather conditions. Made by Pampers.",
+        "images": [
+            "https://picsum.photos/seed/6789/800/600",
+            "https://picsum.photos/seed/6889/800/600",
+            "https://picsum.photos/seed/6989/800/600"
+        ],
+        "price": 2065,
+        "inventory": 90,
+        "isFeatured": false
+    },
+    {
+        "id": "e7f8g9h0-i1j2-3456-7890-123456efghij",
+        "name": "Huggies Little Snugglers",
+        "category": "Kids",
+        "subCategory": "Baby Essentials",
+        "brand": "Huggies",
+        "actualPrice": 3450,
+        "discountPercentage": 28,
+        "rating": 4.5,
+        "shortDescription": "Newborn diapers by Huggies.",
+        "details": "This is a high-quality newborn diapers suitable for all terrains and weather conditions. Made by Huggies.",
+        "images": [
+            "https://picsum.photos/seed/7890/800/600",
+            "https://picsum.photos/seed/7990/800/600",
+            "https://picsum.photos/seed/8090/800/600"
+        ],
+        "price": 2484,
+        "inventory": 49,
+        "isFeatured": false
+    },
+    {
+        "id": "f8g9h0i1-j2k3-4567-8901-234567fghijk",
+        "name": "Johnson's Baby Shampoo",
+        "category": "Kids",
+        "subCategory": "Baby Essentials",
+        "brand": "Johnson's",
+        "actualPrice": 850,
+        "discountPercentage": 35,
+        "rating": 4.3,
+        "shortDescription": "Gentle baby shampoo by Johnson's.",
+        "details": "This is a high-quality gentle baby shampoo suitable for all terrains and weather conditions. Made by Johnson's.",
+        "images": [
+            "https://picsum.photos/seed/8901/800/600",
+            "https://picsum.photos/seed/9001/800/600",
+            "https://picsum.photos/seed/9101/800/600"
+        ],
+        "price": 553,
+        "inventory": 77,
+        "isFeatured": false
+    },
+    {
+        "id": "g9h0i1j2-k3l4-5678-9012-345678ghijkl",
+        "name": "Shimano Ultegra R8100 Disc Brakes",
+        "category": "Spares",
+        "subCategory": "Braking System",
+        "brand": "Shimano",
+        "actualPrice": 18950,
+        "discountPercentage": 10,
+        "rating": 4.8,
+        "shortDescription": "Professional disc brakes by Shimano.",
+        "details": "This is a high-quality professional disc brake system suitable for all terrains and weather conditions. Made by Shimano.",
+        "images": [
+            "https://picsum.photos/seed/9012/800/600",
+            "https://picsum.photos/seed/9112/800/600",
+            "https://picsum.photos/seed/9212/800/600"
+        ],
+        "price": 17055,
+        "inventory": 25,
+        "isFeatured": true
+    },
+    {
+        "id": "h0i1j2k3-l4m5-6789-0123-456789hijklm",
+        "name": "SRAM Red AXS Disc Brakes",
+        "category": "Spares",
+        "subCategory": "Braking System",
+        "brand": "SRAM",
+        "actualPrice": 24950,
+        "discountPercentage": 8,
+        "rating": 4.7,
+        "shortDescription": "Electronic disc brakes by SRAM.",
+        "details": "This is a high-quality electronic disc brake system suitable for all terrains and weather conditions. Made by SRAM.",
+        "images": [
+            "https://picsum.photos/seed/123/800/600",
+            "https://picsum.photos/seed/223/800/600",
+            "https://picsum.photos/seed/323/800/600"
+        ],
+        "price": 22954,
+        "inventory": 33,
+        "isFeatured": false
+    },
+    {
+        "id": "i1j2k3l4-m5n6-7890-1234-567890ijklmn",
+        "name": "Avid Elixir R Disc Brakes",
+        "category": "Spares",
+        "subCategory": "Braking System",
+        "brand": "Avid",
+        "actualPrice": 8950,
+        "discountPercentage": 15,
+        "rating": 4.3,
+        "shortDescription": "Mountain disc brakes by Avid.",
+        "details": "This is a high-quality mountain disc brake system suitable for all terrains and weather conditions. Made by Avid.",
+        "images": [
+            "https://picsum.photos/seed/1234/800/600",
+            "https://picsum.photos/seed/1334/800/600",
+            "https://picsum.photos/seed/1434/800/600"
+        ],
+        "price": 7608,
+        "inventory": 64,
+        "isFeatured": false
+    },
+    {
+        "id": "j2k3l4m5-n6o7-8901-2345-678901jklmno",
+        "name": "Continental Grand Prix 5000 700x25c",
+        "category": "Spares",
+        "subCategory": "Tyres & Tubes",
+        "brand": "Continental",
+        "actualPrice": 4950,
+        "discountPercentage": 12,
+        "rating": 4.8,
+        "shortDescription": "Premium road tire by Continental.",
+        "details": "This is a high-quality premium road tire suitable for all terrains and weather conditions. Made by Continental.",
+        "images": [
+            "https://picsum.photos/seed/2345/800/600",
+            "https://picsum.photos/seed/2445/800/600",
+            "https://picsum.photos/seed/2545/800/600"
+        ],
+        "price": 4356,
+        "inventory": 61,
+        "isFeatured": false
+    },
+    {
+        "id": "k3l4m5n6-o7p8-9012-3456-789012klmnop",
+        "name": "Schwalbe Marathon Plus 26x1.75",
+        "category": "Spares",
+        "subCategory": "Tyres & Tubes",
+        "brand": "Schwalbe",
+        "actualPrice": 3850,
+        "discountPercentage": 18,
+        "rating": 4.6,
+        "shortDescription": "Puncture-proof tire by Schwalbe.",
+        "details": "This is a high-quality puncture-proof tire suitable for all terrains and weather conditions. Made by Schwalbe.",
+        "images": [
+            "https://picsum.photos/seed/3456/800/600",
+            "https://picsum.photos/seed/3556/800/600",
+            "https://picsum.photos/seed/3656/800/600"
+        ],
+        "price": 3157,
+        "inventory": 77,
+        "isFeatured": false
+    },
+    {
+        "id": "l4m5n6o7-p8q9-0123-4567-890123lmnopq",
+        "name": "Maxxis Minion DHF 29x2.5 WT",
+        "category": "Spares",
+        "subCategory": "Tyres & Tubes",
+        "brand": "Maxxis",
+        "actualPrice": 5950,
+        "discountPercentage": 10,
+        "rating": 4.7,
+        "shortDescription": "Downhill front tire by Maxxis.",
+        "details": "This is a high-quality downhill front tire suitable for all terrains and weather conditions. Made by Maxxis.",
+        "images": [
+            "https://picsum.photos/seed/4567/800/600",
+            "https://picsum.photos/seed/4667/800/600",
+            "https://picsum.photos/seed/4767/800/600"
+        ],
+        "price": 5355,
+        "inventory": 30,
+        "isFeatured": false
+    },
+    {
+        "id": "m5n6o7p8-q9r0-1234-5678-901234mnopqr",
+        "name": "Shimano Ultegra PD-R8000",
+        "category": "Spares",
+        "subCategory": "Pedals",
+        "brand": "Shimano",
+        "actualPrice": 8950,
+        "discountPercentage": 15,
+        "rating": 4.6,
+        "shortDescription": "Road clipless pedals by Shimano.",
+        "details": "This is a high-quality road clipless pedals suitable for all terrains and weather conditions. Made by Shimano.",
+        "images": [
+            "https://picsum.photos/seed/5678/800/600",
+            "https://picsum.photos/seed/5778/800/600",
+            "https://picsum.photos/seed/5878/800/600"
+        ],
+        "price": 7608,
+        "inventory": 75,
+        "isFeatured": false
+    },
+    {
+        "id": "n6o7p8q9-r0s1-2345-6789-012345nopqrs",
+        "name": "Crankbrothers Stamp 1",
+        "category": "Spares",
+        "subCategory": "Pedals",
+        "brand": "Crankbrothers",
+        "actualPrice": 4950,
+        "discountPercentage": 20,
+        "rating": 4.4,
+        "shortDescription": "Platform pedals by Crankbrothers.",
+        "details": "This is a high-quality platform pedals suitable for all terrains and weather conditions. Made by Crankbrothers.",
+        "images": [
+            "https://picsum.photos/seed/6789/800/600",
+            "https://picsum.photos/seed/6889/800/600",
+            "https://picsum.photos/seed/6989/800/600"
+        ],
+        "price": 3960,
+        "inventory": 58,
+        "isFeatured": false
+    },
+    {
+        "id": "o7p8q9r0-s1t2-3456-7890-123456opqrst",
+        "name": "Time Xpro 15",
+        "category": "Spares",
+        "subCategory": "Pedals",
+        "brand": "Time",
+        "actualPrice": 12950,
+        "discountPercentage": 12,
+        "rating": 4.7,
+        "shortDescription": "Carbon road pedals by Time.",
+        "details": "This is a high-quality carbon road pedals suitable for all terrains and weather conditions. Made by Time.",
+        "images": [
+            "https://picsum.photos/seed/7890/800/600",
+            "https://picsum.photos/seed/7990/800/600",
+            "https://picsum.photos/seed/8090/800/600"
+        ],
+        "price": 11396,
+        "inventory": 65,
+        "isFeatured": false
+    },
+    {
+        "id": "p8q9r0s1-t2u3-4567-8901-234567pqrstu",
+        "name": "Brooks B17 Standard",
+        "category": "Spares",
+        "subCategory": "Saddles",
+        "brand": "Brooks",
+        "actualPrice": 14950,
+        "discountPercentage": 8,
+        "rating": 4.5,
+        "shortDescription": "Leather touring saddle by Brooks.",
+        "details": "This is a high-quality leather touring saddle suitable for all terrains and weather conditions. Made by Brooks.",
+        "images": [
+            "https://picsum.photos/seed/8901/800/600",
+            "https://picsum.photos/seed/9001/800/600",
+            "https://picsum.photos/seed/9101/800/600"
+        ],
+        "price": 13754,
+        "inventory": 73,
+        "isFeatured": false
+    },
+    {
+        "id": "q9r0s1t2-u3v4-5678-9012-345678qrstuv",
+        "name": "Selle Italia SLR Boost Kit Carbonio",
+        "category": "Spares",
+        "subCategory": "Saddles",
+        "brand": "Selle Italia",
+        "actualPrice": 24950,
+        "discountPercentage": 10,
+        "rating": 4.8,
+        "shortDescription": "Carbon racing saddle by Selle Italia.",
+        "details": "This is a high-quality carbon racing saddle suitable for all terrains and weather conditions. Made by Selle Italia.",
+        "images": [
+            "https://picsum.photos/seed/9012/800/600",
+            "https://picsum.photos/seed/9112/800/600",
+            "https://picsum.photos/seed/9212/800/600"
+        ],
+        "price": 22455,
+        "inventory": 58,
+        "isFeatured": true
+    }
+]

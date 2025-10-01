@@ -14,10 +14,20 @@ export default function ProductDetails({ product }: { product: Product }) {
   const hasMultipleImages = images.length > 1;
 
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [imageLoading, setImageLoading] = useState(true);
 
-  // Calculate savings if there's a discount
-  const savings = product.discountPercentage
-    ? product.price - product.discountedPrice
+  // Initialize thumbnail loading state for all images as true
+  const [thumbnailLoading, setThumbnailLoading] = useState<{ [key: number]: boolean }>(() => {
+    const initialState: { [key: number]: boolean } = {};
+    images.forEach((_, index) => {
+      initialState[index] = true;
+    });
+    return initialState;
+  });
+
+  // Calculate savings if there's a discount - Updated for new price structure
+  const savings = product.discountPercentage && product.actualPrice
+    ? product.actualPrice - (product.price || product.actualPrice * (1 - product.discountPercentage / 100))
     : 0;
 
   return (
@@ -75,18 +85,28 @@ export default function ProductDetails({ product }: { product: Product }) {
                     {images.slice(0, 4).map((image, index) => (
                       <div
                         key={index}
-                        className={`aspect-square overflow-hidden rounded-lg cursor-pointer border-2 transition-all ${selectedImageIndex === index
+                        className={`relative aspect-square overflow-hidden rounded-lg cursor-pointer border-2 transition-all ${selectedImageIndex === index
                           ? 'border-blue-500'
                           : 'border-transparent hover:border-gray-300'
                           }`}
-                        onClick={() => setSelectedImageIndex(index)}
+                        onClick={() => {
+                          setSelectedImageIndex(index);
+                          setImageLoading(true);
+                        }}
                       >
+                        {thumbnailLoading[index] && (
+                          <div className="absolute inset-0 bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 animate-pulse">
+                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent animate-shimmer"></div>
+                          </div>
+                        )}
                         <Image
                           src={image}
                           alt={`${product.name} view ${index + 1}`}
                           width={80}
                           height={80}
-                          className="w-full h-full object-cover"
+                          className={`w-full h-full object-cover transition-opacity duration-300 ${thumbnailLoading[index] ? 'opacity-0' : 'opacity-100'}`}
+                          onLoad={() => setThumbnailLoading(prev => ({ ...prev, [index]: false }))}
+                          onLoadingComplete={() => setThumbnailLoading(prev => ({ ...prev, [index]: false }))}
                         />
                       </div>
                     ))}
@@ -98,13 +118,20 @@ export default function ProductDetails({ product }: { product: Product }) {
                   {/* Main Image */}
                   <div className="relative mb-4">
                     <div className="relative aspect-square overflow-hidden rounded-xl bg-gray-50">
+                      {imageLoading && (
+                        <div className="absolute inset-0 bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 animate-pulse">
+                          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent animate-shimmer"></div>
+                        </div>
+                      )}
                       <Image
                         src={images[selectedImageIndex]}
                         alt={product.name}
                         fill
-                        className="object-cover"
+                        className={`object-cover transition-opacity duration-300 ${imageLoading ? 'opacity-0' : 'opacity-100'}`}
                         sizes="(max-width: 768px) 100vw, 50vw"
                         priority
+                        onLoad={() => setImageLoading(false)}
+                        onLoadingComplete={() => setImageLoading(false)}
                       />
                     </div>
                   </div>
@@ -115,18 +142,28 @@ export default function ProductDetails({ product }: { product: Product }) {
                       {images.slice(0, 4).map((image, index) => (
                         <div
                           key={index}
-                          className={`aspect-square overflow-hidden rounded-lg cursor-pointer border-2 transition-all ${selectedImageIndex === index
+                          className={`relative aspect-square overflow-hidden rounded-lg cursor-pointer border-2 transition-all ${selectedImageIndex === index
                             ? 'border-blue-500'
                             : 'border-transparent hover:border-gray-300'
                             }`}
-                          onClick={() => setSelectedImageIndex(index)}
+                          onClick={() => {
+                            setSelectedImageIndex(index);
+                            setImageLoading(true);
+                          }}
                         >
+                          {thumbnailLoading[index] && (
+                            <div className="absolute inset-0 bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 animate-pulse">
+                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent animate-shimmer"></div>
+                            </div>
+                          )}
                           <Image
                             src={image}
                             alt={`${product.name} view ${index + 1}`}
                             width={200}
                             height={200}
-                            className="w-full h-full object-cover"
+                            className={`w-full h-full object-cover transition-opacity duration-300 ${thumbnailLoading[index] ? 'opacity-0' : 'opacity-100'}`}
+                            onLoad={() => setThumbnailLoading(prev => ({ ...prev, [index]: false }))}
+                            onLoadingComplete={() => setThumbnailLoading(prev => ({ ...prev, [index]: false }))}
                           />
                         </div>
                       ))}
@@ -200,9 +237,9 @@ export default function ProductDetails({ product }: { product: Product }) {
                 <span className="text-3xl font-bold text-gray-900 font-currency">
                   ₹{product.discountedPrice.toLocaleString('en-IN')}
                 </span>
-                {product.discountPercentage && (
+                {product.discountPercentage && product.actualPrice && (
                   <span className="text-lg text-gray-500 line-through font-currency">
-                    ₹{product.price.toLocaleString('en-IN')}
+                    ₹{product.actualPrice.toLocaleString('en-IN')}
                   </span>
                 )}
               </div>

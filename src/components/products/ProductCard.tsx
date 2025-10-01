@@ -93,9 +93,9 @@ export default function ProductCard({ product, viewMode = 'grid' }: ProductCardP
                 <span className="text-xl font-bold text-base-content font-currency">
                   ₹{product.discountedPrice.toLocaleString('en-IN')}
                 </span>
-                {product.discountPercentage && (
+                {product.discountPercentage && product.actualPrice && (
                   <span className="text-base-content/60 line-through text-sm font-currency">
-                    ₹{product.price.toLocaleString('en-IN')}
+                    ₹{product.actualPrice.toLocaleString('en-IN')}
                   </span>
                 )}
               </div>
@@ -183,9 +183,9 @@ export default function ProductCard({ product, viewMode = 'grid' }: ProductCardP
             <span className="text-sm font-bold text-base-content font-currency">
               ₹{product.discountedPrice.toLocaleString('en-IN')}
             </span>
-            {product.discountPercentage && (
+            {product.discountPercentage && product.actualPrice && (
               <span className="text-base-content/50 line-through text-xs font-currency">
-                ₹{product.price.toLocaleString('en-IN')}
+                ₹{product.actualPrice.toLocaleString('en-IN')}
               </span>
             )}
           </div>

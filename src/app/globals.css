@@ -61,4 +61,17 @@
     font-family: 'Noto Sans', 'Roboto', 'Segoe UI', 'Arial Unicode MS', 'Lucida Grande', sans-serif;
     font-feature-settings: "kern" 1, "liga" 1;
   }
+
+  .animate-shimmer {
+    animation: shimmer 2s linear infinite;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
 }

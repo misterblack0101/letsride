@@ -15,6 +15,8 @@ const baseBrandLogoUrl = 'https://yourcdn.com/brands';
  * - Calculates `discountedPrice` from price and discount percentage
  * - Generates `brandLogo` URL based on brand name
  * - Sets default `isRecommended` to false
+ * - Sets default `isFeatured` to false
+ * - Sets default `inventory` to 1 if not provided
  * 
  * **Usage:**
  * - Use `ProductSchema.parse()` for validation with errors
@@ -35,17 +37,22 @@ export const ProductSchema = z.object({
   category: z.string(),
   subCategory: z.string(),
   brand: z.string().optional(),
-  price: z.number(),
+  price: z.number().optional(),
+  actualPrice: z.number(),
   discountPercentage: z.number().nullable().optional(),
   rating: z.number(),
   shortDescription: z.string().optional(),
   details: z.string().optional(),
   images: z.array(z.string()).optional(),
+  inventory: z.number().default(1),
   isRecommended: z.boolean().default(false),
+  isFeatured: z.boolean().default(false),
 }).transform(product => {
-  const discountedPrice = product.discountPercentage != null
-    ? product.price * (1 - product.discountPercentage / 100)
-    : product.price;
+  const discountedPrice = product.price != null
+    ? product.price
+    : (product.discountPercentage != null
+      ? product.actualPrice * (1 - product.discountPercentage / 100)
+      : product.actualPrice);
 
   return {
     ...product,
@@ -60,7 +67,7 @@ export const ProductSchema = z.object({
  * Product type inferred from ProductSchema.
  * 
  * **Computed Fields:**
- * - `discountedPrice`: Calculated from price and discountPercentage
+ * - `discountedPrice`: Calculated from price and discountPercentage, or stored directly
  * - `brandLogo`: Generated URL for brand logo image
  * 
  * **Field Descriptions:**
@@ -69,13 +76,16 @@ export const ProductSchema = z.object({
  * - `category`: Top-level category (e.g., "Bikes", "Accessories")
  * - `subCategory`: Specific subcategory (e.g., "Mountain", "Road")
  * - `brand`: Manufacturer name (optional)
- * - `price`: Original price in currency units
+ * - `price`: Final price after discount (computed or stored) 
+ * - `actualPrice`: Original price in currency units
  * - `discountPercentage`: Discount as percentage (0-100, null for no discount)
  * - `rating`: Product rating (typically 0-5 scale)
  * - `shortDescription`: Brief product summary
  * - `details`: Full product description
  * - `images`: Array of image URLs
+ * - `inventory`: Stock count/quantity available
  * - `isRecommended`: Whether product appears in recommendation sections
+ * - `isFeatured`: Whether product appears on home page featured section
  * 
  * @example
  * ```typescript
@@ -86,9 +96,11 @@ export const ProductSchema = z.object({
  *   subCategory: 'Mountain',
  *   brand: 'Trek',
  *   price: 1200,
+ *   discountedPrice: 1080, // Computed or stored
  *   discountPercentage: 10,
- *   discountedPrice: 1080, // Computed
  *   rating: 4.5,
+ *   inventory: 15,
+ *   isFeatured: true,
  *   brandLogo: 'https://yourcdn.com/brands/trek.png', // Computed
  *   isRecommended: false
  * };
