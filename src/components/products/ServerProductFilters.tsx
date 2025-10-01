@@ -215,7 +215,7 @@ export default function ServerProductFilters({
             {/* Clear all filters */}
             {hasActiveFilters && (
                 <div className="flex justify-between items-center">
-                    <span className="text-sm font-medium">Active Filters</span>
+                    <span className="text-sm font-bold">Active Filters</span>
                     <Button
                         variant="ghost"
                         size="sm"
@@ -227,40 +227,28 @@ export default function ServerProductFilters({
                 </div>
             )}
 
-            {/* Context information - show what category/subcategory we're in */}
-            {currentCategory && (
-                <div>
-                    <h3 className="font-medium mb-1">Currently Browsing</h3>
-                    <div className="text-sm bg-muted/50 p-2 rounded">
-                        <div><strong>Category:</strong> {currentCategory}</div>
-                        {currentSubcategory && (
-                            <div><strong>Subcategory:</strong> {currentSubcategory}</div>
-                        )}
-                    </div>
-                </div>
-            )}
-
             {/* Category Filter - only show if not in a category context */}
             {!currentCategory && availableCategories.length > 0 && (
                 <>
                     <div>
-                        <h3 className="font-medium mb-3">Category</h3>
-                        <div className="space-y-2">
+                        <h3 className="font-bold mb-3">Categories</h3>
+                        <div className="space-y-1">
                             {availableCategories.map(category => (
-                                <div key={category} className="flex items-center space-x-2">
-                                    <Checkbox
-                                        id={`category-${category}`}
-                                        checked={selectedCategories.includes(category)}
-                                        onCheckedChange={(checked) =>
-                                            handleCategoryChange(category, checked as boolean)
-                                        }
-                                    />
-                                    <Label
-                                        htmlFor={`category-${category}`}
-                                        className="text-sm capitalize cursor-pointer"
+                                <div key={category}>
+                                    <a
+                                        href={`/products/${encodeURIComponent(category)}`}
+                                        className="flex items-center justify-between w-full px-3 py-2 text-sm rounded-md hover:bg-gray-100 hover:text-primary transition-colors cursor-pointer group"
                                     >
-                                        {category}
-                                    </Label>
+                                        <span className="capitalize">{category}</span>
+                                        <svg
+                                            className="w-4 h-4 text-gray-400 group-hover:text-primary transition-colors"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                        </svg>
+                                    </a>
                                 </div>
                             ))}
                         </div>
@@ -273,15 +261,23 @@ export default function ServerProductFilters({
             {currentCategory && !currentSubcategory && currentSubcategories && currentSubcategories.length > 0 && (
                 <>
                     <div>
-                        <h3 className="font-medium mb-3">Subcategories</h3>
-                        <div className="space-y-2">
+                        <h3 className="font-bold mb-3">Subcategories</h3>
+                        <div className="space-y-1">
                             {currentSubcategories.map(subcat => (
-                                <div key={subcat} className="flex items-center space-x-2">
+                                <div key={subcat}>
                                     <a
                                         href={`/products/${encodeURIComponent(currentCategory)}/${encodeURIComponent(subcat)}`}
-                                        className="text-sm hover:underline hover:text-primary cursor-pointer w-full py-1"
+                                        className="flex items-center justify-between w-full px-3 py-2 text-sm rounded-md hover:bg-gray-100 hover:text-primary transition-colors cursor-pointer group"
                                     >
-                                        {subcat}
+                                        <span>{subcat}</span>
+                                        <svg
+                                            className="w-4 h-4 text-gray-400 group-hover:text-primary transition-colors"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                        </svg>
                                     </a>
                                 </div>
                             ))}
@@ -293,7 +289,7 @@ export default function ServerProductFilters({
 
             {/* Brand Filter */}
             <div>
-                <h3 className="font-medium mb-3">Brand</h3>
+                <h3 className="font-bold mb-3">Brand</h3>
                 <div className="space-y-2 max-h-48 overflow-y-auto">
                     {availableBrands.map(brand => (
                         <div key={brand} className="flex items-center space-x-2">

@@ -92,6 +92,8 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
             description={`Find the perfect ${decodedCategory.toLowerCase()} for your cycling adventures.`}
             initialProducts={initialBatch.products}
             availableBrands={categoryBrands}
+            availableCategories={[]}
+            selectedCategories={[]}
             currentCategory={decodedCategory}
             currentSubcategories={subcategories}
             selectedBrands={brands}

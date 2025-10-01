@@ -135,7 +135,7 @@ export default function PriceRangeFilter({
     return (
         <div className="space-y-4">
             <div className="flex items-center justify-between">
-                <Label className="text-sm font-medium">Price Range</Label>
+                <Label className="text-sm font-bold">Price Range</Label>
                 {hasActiveFilter && (
                     <Button
                         variant="ghost"

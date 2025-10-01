@@ -1,5 +1,6 @@
 // src/components/products/ProductPage.tsx
 import { Suspense } from 'react';
+import Link from 'next/link';
 import ProductGrid from '@/components/products/ProductGrid';
 import ServerProductSort from '@/components/products/ServerProductSort';
 import ServerViewToggle from '@/components/products/ServerViewToggle';
@@ -30,6 +31,10 @@ interface ProductPageProps {
     filters: ProductFilterOptions;
     /** Available brand options for the filter sidebar */
     availableBrands: string[];
+    /** Available category options for the filter sidebar (used in general product pages) */
+    availableCategories: string[];
+    /** Currently selected categories */
+    selectedCategories: string[];
     /** Current category context (for category-specific pages) */
     currentCategory?: string;
     /** Current subcategory context (for subcategory-specific pages) */
@@ -69,6 +74,8 @@ export default function ProductPage({
     initialProducts,
     filters,
     availableBrands,
+    availableCategories,
+    selectedCategories,
     currentCategory,
     currentSubcategory,
     currentSubcategories,
@@ -89,8 +96,8 @@ export default function ProductPage({
             <div className="block lg:hidden mb-6">
                 <ServerProductFilters
                     availableBrands={availableBrands}
-                    availableCategories={[]}
-                    selectedCategories={[]}
+                    availableCategories={availableCategories}
+                    selectedCategories={selectedCategories}
                     selectedBrands={selectedBrands}
                     selectedMinPrice={selectedMinPrice}
                     selectedMaxPrice={selectedMaxPrice}
@@ -105,8 +112,8 @@ export default function ProductPage({
                 <div className="hidden lg:block w-64 flex-shrink-0">
                     <ServerProductFilters
                         availableBrands={availableBrands}
-                        availableCategories={[]}
-                        selectedCategories={[]}
+                        availableCategories={availableCategories}
+                        selectedCategories={selectedCategories}
                         selectedBrands={selectedBrands}
                         selectedMinPrice={selectedMinPrice}
                         selectedMaxPrice={selectedMaxPrice}
@@ -120,12 +127,43 @@ export default function ProductPage({
                 <div className="flex-1">
                     {/* Controls */}
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-                        {/* Simplified header - no product count needed for infinite scroll */}
-                        <div className="text-sm text-muted-foreground">
+                        {/* Enhanced breadcrumb display */}
+                        <div className="flex flex-col gap-1">
                             {currentCategory && currentSubcategory ? (
-                                <span>{currentCategory} / {currentSubcategory}</span>
+                                <>
+                                    <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                                        Currently Browsing
+                                    </span>
+                                    <div className="flex items-center gap-2 text-sm">
+                                        <Link
+                                            href={`/products/${encodeURIComponent(currentCategory)}`}
+                                            className="bg-gray-100 text-gray-700 px-2 py-1 rounded-md font-medium hover:bg-gray-200 hover:text-primary transition-colors cursor-pointer"
+                                        >
+                                            {currentCategory}
+                                        </Link>
+                                        <svg className="w-3 h-3 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                        </svg>
+                                        <span className="bg-primary/20 text-primary px-2 py-1 rounded-md font-medium">
+                                            {currentSubcategory}
+                                        </span>
+                                    </div>
+                                </>
+                            ) : currentCategory && !currentSubcategory ? (
+                                <>
+                                    <div className="flex items-center gap-2 text-sm">
+                                        <Link
+                                            href="/products"
+                                            className="flex items-center gap-1 bg-gray-100 text-gray-700 px-3 py-2 rounded-md font-medium hover:bg-gray-200 transition-colors cursor-pointer"
+                                        >
+                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                                            </svg>
+                                        </Link>
+                                    </div>
+                                </>
                             ) : (
-                                <span>Showing products</span>
+                                <div className="h-12" aria-hidden="true"></div>
                             )}
                         </div>
                         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto order-1 sm:order-2">

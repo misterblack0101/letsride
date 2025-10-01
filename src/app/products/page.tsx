@@ -93,7 +93,9 @@ export default async function StorePage({ searchParams }: StorePageProps) {
   });
 
   // Get structured category data from our cached service
-  const { allBrands } = await getCategoriesFromDB();
+  const categoriesData = await getCategoriesFromDB();
+  const { allBrands } = categoriesData;
+  const availableCategories = Object.keys(categoriesData.categories);
 
   // Build filter object for client-side infinite scroll
   const filters = {
@@ -109,6 +111,8 @@ export default async function StorePage({ searchParams }: StorePageProps) {
       description="Find the perfect ride and gear for your next adventure."
       initialProducts={initialBatch.products}
       availableBrands={allBrands}
+      availableCategories={availableCategories}
+      selectedCategories={[]}
       selectedBrands={brands}
       selectedMinPrice={minPrice}
       selectedMaxPrice={maxPrice}

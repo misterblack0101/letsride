@@ -20,9 +20,11 @@ import { getFilteredProductsViaCategory } from '@/lib/server/products.server';
  * 
  * **Error Responses:**
  * - 400: Invalid query parameters or category/subcategory
- * - 404: Category/subcategory combination not found
  * - 500: Server/database errors
  * - 503: Service temporarily unavailable
+ * 
+ * **Note:** Returns 200 with empty results instead of 404 for "no products found"
+ * to allow the UI to handle the empty state gracefully without triggering Next.js error pages.
  */
 export async function GET(request: Request, { params }: { params: Promise<{ category: string; subcategory: string }> }) {
   try {
@@ -90,14 +92,8 @@ export async function GET(request: Request, { params }: { params: Promise<{ cate
       maxPrice
     });
 
-    // Handle case where category/subcategory combination has no products
-    if (!result.hasMore && result.products.length === 0 && !startAfterId) {
-      return NextResponse.json(
-        { error: 'No products found for this category and subcategory combination.' },
-        { status: 404 }
-      );
-    }
-
+    // Always return 200 with empty results - let the UI handle "no products found" state
+    // This prevents Next.js from showing the technical error page
     return NextResponse.json(result);
   } catch (error: any) {
     console.error(`Error in /api/products/category API:`, error);

@@ -14,12 +14,6 @@
 
 //////////////////////////////
 // current todo
-// pagination will cause more money if offset based, when ujmping pages
-// --------------- price range filter fix
-// - filters fixes:
-//   - reset filters button
-//   - remove the current category/subcategory text from above filters
-//   - when on products page, show all brands and a page text link type ui for the categories
 // - bottomnav links add
 // - update current product details UI with support for image listview/multiple images
 // - use discounted price for price based sort/filter once added in model

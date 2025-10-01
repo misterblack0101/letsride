@@ -100,6 +100,8 @@ export default async function SubcategoryPage({ params, searchParams }: Props) {
             description={`Shop our collection of ${decodedSubcategory.toLowerCase()} in the ${decodedCategory.toLowerCase()} category.`}
             initialProducts={initialBatch.products}
             availableBrands={subcategoryBrands}
+            availableCategories={[]}
+            selectedCategories={[]}
             currentCategory={decodedCategory}
             currentSubcategory={decodedSubcategory}
             selectedBrands={brands}
