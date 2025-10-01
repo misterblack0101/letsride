@@ -1,8 +1,6 @@
-import { fetchProducts, fetchFilteredProducts } from '@/lib/server/products.server';
-import { getProductCount } from '@/lib/server/product-count';
+import { fetchFilteredProducts } from '@/lib/server/products.server';
 import { getCategoriesFromDB } from '@/lib/services/categories';
 import ProductPage from '@/components/products/ProductPage';
-import { redirect } from 'next/navigation';
 import type { Metadata } from 'next';
 
 interface SearchParams {
@@ -12,8 +10,6 @@ interface SearchParams {
   maxPrice?: string;
   sort?: string;
   view?: string;
-  page?: string;
-  lastId?: string;
 }
 
 interface StorePageProps {
@@ -59,14 +55,25 @@ export async function generateMetadata({ searchParams }: StorePageProps): Promis
   };
 }
 
+/**
+ * Products page with infinite scroll optimization.
+ * 
+ * **Cost Optimization Strategy:**
+ * - Fetches only initial batch for SSR (typically 24 products)
+ * - Client-side infinite scroll handles subsequent loads
+ * - Eliminated expensive page counting and offset calculations
+ * - Removed pagination UI and related complexity
+ * 
+ * **Performance Benefits:**
+ * - Faster initial page load (fewer Firestore reads)
+ * - Better SEO with actual product content in SSR
+ * - Smoother UX with infinite scroll
+ * - Significant cost reduction from cursor-based pagination
+ */
 export default async function StorePage({ searchParams }: StorePageProps) {
   const params = await searchParams;
 
   // Parse search parameters
-  const categories = Array.isArray(params.category)
-    ? params.category
-    : params.category ? [params.category] : [];
-
   const brands = Array.isArray(params.brand)
     ? params.brand
     : params.brand ? [params.brand] : [];
@@ -75,63 +82,39 @@ export default async function StorePage({ searchParams }: StorePageProps) {
   const maxPrice = params.maxPrice ? parseFloat(params.maxPrice) : undefined;
   const sortBy = (params.sort as 'name' | 'price_low' | 'price_high' | 'rating') || 'rating';
   const viewMode = (params.view as 'grid' | 'list') || 'grid';
-  const page = params.page ? parseInt(params.page) : 1;
-  const pageSize = 24; // Number of products per page
 
-  // For cursor-based pagination: use lastId when page > 1 AND lastId is provided
-  // Otherwise, use offset-based pagination for page jumps or going backwards
-  const startAfterId = page > 1 && params.lastId ? params.lastId : undefined;
-  const useOffsetPagination = page > 1 && !params.lastId;
-
-  // Use enhanced filtering for better performance (no category filtering on main page)
-  const hasFilters = brands.length > 0 || minPrice !== undefined || maxPrice !== undefined;
-
-  // Get product count for pagination (no category filter on main page)
-  const totalCount = await getProductCount({
+  // Fetch initial batch for SSR (first 24 products)
+  const initialBatch = await fetchFilteredProducts({
     brands: brands.length > 0 ? brands : undefined,
     minPrice,
-    maxPrice
+    maxPrice,
+    sortBy,
+    pageSize: 24 // First batch size
   });
-
-  // Fetch filtered products with pagination (no category filter on main page)
-  const [filteredProducts, allProducts] = await Promise.all([
-    fetchFilteredProducts({
-      brands: brands.length > 0 ? brands : undefined,
-      minPrice,
-      maxPrice,
-      sortBy,
-      pageSize: pageSize,
-      startAfterId, // Use cursor-based pagination when available
-      offset: useOffsetPagination ? (page - 1) * pageSize : undefined, // Use offset-based pagination for page jumps
-    }),
-    // Always fetch all products for filter options (no pagination)
-    fetchProducts()
-  ]);
-
-  // Use the filtered products for display (they respect pagination and filters)
-  const productsToShow = filteredProducts;
-
-  // Get the ID of the last product for cursor-based pagination
-  const lastProductId = productsToShow.length > 0 ? productsToShow[productsToShow.length - 1].id : undefined;
 
   // Get structured category data from our cached service
   const { allBrands } = await getCategoriesFromDB();
+
+  // Build filter object for client-side infinite scroll
+  const filters = {
+    brands: brands.length > 0 ? brands : undefined,
+    minPrice,
+    maxPrice,
+    sortBy
+  };
 
   return (
     <ProductPage
       title="Explore Our Collection"
       description="Find the perfect ride and gear for your next adventure."
-      products={productsToShow}
+      initialProducts={initialBatch.products}
       availableBrands={allBrands}
       selectedBrands={brands}
       selectedMinPrice={minPrice}
       selectedMaxPrice={maxPrice}
       sortBy={sortBy}
       viewMode={viewMode}
-      totalCount={totalCount}
-      currentPage={page}
-      pageSize={pageSize}
-      lastProductId={lastProductId}
+      filters={filters}
     />
   );
 }

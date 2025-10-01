@@ -4,16 +4,18 @@ import ProductGrid from '@/components/products/ProductGrid';
 import ServerProductSort from '@/components/products/ServerProductSort';
 import ServerViewToggle from '@/components/products/ServerViewToggle';
 import ServerProductFilters from '@/components/products/ServerProductFilters';
-import ServerPagination from '@/components/products/ServerPagination';
 import { ProductGridSkeleton } from '@/components/ui/loading';
 import type { Product } from '@/lib/models/Product';
-import ProductCount from './ProductCount';
+import type { ProductFilterOptions } from '@/lib/services/products';
 
 /**
- * Props interface for the main ProductPage component.
+ * Props interface for the main ProductPage component with infinite scroll.
  * 
- * This interface defines all the data and configuration needed to render
- * a complete product listing page with filtering, sorting, and pagination.
+ * **Migration from Pagination:**
+ * - Removed pagination-related props (totalCount, currentPage, pageSize, lastProductId)
+ * - Added initialProducts for SSR hydration
+ * - Added filters object for client-side infinite scroll
+ * - Simplified component architecture
  * 
  * @interface ProductPageProps
  */
@@ -22,8 +24,10 @@ interface ProductPageProps {
     title: string;
     /** Page description displayed below the title */
     description: string;
-    /** Array of products to display (already filtered and paginated) */
-    products: Product[];
+    /** Initial products from SSR for immediate display */
+    initialProducts?: Product[];
+    /** Filter configuration for infinite scroll */
+    filters: ProductFilterOptions;
     /** Available brand options for the filter sidebar */
     availableBrands: string[];
     /** Current category context (for category-specific pages) */
@@ -42,18 +46,28 @@ interface ProductPageProps {
     sortBy: 'name' | 'price_low' | 'price_high' | 'rating';
     /** Current view mode (grid or list layout) */
     viewMode: 'grid' | 'list';
-    /** Total number of products matching current filters (for pagination) */
-    totalCount: number;
-    /** Current page number (1-based) */
-    currentPage: number;
-    /** Number of products per page */
-    pageSize: number;
-    /** ID of the last product on current page (for cursor-based pagination) */
-    lastProductId?: string;
-}export default function ProductPage({
+}
+
+/**
+ * Main product listing page with infinite scroll optimization.
+ * 
+ * **Architecture Changes:**
+ * - Removed pagination UI and related complexity
+ * - ProductGrid now handles infinite scroll internally
+ * - Simplified props interface focusing on filter state
+ * - Better SSR with initial product batch
+ * 
+ * **Cost Benefits:**
+ * - No expensive totalCount queries
+ * - Eliminated page-based navigation overhead
+ * - Cursor-based pagination reduces Firestore reads significantly
+ * - Simpler component tree improves rendering performance
+ */
+export default function ProductPage({
     title,
     description,
-    products,
+    initialProducts,
+    filters,
     availableBrands,
     currentCategory,
     currentSubcategory,
@@ -62,11 +76,7 @@ interface ProductPageProps {
     selectedMinPrice,
     selectedMaxPrice,
     sortBy,
-    viewMode,
-    totalCount,
-    currentPage,
-    pageSize,
-    lastProductId
+    viewMode
 }: ProductPageProps) {
     return (
         <div className="container mx-auto px-4 py-8">
@@ -110,14 +120,14 @@ interface ProductPageProps {
                 <div className="flex-1">
                     {/* Controls */}
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-                        <ProductCount
-                            totalCount={totalCount}
-                            currentPage={currentPage}
-                            pageSize={pageSize}
-                            actualProductsCount={products.length}
-                            currentCategory={currentCategory}
-                            currentSubcategory={currentSubcategory}
-                        />
+                        {/* Simplified header - no product count needed for infinite scroll */}
+                        <div className="text-sm text-muted-foreground">
+                            {currentCategory && currentSubcategory ? (
+                                <span>{currentCategory} / {currentSubcategory}</span>
+                            ) : (
+                                <span>Showing products</span>
+                            )}
+                        </div>
                         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto order-1 sm:order-2">
                             <div className="flex-1 sm:flex-initial">
                                 <ServerProductSort currentSort={sortBy} />
@@ -126,16 +136,11 @@ interface ProductPageProps {
                         </div>
                     </div>
 
-                    {/* Products Grid */}
-                    <ProductGrid products={products} viewMode={viewMode} />
-
-                    {/* Pagination */}
-                    <ServerPagination
-                        currentPage={currentPage}
-                        totalPages={Math.ceil(totalCount / pageSize)}
-                        totalItems={totalCount}
-                        pageSize={pageSize}
-                        lastProductId={lastProductId}
+                    {/* Infinite Scroll Products Grid */}
+                    <ProductGrid
+                        initialProducts={initialProducts}
+                        filters={filters}
+                        viewMode={viewMode}
                     />
                 </div>
             </div>

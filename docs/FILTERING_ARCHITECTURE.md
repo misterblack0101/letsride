@@ -18,7 +18,6 @@ The Let's Ride filtering system uses a **server-side rendering approach with URL
    - `components/products/ServerProductFilters.tsx` (client component despite the "Server" prefix)
    - `components/products/ServerProductSort.tsx`
    - `components/products/ServerViewToggle.tsx`
-   - `components/products/ServerPagination.tsx`
 
 3. **Shared Components**:
    - `components/products/ProductPage.tsx` (main layout)

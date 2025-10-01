@@ -1,6 +1,5 @@
 // app/products/[category]/[subcategory]/page.tsx
 import { getFilteredProductsViaCategory } from '@/lib/server/products.server'; // server-only
-import { getProductCount } from '@/lib/server/product-count'; // Import the count function
 import { getBrandsForSubcategory } from '@/lib/services/categories'; // Get brands for the specific subcategory
 import { parseProductFilterParams } from '@/lib/utils/search-params';
 import ProductPage from '@/components/products/ProductPage';
@@ -17,8 +16,6 @@ type Props = {
         maxPrice?: string;
         sort?: string;
         view?: string;
-        page?: string;
-        lastId?: string;
     };
 };
 
@@ -38,6 +35,21 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
 }
 
+/**
+ * Category/Subcategory page with infinite scroll optimization.
+ * 
+ * **Cost Optimization Changes:**
+ * - Removed expensive product counting queries
+ * - Eliminated pagination-related complexity
+ * - Fetches only initial batch for SSR (24 products)
+ * - Client-side infinite scroll handles subsequent loads
+ * 
+ * **Performance Benefits:**
+ * - Faster page load with fewer Firestore reads
+ * - Better SEO with actual content in SSR
+ * - Smooth infinite scroll UX
+ * - Category-specific filtering optimized for cursor pagination
+ */
 export default async function SubcategoryPage({ params, searchParams }: Props) {
     // Await params before accessing its properties
     const { category, subcategory } = await params;
@@ -53,39 +65,16 @@ export default async function SubcategoryPage({ params, searchParams }: Props) {
         minPrice,
         maxPrice,
         sortBy = 'rating',
-        viewMode = 'grid',
-        page: requestedPage = 1,
-        lastId
+        viewMode = 'grid'
     } = parseProductFilterParams(awaitedSearchParams as Record<string, string | string[]>);
 
-    const pageSize = 24; // Number of products per page
-
-    // Get the total count for pagination using a proper count query
-    const totalCount = await getProductCount({
-        category: decodedCategory,
-        subcategory: decodedSubcategory,
-        brands: brands.length > 0 ? brands : undefined,
-        minPrice,
-        maxPrice
-    });
-
-    // Calculate total pages and ensure page number is within valid range
-    const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
-    const page = requestedPage > totalPages ? 1 : requestedPage;
-
-    // Only use startAfterId for valid pages beyond the first
-    const startAfterId = page > 1 && lastId ? lastId : undefined;
-    const useOffsetPagination = page > 1 && !lastId;
-
-    // Get products for this category/subcategory combination with any additional filters
-    const products = await getFilteredProductsViaCategory(
+    // Fetch initial batch for SSR (first 24 products)
+    const initialBatch = await getFilteredProductsViaCategory(
         decodedCategory,
         decodedSubcategory,
         {
             sortBy: sortBy as 'name' | 'price_low' | 'price_high' | 'rating',
-            pageSize,
-            startAfterId,
-            offset: useOffsetPagination ? (page - 1) * pageSize : undefined,
+            pageSize: 24,
             brands: brands.length > 0 ? brands : undefined,
             minPrice,
             maxPrice
@@ -95,14 +84,21 @@ export default async function SubcategoryPage({ params, searchParams }: Props) {
     // Get the specific brands for this subcategory
     const subcategoryBrands = await getBrandsForSubcategory(decodedCategory, decodedSubcategory);
 
-    // Get the ID of the last product for cursor-based pagination
-    const lastProductId = products.length > 0 ? products[products.length - 1].id : undefined;
+    // Build filter object for client-side infinite scroll
+    const filters = {
+        category: decodedCategory,
+        subcategory: decodedSubcategory,
+        brands: brands.length > 0 ? brands : undefined,
+        minPrice,
+        maxPrice,
+        sortBy: sortBy as 'name' | 'price_low' | 'price_high' | 'rating'
+    };
 
     return (
         <ProductPage
             title={decodedSubcategory}
             description={`Shop our collection of ${decodedSubcategory.toLowerCase()} in the ${decodedCategory.toLowerCase()} category.`}
-            products={products}
+            initialProducts={initialBatch.products}
             availableBrands={subcategoryBrands}
             currentCategory={decodedCategory}
             currentSubcategory={decodedSubcategory}
@@ -111,10 +107,7 @@ export default async function SubcategoryPage({ params, searchParams }: Props) {
             selectedMaxPrice={maxPrice}
             sortBy={sortBy as 'name' | 'price_low' | 'price_high' | 'rating'}
             viewMode={viewMode as 'grid' | 'list'}
-            totalCount={totalCount}
-            currentPage={page}
-            pageSize={pageSize}
-            lastProductId={lastProductId}
+            filters={filters}
         />
     );
 }

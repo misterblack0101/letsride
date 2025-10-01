@@ -1,6 +1,5 @@
 // app/products/[category]/page.tsx
 import { fetchFilteredProducts } from '@/lib/server/products.server'; // server-only
-import { getProductCount } from '@/lib/server/product-count'; // Import count function
 import { getCategoriesFromDB, getBrandsForCategory } from '@/lib/services/categories';
 import ProductPage from '@/components/products/ProductPage';
 import { parseProductFilterParams } from '@/lib/utils/search-params';
@@ -12,8 +11,6 @@ interface SearchParams {
     maxPrice?: string;
     sort?: string;
     view?: string;
-    page?: string;
-    lastId?: string;
 }
 
 interface CategoryPageProps {
@@ -38,6 +35,15 @@ export async function generateMetadata({ params }: CategoryPageProps): Promise<M
     };
 }
 
+/**
+ * Category page with infinite scroll optimization.
+ * 
+ * **Cost Optimization:**
+ * - Removed expensive product counting
+ * - Eliminated pagination complexity
+ * - Fetches only initial batch for SSR
+ * - Uses category-specific filtering for better performance
+ */
 export default async function CategoryPage({ params, searchParams }: CategoryPageProps) {
     const { category } = await params;
     const decodedCategory = decodeURIComponent(category);
@@ -47,53 +53,44 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
 
     // Parse and validate search parameters using our utility
     const {
-        brands = [], // Renamed to match our expected prop name
+        brands = [],
         minPrice,
         maxPrice,
         sortBy = 'rating',
-        viewMode = 'grid',
-        page = 1,
-        lastId
+        viewMode = 'grid'
     } = parseProductFilterParams(awaitedSearchParams as Record<string, string | string[]>);
 
-    const pageSize = 24; // Number of products per page
-    // Pagination logic: hybrid cursor and offset-based
-    const startAfterId = page > 1 && lastId ? lastId : undefined;
-    const useOffsetPagination = page > 1 && !lastId;
-
-    // Always filter by the current category
-    const products = await fetchFilteredProducts({
+    // Fetch initial batch for SSR (filter by current category)
+    const initialBatch = await fetchFilteredProducts({
         categories: [decodedCategory],
         brands: brands.length > 0 ? brands : undefined,
         minPrice,
         maxPrice,
         sortBy: sortBy as 'name' | 'price_low' | 'price_high' | 'rating',
-        pageSize,
-        startAfterId,
-        offset: useOffsetPagination ? (page - 1) * pageSize : undefined,
+        pageSize: 24
     });
 
-    // Get the total count for pagination using a proper count query
-    const totalCount = await getProductCount({
-        category: decodedCategory,
-        brands: brands.length > 0 ? brands : undefined,
-        minPrice,
-        maxPrice
-    });    // Get subcategories and brands specific to this category
+    // Get subcategories and brands specific to this category
     const { subcategoriesByCategory } = await getCategoriesFromDB();
     const subcategories = subcategoriesByCategory[decodedCategory] || [];
 
     // Get brands specific to this category
     const categoryBrands = await getBrandsForCategory(decodedCategory);
 
-    // Get the ID of the last product for cursor-based pagination
-    const lastProductId = products.length > 0 ? products[products.length - 1].id : undefined;
+    // Build filter object for client-side infinite scroll
+    const filters = {
+        categories: [decodedCategory],
+        brands: brands.length > 0 ? brands : undefined,
+        minPrice,
+        maxPrice,
+        sortBy: sortBy as 'name' | 'price_low' | 'price_high' | 'rating'
+    };
 
     return (
         <ProductPage
             title={decodedCategory}
             description={`Find the perfect ${decodedCategory.toLowerCase()} for your cycling adventures.`}
-            products={products}
+            initialProducts={initialBatch.products}
             availableBrands={categoryBrands}
             currentCategory={decodedCategory}
             currentSubcategories={subcategories}
@@ -102,10 +99,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
             selectedMaxPrice={maxPrice}
             sortBy={sortBy as 'name' | 'price_low' | 'price_high' | 'rating'}
             viewMode={viewMode as 'grid' | 'list'}
-            totalCount={totalCount}
-            currentPage={page}
-            pageSize={pageSize}
-            lastProductId={lastProductId}
+            filters={filters}
         />
     );
 }

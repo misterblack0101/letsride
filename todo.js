@@ -14,7 +14,8 @@
 
 //////////////////////////////
 // current todo
-// - price range filter fix
+// pagination will cause more money if offset based, when ujmping pages
+// --------------- price range filter fix
 // - filters fixes:
 //   - reset filters button
 //   - remove the current category/subcategory text from above filters
