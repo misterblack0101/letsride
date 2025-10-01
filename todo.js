@@ -17,6 +17,8 @@
 // - bottomnav links add
 // - update current product details UI with support for image listview/multiple images
 // - use discounted price for price based sort/filter once added in model
+// - check gridview/listview for web and mobile
+// check searchbar implementation
 
 
 //////////////////////////////

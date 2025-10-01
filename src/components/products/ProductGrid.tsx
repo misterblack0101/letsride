@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useEffect, useState } from 'react';
 import type { Product } from '@/lib/models/Product';
 import ProductCard from './ProductCard';
 import { ProductGridSkeleton } from '@/components/ui/loading';
@@ -46,6 +46,26 @@ type ProductGridProps = {
  * @param props.viewMode - Grid or list display mode
  */
 export default function ProductGrid({ initialProducts = [], filters, viewMode }: ProductGridProps) {
+  // Filter change loading state
+  const [isFilterChanging, setIsFilterChanging] = useState(false);
+
+  // Listen for filter change events from ServerProductFilters
+  useEffect(() => {
+    const handleFilterStart = () => setIsFilterChanging(true);
+    const handlePriceFilterStart = () => setIsFilterChanging(true);
+
+    window.addEventListener('filterChangeStart', handleFilterStart);
+    window.addEventListener('priceFilterStart', handlePriceFilterStart);
+
+    // Reset filter changing state when component re-renders (after navigation)
+    setIsFilterChanging(false);
+
+    return () => {
+      window.removeEventListener('filterChangeStart', handleFilterStart);
+      window.removeEventListener('priceFilterStart', handlePriceFilterStart);
+    };
+  }, [filters]); // Reset when filters actually change
+
   // Extract stable values to prevent fetchFunction recreation
   const { category, subcategory, ...otherFilters } = filters;
 
@@ -108,8 +128,8 @@ export default function ProductGrid({ initialProducts = [], filters, viewMode }:
     }
   );
 
-  // Show initial loading skeleton
-  if (isLoading && products.length === 0) {
+  // Show initial loading skeleton or filter change loading
+  if ((isLoading && products.length === 0) || isFilterChanging) {
     return <ProductGridSkeleton />;
   }
 

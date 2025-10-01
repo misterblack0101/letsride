@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useTransition, useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -92,6 +92,20 @@ export default function ServerProductFilters({
     const router = useRouter();
     const searchParams = useSearchParams();
     const isMobile = useIsMobile();
+    const [isPending, startTransition] = useTransition();
+
+    // Local state for instant UI feedback
+    const [localSelectedBrands, setLocalSelectedBrands] = useState<string[]>(selectedBrands);
+    const [localSelectedCategories, setLocalSelectedCategories] = useState<string[]>(selectedCategories);
+
+    // Sync local state with props when they change (from server)
+    useEffect(() => {
+        setLocalSelectedBrands(selectedBrands);
+    }, [selectedBrands]);
+
+    useEffect(() => {
+        setLocalSelectedCategories(selectedCategories);
+    }, [selectedCategories]);
 
     /**
      * Updates URL search parameters and navigates to the new URL.
@@ -151,27 +165,45 @@ export default function ServerProductFilters({
     };
 
     /**
-     * Handles category filter checkbox changes.
-     * Updates the URL with new category selection.
+     * Handles category filter checkbox changes with instant UI feedback.
+     * Updates local state immediately, then navigates with loading state.
      */
     const handleCategoryChange = (category: string, checked: boolean) => {
+        // Update local state instantly for immediate UI feedback
         const newCategories = checked
-            ? [...selectedCategories, category]
-            : selectedCategories.filter(c => c !== category);
+            ? [...localSelectedCategories, category]
+            : localSelectedCategories.filter(c => c !== category);
 
-        updateURL({ category: newCategories });
+        setLocalSelectedCategories(newCategories);
+
+        // Dispatch event to trigger loading state in ProductGrid
+        window.dispatchEvent(new CustomEvent('filterChangeStart'));
+
+        // Use transition for smooth navigation
+        startTransition(() => {
+            updateURL({ category: newCategories });
+        });
     };
 
     /**
-     * Handles brand filter checkbox changes.
-     * Updates the URL with new brand selection.
+     * Handles brand filter checkbox changes with instant UI feedback.
+     * Updates local state immediately, then navigates with loading state.
      */
     const handleBrandChange = (brand: string, checked: boolean) => {
+        // Update local state instantly for immediate UI feedback
         const newBrands = checked
-            ? [...selectedBrands, brand]
-            : selectedBrands.filter(b => b !== brand);
+            ? [...localSelectedBrands, brand]
+            : localSelectedBrands.filter(b => b !== brand);
 
-        updateURL({ brand: newBrands });
+        setLocalSelectedBrands(newBrands);
+
+        // Dispatch event to trigger loading state in ProductGrid
+        window.dispatchEvent(new CustomEvent('filterChangeStart'));
+
+        // Use transition for smooth navigation
+        startTransition(() => {
+            updateURL({ brand: newBrands });
+        });
     };
 
     /**
@@ -289,20 +321,29 @@ export default function ServerProductFilters({
 
             {/* Brand Filter */}
             <div>
-                <h3 className="font-bold mb-3">Brand</h3>
+                <h3 className="font-bold mb-3 flex items-center gap-2">
+                    Brand
+                    {isPending && (
+                        <svg className="animate-spin h-4 w-4 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                            <path className="opacity-75" fill="currentColor" d="m 4,12 a 8,8 0 0 1 8,-8 V 0 l 3,4 -3,4 v -4 a 4,4 0 0 0 -4,4 z"></path>
+                        </svg>
+                    )}
+                </h3>
                 <div className="space-y-2 max-h-48 overflow-y-auto">
                     {availableBrands.map(brand => (
                         <div key={brand} className="flex items-center space-x-2">
                             <Checkbox
                                 id={`brand-${brand}`}
-                                checked={selectedBrands.includes(brand)}
+                                checked={localSelectedBrands.includes(brand)}
                                 onCheckedChange={(checked) =>
                                     handleBrandChange(brand, checked as boolean)
                                 }
+                                disabled={isPending}
                             />
                             <Label
                                 htmlFor={`brand-${brand}`}
-                                className="text-sm cursor-pointer"
+                                className={`text-sm cursor-pointer ${isPending ? 'opacity-50' : ''}`}
                             >
                                 {brand}
                             </Label>
