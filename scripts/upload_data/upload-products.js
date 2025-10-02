@@ -16,3 +16,4 @@ async function uploadProducts() {
 }
 
 uploadProducts().catch(console.error);
+

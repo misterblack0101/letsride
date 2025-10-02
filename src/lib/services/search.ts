@@ -25,8 +25,9 @@ import { Product } from '../models/Product';
  * - shortDescription: Product description
  * 
  * @param query - Search term to find matching products
- * @param limit - Maximum number of results to return
+ * @param limit - Maximum number of results to return per page
  * @param filters - Optional filters (e.g., ['category:Bikes', 'brand:Trek'])
+ * @param page - Page number for pagination (0-based)
  * 
  * @returns Promise resolving to array of matching products
  * 
@@ -36,6 +37,9 @@ import { Product } from '../models/Product';
  * ```typescript
  * // Search across all searchable fields
  * const results = await searchProducts('mountain bike', 10);
+ * 
+ * // Search with pagination
+ * const page2Results = await searchProducts('bike', 24, undefined, 1);
  * 
  * // Search with filters
  * const trekBikes = await searchProducts('bike', 20, ['brand:Trek']);
@@ -53,7 +57,8 @@ const client = algoliasearch(
 export async function searchProducts(
     query: string,
     limit: number = 10,
-    filters?: string[]
+    filters?: string[],
+    page: number = 0
 ): Promise<Product[]> {
     if (!query || query.trim().length < 2) {
         return [];
@@ -65,6 +70,7 @@ export async function searchProducts(
             searchParams: {
                 query: query.trim(),
                 hitsPerPage: limit,
+                page: page,
                 attributesToRetrieve: ['*'],
                 typoTolerance: true,
                 filters: filters?.join(' AND '),

@@ -10,6 +10,10 @@
 // - compress images before uploading
 /// create a new image field for every images array add/edit, using images[0]
 /// save the price from admin panel
+// - add delete functionality
+// - protect the admin routes, redirect anything after /admin to homepage if not logged in
+// - api called twice on start because of infinite scroll
+// - add indexes to firestore based on what all permutaions of queries are possible in admin panel
 
 //////////////////////////////
 // - add items in model:
