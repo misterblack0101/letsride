@@ -9,9 +9,10 @@ import type { Product } from '@/lib/models/Product';
 type ProductCardProps = {
   product: Product;
   viewMode?: 'grid' | 'list';
+  hidePricing?: boolean;
 };
 
-export default function ProductCard({ product, viewMode = 'grid' }: ProductCardProps) {
+export default function ProductCard({ product, viewMode = 'grid', hidePricing = false }: ProductCardProps) {
   const isMobile = useIsMobile();
 
 
@@ -88,21 +89,23 @@ export default function ProductCard({ product, viewMode = 'grid' }: ProductCardP
             )}
 
             {/* Pricing */}
-            <div className="flex items-center justify-between mt-auto">
-              <div className="flex items-center gap-2">
-                <span className="text-xl font-bold text-base-content font-currency">
-                  ₹{product.discountedPrice.toLocaleString('en-IN')}
-                </span>
-                {product.discountPercentage && product.actualPrice && (
-                  <span className="text-base-content/60 line-through text-sm font-currency">
-                    ₹{product.actualPrice.toLocaleString('en-IN')}
+            {!hidePricing && (
+              <div className="flex items-center justify-between mt-auto">
+                <div className="flex items-center gap-2">
+                  <span className="text-xl font-bold text-base-content font-currency">
+                    ₹{product.discountedPrice.toLocaleString('en-IN')}
                   </span>
-                )}
+                  {product.discountPercentage && product.actualPrice && (
+                    <span className="text-base-content/60 line-through text-sm font-currency">
+                      ₹{product.actualPrice.toLocaleString('en-IN')}
+                    </span>
+                  )}
+                </div>
+                <button className="btn btn-circle btn-sm bg-base-200 hover:bg-base-300 border-base-300 hover:border-base-400 shadow-sm transform hover:scale-105 transition-all duration-200">
+                  <Plus className="w-4 h-4 text-base-content" />
+                </button>
               </div>
-              <button className="btn btn-circle btn-sm bg-base-200 hover:bg-base-300 border-base-300 hover:border-base-400 shadow-sm transform hover:scale-105 transition-all duration-200">
-                <Plus className="w-4 h-4 text-base-content" />
-              </button>
-            </div>
+            )}
           </div>
         </div>
       </Link>
@@ -179,16 +182,18 @@ export default function ProductCard({ product, viewMode = 'grid' }: ProductCardP
 
 
           {/* Pricing */}
-          <div className="flex items-center gap-1.5">
-            <span className="text-sm font-bold text-base-content font-currency">
-              ₹{product.discountedPrice.toLocaleString('en-IN')}
-            </span>
-            {product.discountPercentage && product.actualPrice && (
-              <span className="text-base-content/50 line-through text-xs font-currency">
-                ₹{product.actualPrice.toLocaleString('en-IN')}
+          {!hidePricing && (
+            <div className="flex items-center gap-1.5">
+              <span className="text-sm font-bold text-base-content font-currency">
+                ₹{product.discountedPrice.toLocaleString('en-IN')}
               </span>
-            )}
-          </div>
+              {product.discountPercentage && product.actualPrice && (
+                <span className="text-base-content/50 line-through text-xs font-currency">
+                  ₹{product.actualPrice.toLocaleString('en-IN')}
+                </span>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </Link>

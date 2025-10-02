@@ -4,6 +4,8 @@
 // - Create admin UI for uploading/searching/editing products
 // - Create admin UI for uploading brands
 // - compress images before uploading
+/// create a new image field for every images array add/edit, using images[0]
+/// save the price from admin panel
 
 //////////////////////////////
 // - add items in model:
@@ -35,6 +37,7 @@ top accesories etc.
 // - add checkout button w/whatsapp link
 
 
+
 //////////////////////////////
 // misc
 // - secure firebase firestore rules
@@ -46,9 +49,10 @@ top accesories etc.
 
 /////////////////////////////
 // nice to have
+// - update the searchbar UI
 // - add stock/inventory count to products
 // - add out of stock label to products that have no inventory
 // - add the cycle loader lottie wherever applicable
 // - check code quality/optimization
 // - db throttling/debouncing to avoid excessive reads/writes
-// Fix the infinite scroll sort/filter issue
+// - Fix the infinite scroll sort/filter issue

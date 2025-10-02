@@ -1,11 +1,76 @@
-import { searchProducts } from '@/lib/services/search';
-import ProductGrid from '@/components/products/ProductGrid';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import type { Metadata } from 'next';
+import type { Product } from '@/lib/models/Product';
+import ProductCard from '@/components/products/ProductCard';
 
 interface SearchPageProps {
     searchParams: Promise<{ q?: string }>;
+}
+
+// Interface for lightweight search results from API
+interface LightweightSearchResult {
+    id: string;
+    name: string;
+    brand: string;
+    price: number;
+    discountedPrice?: number;
+    rating: number;
+    imageUrl: string;
+    category: string;
+    subCategory: string;
+}
+
+// Convert lightweight results to Product format for ProductCard
+function convertToProducts(lightweightResults: LightweightSearchResult[]): Product[] {
+    return lightweightResults.map(result => ({
+        id: result.id,
+        name: result.name,
+        brand: result.brand,
+        category: result.category,
+        subCategory: result.subCategory,
+        price: result.price,
+        discountedPrice: result.discountedPrice || result.price,
+        actualPrice: result.price,
+        rating: result.rating,
+        images: result.imageUrl ? [result.imageUrl] : ['/images/placeholder.jpg'],
+        brandLogo: '/images/placeholder.jpg', // Use placeholder instead of empty string
+        inventory: 1, // Assume in stock for search results
+        isRecommended: false,
+        isFeatured: false,
+        shortDescription: '',
+        details: '',
+        tags: []
+    }));
+}
+
+async function searchProductsViaAPI(query: string, limit: number = 50): Promise<Product[]> {
+    try {
+        const baseUrl = process.env.NODE_ENV === 'production'
+            ? 'https://your-domain.com' // Replace with your actual domain
+            : 'http://localhost:9002';
+
+        const response = await fetch(
+            `${baseUrl}/api/search?q=${encodeURIComponent(query)}&limit=${limit}`,
+            {
+                next: { revalidate: 300 } // Cache for 5 minutes on server side too
+            }
+        );
+
+        if (!response.ok) {
+            console.error('Search API error:', response.status, response.statusText);
+            return [];
+        }
+
+        const data = await response.json();
+        const lightweightResults: LightweightSearchResult[] = data.products || [];
+
+        // Convert to full Product format for ProductCard
+        return convertToProducts(lightweightResults);
+    } catch (error) {
+        console.error('Failed to fetch search results:', error);
+        return [];
+    }
 }
 
 export async function generateMetadata({ searchParams }: SearchPageProps): Promise<Metadata> {
@@ -22,7 +87,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
     const params = await searchParams;
     const query = params.q || '';
 
-    const products = query ? await searchProducts(query, 50) : [];
+    const products = query ? await searchProductsViaAPI(query, 50) : [];
 
     return (
         <div className="container mx-auto px-4 py-8">
@@ -45,7 +110,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
                             Search Results for <span className="text-primary">&ldquo;{query}&rdquo;</span>
                         </h1>
                         <p className="text-muted-foreground">
-                            Found {products.length} product{products.length !== 1 ? 's' : ''}
+                            Showing top {products.length} product{products.length !== 1 ? 's' : ''}
                         </p>
                     </>
                 ) : (
@@ -59,7 +124,16 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
             {/* Results */}
             {query ? (
                 products.length > 0 ? (
-                    <ProductGrid products={products} viewMode="grid" />
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+                        {products.map((product) => (
+                            <ProductCard
+                                key={product.id}
+                                product={product}
+                                viewMode="grid"
+                                hidePricing={true}
+                            />
+                        ))}
+                    </div>
                 ) : (
                     <div className="text-center py-16">
                         <h2 className="text-xl font-semibold mb-2">No products found</h2>

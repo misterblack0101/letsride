@@ -6,7 +6,6 @@ import { ShoppingCart } from 'lucide-react';
 import { useCart } from '@/context/cart-context';
 import BrandLogo from '@/components/BrandLogo';
 import HeaderSearch from '@/components/header/HeaderSearch';
-import { useState } from 'react';
 import MegaMenu from './MegaMenu';
 import MobileDrawer from '../MobileDrawer';
 
@@ -22,7 +21,6 @@ interface HeaderContentProps {
 export default function HeaderClient({ categoriesData }: HeaderContentProps) {
   const { subcategoriesByCategory } = categoriesData;
   const { itemCount } = useCart();
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const pathname = usePathname();
 
   const isActive = (path: string) => pathname === path;
@@ -41,13 +39,9 @@ export default function HeaderClient({ categoriesData }: HeaderContentProps) {
           </Link>
         </div>
 
-        {/* Right - Cart */}
+        {/* Right - Search & Cart */}
         <div className="flex items-center gap-4">
-          <HeaderSearch
-            isOpen={isSearchOpen}
-            onToggle={() => setIsSearchOpen(!isSearchOpen)}
-            isMobile={true}
-          />
+          <HeaderSearch isMobile={true} />
 
           <div className="indicator">
             {itemCount > 0 && (
@@ -72,11 +66,7 @@ export default function HeaderClient({ categoriesData }: HeaderContentProps) {
           <div className="container mx-auto flex items-center justify-between py-4 font-light tracking-widest uppercase text-sm relative">
             {/* Left - Search */}
             <div className="flex items-center gap-6">
-              <HeaderSearch
-                isOpen={isSearchOpen}
-                onToggle={() => setIsSearchOpen(!isSearchOpen)}
-                isMobile={false}
-              />
+              <HeaderSearch isMobile={false} />
             </div>
 
             {/* Center - Logo */}
