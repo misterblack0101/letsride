@@ -1,10 +1,9 @@
 'use client';
 
-import { useMemo, useEffect, useState } from 'react';
+import { useMemo, useEffect, useState, useCallback, useRef } from 'react';
 import type { Product } from '@/lib/models/Product';
 import ProductCard from './ProductCard';
 import { ProductGridSkeleton } from '@/components/ui/loading';
-import { useInfiniteScroll } from '@/hooks/use-infinite-scroll';
 import {
   fetchFilteredProducts,
   getFilteredProductsViaCategory,
@@ -24,30 +23,56 @@ type ProductGridProps = {
 };
 
 /**
- * Infinite scroll ProductGrid component with cost-optimized Firestore queries.
+ * ProductGrid component with optimized manual fetch functionality.
  * 
  * **Architecture:**
- * - Uses custom useInfiniteScroll hook with intersection observer
- * - Supports both general products and category-specific endpoints
- * - Appends new products to existing list (no page replacements)
- * - Shows loading shimmer at bottom during infinite loading
- * - Maintains grid/list view modes seamlessly
- * - Resets and loads fresh data when filters change
+ * - State-based product loading with memoized functions to prevent infinite loops
+ * - Supports both general products (/api/products) and category-specific endpoints (/api/products/category/[cat]/[subcat])
+ * - Manual "Load More" button with loading states and shimmer UI
+ * - Automatic filter change detection and data reset
+ * - Grid/list view mode support with memoized CSS classes
+ * - Proper React hook ordering to prevent "fewer hooks than expected" errors
  * 
- * **Performance Benefits:**
- * - Cursor-based pagination eliminates expensive offset queries
- * - Intersection observer triggers loading before user reaches end
- * - Debounced loading prevents excessive API calls
- * - Preserves scroll position during filter changes
+ * **Performance Optimizations:**
+ * - useCallback for loadMore and resetAndLoad functions
+ * - useMemo for memoizedFilters to prevent unnecessary API calls
+ * - useMemo for fetchFunction based on category/subcategory detection
+ * - useMemo for gridClasses to prevent unnecessary re-renders
+ * - useRef for initialization tracking to prevent infinite loops
+ * 
+ * **State Management:**
+ * - products: Current product list (initially from SSR, then from API)
+ * - isLoading: Initial load state (shows skeleton)
+ * - isLoadingMore: Pagination load state (shows shimmer)
+ * - error: Error state with retry functionality
+ * - hasMore: Pagination state
+ * - isFilterChanging: External filter change events (from ServerProductFilters)
+ * 
+ * **API Integration:**
+ * - Detects category/subcategory context to choose correct endpoint
+ * - Handles case-insensitive URL routing for categories
+ * - Cursor-based pagination with lastProductId tracking
+ * - Filter parameters: brands, minPrice, maxPrice, sortBy
  * 
  * @param props - Component props
- * @param props.initialProducts - SSR products for initial render (optional)
- * @param props.filters - Current filter state (includes category/subcategory if applicable)
- * @param props.viewMode - Grid or list display mode
+ * @param props.initialProducts - SSR products for initial render (prevents unnecessary API call)
+ * @param props.filters - Current filter state including category/subcategory context
+ * @param props.viewMode - Display mode ('grid' | 'list') affects layout and loading skeletons
  */
 export default function ProductGrid({ initialProducts = [], filters, viewMode }: ProductGridProps) {
+  // Product state management
+  const [products, setProducts] = useState<Product[]>(initialProducts);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [hasMore, setHasMore] = useState(true);
+  const [lastProductId, setLastProductId] = useState<string | undefined>();
+
   // Filter change loading state
   const [isFilterChanging, setIsFilterChanging] = useState(false);
+
+  // Track if component has been initialized to prevent infinite loops
+  const isInitialized = useRef(false);
 
   // Listen for filter change events from ServerProductFilters
   useEffect(() => {
@@ -100,33 +125,79 @@ export default function ProductGrid({ initialProducts = [], filters, viewMode }:
       return (filterOptions: Record<string, any>, pageSize: number, startAfterId?: string) =>
         fetchFilteredProducts({ ...filterOptions, pageSize, startAfterId });
     }
-  }, [isCategory, categoryKey]); // Use stable identifiers instead of the objects
+  }, [isCategory, categoryKey, category, subcategory]);
 
-  // Use stable filter object for the hook
-  const hookFilters = useMemo(() => otherFilters, [JSON.stringify(otherFilters)]);
+  // Memoize otherFilters to prevent unnecessary function recreations
+  const memoizedFilters = useMemo(() => otherFilters, [JSON.stringify(otherFilters)]);
 
-  // Use infinite scroll hook
-  const {
-    products,
-    isLoading,
-    isLoadingMore,
-    error,
-    hasMore,
-    loadMoreRef
-  } = useInfiniteScroll(
-    fetchFunction,
-    hookFilters,
-    {
-      pageSize: 24,
-      rootMargin: '400px', // Load well before user reaches the end
-      threshold: 0.1,
-      initialData: initialProducts.length > 0 ? {
-        products: initialProducts,
-        hasMore: initialProducts.length >= 24, // Assume more exist if we got a full page
-        lastProductId: initialProducts.length > 0 ? initialProducts[initialProducts.length - 1].id : undefined
-      } : undefined
+  // Manual load more function
+  const loadMore = useCallback(async () => {
+    if (isLoadingMore || !hasMore) return;
+
+    setIsLoadingMore(true);
+    setError(null);
+
+    try {
+      const result = await fetchFunction(memoizedFilters, 24, lastProductId);
+      setProducts(prev => [...prev, ...result.products]);
+      setHasMore(result.hasMore);
+      setLastProductId(result.lastProductId);
+    } catch (err) {
+      console.error('Error loading more products:', err);
+      setError(err instanceof Error ? err.message : 'Failed to load products');
+    } finally {
+      setIsLoadingMore(false);
     }
-  );
+  }, [fetchFunction, memoizedFilters, lastProductId, isLoadingMore, hasMore]);
+
+  // Reset and load fresh data when filters change
+  const resetAndLoad = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+    setProducts([]);
+    setHasMore(true);
+    setLastProductId(undefined);
+
+    try {
+      const result = await fetchFunction(memoizedFilters, 24, undefined);
+      setProducts(result.products);
+      setHasMore(result.hasMore);
+      setLastProductId(result.lastProductId);
+    } catch (err) {
+      console.error('Error loading initial products:', err);
+      setError(err instanceof Error ? err.message : 'Failed to load products');
+    } finally {
+      setIsLoading(false);
+    }
+  }, [fetchFunction, memoizedFilters]);
+
+  // Memoize grid classes to prevent unnecessary re-renders (MUST be before any conditional returns)
+  const gridClasses = useMemo(() =>
+    viewMode === 'grid'
+      ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6"
+      : "flex flex-col gap-4"
+    , [viewMode]);
+
+  // Reset when filters change
+  useEffect(() => {
+    // If we have initial products and haven't initialized yet, use them
+    if (initialProducts.length > 0 && !isInitialized.current) {
+      setProducts(initialProducts);
+      setHasMore(initialProducts.length >= 24);
+      setLastProductId(initialProducts.length > 0 ? initialProducts[initialProducts.length - 1].id : undefined);
+      isInitialized.current = true;
+      return;
+    }
+
+    // Reset when filters change (only after initialization)
+    if (isInitialized.current) {
+      resetAndLoad();
+    } else {
+      // First time with no initial products
+      isInitialized.current = true;
+      resetAndLoad();
+    }
+  }, [memoizedFilters, isCategory, categoryKey, resetAndLoad]);
 
   // Show initial loading skeleton or filter change loading
   if ((isLoading && products.length === 0) || isFilterChanging) {
@@ -207,10 +278,6 @@ export default function ProductGrid({ initialProducts = [], filters, viewMode }:
     );
   }
 
-  const gridClasses = viewMode === 'grid'
-    ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6"
-    : "flex flex-col gap-4";
-
   return (
     <div className="space-y-6">
       {/* Product Grid */}
@@ -224,32 +291,40 @@ export default function ProductGrid({ initialProducts = [], filters, viewMode }:
         ))}
       </div>
 
-      {/* Infinite Scroll Trigger & Loading State */}
+      {/* Load More Section */}
       {hasMore && (
-        <div
-          ref={loadMoreRef}
-          className="flex justify-center py-4"
-          style={{
-            minHeight: '120px',
-            // Reserve space for loading state to prevent layout shift
-            contain: 'layout'
-          }}
-        >
-          {isLoadingMore ? (
-            <div className="space-y-4 w-full">
-              {/* Loading shimmer for additional products */}
-              <div className="text-center">
-                <div className="inline-flex items-center space-x-2 text-muted-foreground">
-                  <div className="animate-spin h-4 w-4 border-2 border-current border-t-transparent rounded-full"></div>
-                  <span>Loading more products...</span>
-                </div>
-              </div>
+        <div className="space-y-6">
+          {/* Load More Button */}
+          <div className="flex justify-center">
+            <button
+              onClick={loadMore}
+              disabled={isLoadingMore}
+              className="inline-flex items-center gap-2 px-8 py-3 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 hover:border-gray-400 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 font-medium text-gray-700"
+            >
+              {isLoadingMore ? (
+                <>
+                  <div className="animate-spin h-4 w-4 border-2 border-gray-400 border-t-transparent rounded-full"></div>
+                  <span>Loading More...</span>
+                </>
+              ) : (
+                <>
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                  </svg>
+                  <span>Load More Products</span>
+                </>
+              )}
+            </button>
+          </div>
 
-              {/* Skeleton for upcoming products based on view mode */}
+          {/* Loading Shimmer when loading more */}
+          {isLoadingMore && (
+            <div className="space-y-4">
+              {/* Loading shimmer for additional products based on view mode */}
               {viewMode === 'list' ? (
                 <div className="flex flex-col gap-4">
                   {Array.from({ length: 3 }).map((_, i) => (
-                    <div key={`list-skeleton-${i}`} className="bg-white rounded-lg shadow-sm border animate-pulse">
+                    <div key={`list-shimmer-${i}`} className="bg-white rounded-lg shadow-sm border animate-pulse">
                       <div className="flex gap-4 p-4">
                         <div className="w-32 h-32 bg-gray-200 rounded-lg flex-shrink-0"></div>
                         <div className="flex-1 space-y-3">
@@ -268,7 +343,7 @@ export default function ProductGrid({ initialProducts = [], filters, viewMode }:
               ) : (
                 <div className={gridClasses}>
                   {Array.from({ length: 4 }).map((_, i) => (
-                    <div key={`grid-skeleton-${i}`} className="bg-white rounded-lg shadow-sm border animate-pulse">
+                    <div key={`grid-shimmer-${i}`} className="bg-white rounded-lg shadow-sm border animate-pulse">
                       <div className="aspect-square bg-gray-200 rounded-t-lg"></div>
                       <div className="p-4 space-y-3">
                         <div className="h-4 bg-gray-200 rounded w-3/4"></div>
@@ -279,11 +354,6 @@ export default function ProductGrid({ initialProducts = [], filters, viewMode }:
                   ))}
                 </div>
               )}
-            </div>
-          ) : (
-            <div className="text-center text-muted-foreground py-8">
-              <div className="h-8 w-8 border-2 border-dashed border-current rounded-full mx-auto mb-2"></div>
-              <span>Scroll for more products</span>
             </div>
           )}
         </div>

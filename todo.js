@@ -18,11 +18,6 @@
 // - check gridview/listview for web and mobile
 // - check searchbar implementation
 
-// url is case sensitive right now, make it case insensitive
-
-// Fix the infinite scroll/sort issue
-
-
 
 //////////////////////////////
 // Home page:
@@ -56,3 +51,4 @@ top accesories etc.
 // - add the cycle loader lottie wherever applicable
 // - check code quality/optimization
 // - db throttling/debouncing to avoid excessive reads/writes
+// Fix the infinite scroll sort/filter issue

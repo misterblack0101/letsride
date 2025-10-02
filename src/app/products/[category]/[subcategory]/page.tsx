@@ -1,8 +1,9 @@
 // app/products/[category]/[subcategory]/page.tsx
 import { getFilteredProductsViaCategory } from '@/lib/server/products.server'; // server-only
-import { getBrandsForSubcategory } from '@/lib/services/categories'; // Get brands for the specific subcategory
-import { parseProductFilterParams } from '@/lib/utils/search-params';
+import { getBrandsForSubcategory, getCategoriesFromDB } from '@/lib/services/categories'; // Get brands for the specific subcategory
+import { parseProductFilterParams, findCorrectCategory, findCorrectSubcategory } from '@/lib/utils/search-params';
 import ProductPage from '@/components/products/ProductPage';
+import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 
 type Props = {
@@ -24,12 +25,19 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const decodedCategory = decodeURIComponent(category);
     const decodedSubcategory = decodeURIComponent(subcategory);
 
+    // Get available categories/subcategories to find the correct case
+    const { subcategoriesByCategory } = await getCategoriesFromDB();
+    const availableCategories = Object.keys(subcategoriesByCategory);
+    const correctCategory = findCorrectCategory(decodedCategory, availableCategories) || decodedCategory;
+    const availableSubcategories = subcategoriesByCategory[correctCategory] || [];
+    const correctSubcategory = findCorrectSubcategory(decodedSubcategory, availableSubcategories) || decodedSubcategory;
+
     return {
-        title: `${decodedSubcategory} - ${decodedCategory} | Let's Ride`,
-        description: `Shop from our collection of ${decodedSubcategory.toLowerCase()} in the ${decodedCategory.toLowerCase()} category. Find the perfect gear for your cycling adventure.`,
+        title: `${correctSubcategory} - ${correctCategory} | Let's Ride`,
+        description: `Shop from our collection of ${correctSubcategory.toLowerCase()} in the ${correctCategory.toLowerCase()} category. Find the perfect gear for your cycling adventure.`,
         openGraph: {
-            title: `${decodedSubcategory} - ${decodedCategory} | Let's Ride`,
-            description: `Shop from our collection of ${decodedSubcategory.toLowerCase()} in the ${decodedCategory.toLowerCase()} category.`,
+            title: `${correctSubcategory} - ${correctCategory} | Let's Ride`,
+            description: `Shop from our collection of ${correctSubcategory.toLowerCase()} in the ${correctCategory.toLowerCase()} category.`,
             type: 'website',
         },
     };
@@ -56,6 +64,27 @@ export default async function SubcategoryPage({ params, searchParams }: Props) {
     const decodedCategory = decodeURIComponent(category);
     const decodedSubcategory = decodeURIComponent(subcategory);
 
+    // Get available categories/subcategories to find the correct case
+    const { subcategoriesByCategory } = await getCategoriesFromDB();
+    const availableCategories = Object.keys(subcategoriesByCategory);
+
+    // Find the correctly cased category name
+    const correctCategory = findCorrectCategory(decodedCategory, availableCategories);
+
+    // If category doesn't exist, show 404
+    if (!correctCategory) {
+        notFound();
+    }
+
+    // Find the correctly cased subcategory name
+    const availableSubcategories = subcategoriesByCategory[correctCategory] || [];
+    const correctSubcategory = findCorrectSubcategory(decodedSubcategory, availableSubcategories);
+
+    // If subcategory doesn't exist, show 404
+    if (!correctSubcategory) {
+        notFound();
+    }
+
     // Prepare searchParams for future use
     const awaitedSearchParams = await searchParams;
 
@@ -70,8 +99,8 @@ export default async function SubcategoryPage({ params, searchParams }: Props) {
 
     // Fetch initial batch for SSR (first 24 products)
     const initialBatch = await getFilteredProductsViaCategory(
-        decodedCategory,
-        decodedSubcategory,
+        correctCategory,
+        correctSubcategory,
         {
             sortBy: sortBy as 'name' | 'price_low' | 'price_high' | 'rating',
             pageSize: 24,
@@ -82,12 +111,12 @@ export default async function SubcategoryPage({ params, searchParams }: Props) {
     );
 
     // Get the specific brands for this subcategory
-    const subcategoryBrands = await getBrandsForSubcategory(decodedCategory, decodedSubcategory);
+    const subcategoryBrands = await getBrandsForSubcategory(correctCategory, correctSubcategory);
 
     // Build filter object for client-side infinite scroll
     const filters = {
-        category: decodedCategory,
-        subcategory: decodedSubcategory,
+        category: correctCategory,
+        subcategory: correctSubcategory,
         brands: brands.length > 0 ? brands : undefined,
         minPrice,
         maxPrice,
@@ -96,14 +125,14 @@ export default async function SubcategoryPage({ params, searchParams }: Props) {
 
     return (
         <ProductPage
-            title={decodedSubcategory}
-            description={`Shop from our collection of ${decodedSubcategory.toLowerCase()} in the ${decodedCategory.toLowerCase()} category.`}
+            title={correctSubcategory}
+            description={`Shop from our collection of ${correctSubcategory.toLowerCase()} in the ${correctCategory.toLowerCase()} category.`}
             initialProducts={initialBatch.products}
             availableBrands={subcategoryBrands}
             availableCategories={[]}
             selectedCategories={[]}
-            currentCategory={decodedCategory}
-            currentSubcategory={decodedSubcategory}
+            currentCategory={correctCategory}
+            currentSubcategory={correctSubcategory}
             selectedBrands={brands}
             selectedMinPrice={minPrice}
             selectedMaxPrice={maxPrice}

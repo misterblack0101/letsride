@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getFilteredProductsViaCategory } from '@/lib/server/products.server';
+import { getCategoriesFromDB } from '@/lib/services/categories';
+import { findCorrectCategory, findCorrectSubcategory } from '@/lib/utils/search-params';
 
 /**
  * GET /api/products/category/[category]/[subcategory] - Category-specific infinite scroll API
@@ -83,7 +85,40 @@ export async function GET(request: Request, { params }: { params: Promise<{ cate
       );
     }
 
-    const result = await getFilteredProductsViaCategory(category, subcategory, {
+    // Decode URL parameters
+    const decodedCategory = decodeURIComponent(category);
+    const decodedSubcategory = decodeURIComponent(subcategory);
+
+    // Get available categories/subcategories to find the correct case
+    const { subcategoriesByCategory } = await getCategoriesFromDB();
+    const availableCategories = Object.keys(subcategoriesByCategory);
+
+    // Find the correctly cased category name
+    const correctCategory = findCorrectCategory(decodedCategory, availableCategories);
+
+    // If category doesn't exist, return empty results
+    if (!correctCategory) {
+      return NextResponse.json({
+        products: [],
+        hasMore: false,
+        lastProductId: undefined
+      });
+    }
+
+    // Find the correctly cased subcategory name
+    const availableSubcategories = subcategoriesByCategory[correctCategory] || [];
+    const correctSubcategory = findCorrectSubcategory(decodedSubcategory, availableSubcategories);
+
+    // If subcategory doesn't exist, return empty results
+    if (!correctSubcategory) {
+      return NextResponse.json({
+        products: [],
+        hasMore: false,
+        lastProductId: undefined
+      });
+    }
+
+    const result = await getFilteredProductsViaCategory(correctCategory, correctSubcategory, {
       sortBy,
       pageSize,
       startAfterId,

@@ -1,10 +1,34 @@
 # Infinite Scroll Architecture Documentation
 
+> **⚠️ ARCHITECTURE CHANGE NOTICE**
+> 
+> **Status:** DEPRECATED - Replaced with Manual Loading
+> **Date:** October 2025
+> **Reason:** Complex state management issues, infinite API loops, hook ordering errors
+> 
+> **Current Implementation:** See [MANUAL_LOADING_ARCHITECTURE.md](./MANUAL_LOADING_ARCHITECTURE.md)
+> 
+> This document is preserved for historical reference and potential future re-implementation.
+
 ## Overview
 
-This document explains the infinite scroll pagination system implemented to replace expensive offset-based pagination, reducing Firestore read costs by over 90% while providing a modern, seamless user experience.
+This document explains the original infinite scroll pagination system that was implemented to replace expensive offset-based pagination. While the system successfully reduced Firestore read costs by over 90%, it was later replaced due to complex state management challenges.
 
-## Architecture Components
+## Why It Was Replaced
+
+### Issues Encountered
+1. **Infinite API Loops:** Filter changes triggered circular dependencies
+2. **Hook Ordering Errors:** "Rendered fewer hooks than expected" due to conditional returns
+3. **Race Conditions:** Endpoint transitions caused state conflicts
+4. **Complex Debugging:** Intersection observer logic made issues hard to trace
+
+### Migration Path
+- Replaced `useInfiniteScroll` hook with manual state management
+- Maintained all API endpoints and fetch functions
+- Added manual "Load More" button with shimmer loading
+- Preserved infrastructure for future re-implementation
+
+## Original Architecture Components
 
 ### 1. Server-Side (Firestore Optimization)
 

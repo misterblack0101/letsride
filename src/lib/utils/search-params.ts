@@ -95,3 +95,43 @@ export function updateSearchParams(
 
     return params.toString();
 }
+
+/**
+ * Finds the correct case-sensitive category name from available categories.
+ * Used to handle case-insensitive URL routing.
+ * 
+ * @param inputCategory - The category name from URL (any case)
+ * @param availableCategories - Array of valid category names (correct case)
+ * @returns The correctly cased category name, or null if not found
+ * 
+ * @example
+ * ```typescript
+ * const categories = ['Kids', 'Bikes', 'Accessories'];
+ * findCorrectCategory('kids', categories); // returns 'Kids'
+ * findCorrectCategory('BIKES', categories); // returns 'Bikes'
+ * findCorrectCategory('invalid', categories); // returns null
+ * ```
+ */
+export function findCorrectCategory(
+    inputCategory: string,
+    availableCategories: string[]
+): string | null {
+    const normalizedInput = inputCategory.toLowerCase();
+    return availableCategories.find(cat => cat.toLowerCase() === normalizedInput) || null;
+}
+
+/**
+ * Finds the correct case-sensitive subcategory name within a category.
+ * Used to handle case-insensitive URL routing for subcategories.
+ * 
+ * @param inputSubcategory - The subcategory name from URL (any case)
+ * @param availableSubcategories - Array of valid subcategory names (correct case)
+ * @returns The correctly cased subcategory name, or null if not found
+ */
+export function findCorrectSubcategory(
+    inputSubcategory: string,
+    availableSubcategories: string[]
+): string | null {
+    const normalizedInput = inputSubcategory.toLowerCase();
+    return availableSubcategories.find(subcat => subcat.toLowerCase() === normalizedInput) || null;
+}
