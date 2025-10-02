@@ -86,9 +86,9 @@ export default function ProductPage({
     viewMode
 }: ProductPageProps) {
     return (
-        <div className="container mx-auto px-4 py-8">
-            <h1 className="text-4xl font-bold font-headline text-center mb-2">{title}</h1>
-            <p className="text-lg text-muted-foreground text-center mb-8">
+        <div className="container mx-auto px-4 pt-0 pb-3">
+            <h1 className="text-4xl font-bold font-headline text-center mb-1">{title}</h1>
+            <p className="text-lg text-muted-foreground text-center mb-6">
                 {description}
             </p>
 
@@ -136,6 +136,15 @@ export default function ProductPage({
                                     </span>
                                     <div className="flex items-center gap-2 text-sm">
                                         <Link
+                                            href="/products"
+                                            className="flex items-center gap-1 bg-gray-100 text-gray-700 px-3 py-2 rounded-md font-medium hover:bg-gray-200 transition-colors cursor-pointer"
+                                        >
+                                            All Products
+                                        </Link>
+                                        <svg className="w-3 h-3 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                        </svg>
+                                        <Link
                                             href={`/products/${encodeURIComponent(currentCategory)}`}
                                             className="bg-gray-100 text-gray-700 px-2 py-1 rounded-md font-medium hover:bg-gray-200 hover:text-primary transition-colors cursor-pointer"
                                         >
@@ -159,6 +168,7 @@ export default function ProductPage({
                                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                                             </svg>
+                                            All Products
                                         </Link>
                                     </div>
                                 </>

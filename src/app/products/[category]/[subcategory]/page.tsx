@@ -26,10 +26,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
     return {
         title: `${decodedSubcategory} - ${decodedCategory} | Let's Ride`,
-        description: `Shop our collection of ${decodedSubcategory.toLowerCase()} in the ${decodedCategory.toLowerCase()} category. Find the perfect gear for your cycling adventure.`,
+        description: `Shop from our collection of ${decodedSubcategory.toLowerCase()} in the ${decodedCategory.toLowerCase()} category. Find the perfect gear for your cycling adventure.`,
         openGraph: {
             title: `${decodedSubcategory} - ${decodedCategory} | Let's Ride`,
-            description: `Shop our collection of ${decodedSubcategory.toLowerCase()} in the ${decodedCategory.toLowerCase()} category.`,
+            description: `Shop from our collection of ${decodedSubcategory.toLowerCase()} in the ${decodedCategory.toLowerCase()} category.`,
             type: 'website',
         },
     };
@@ -97,7 +97,7 @@ export default async function SubcategoryPage({ params, searchParams }: Props) {
     return (
         <ProductPage
             title={decodedSubcategory}
-            description={`Shop our collection of ${decodedSubcategory.toLowerCase()} in the ${decodedCategory.toLowerCase()} category.`}
+            description={`Shop from our collection of ${decodedSubcategory.toLowerCase()} in the ${decodedCategory.toLowerCase()} category.`}
             initialProducts={initialBatch.products}
             availableBrands={subcategoryBrands}
             availableCategories={[]}

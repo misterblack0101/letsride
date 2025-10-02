@@ -26,10 +26,10 @@ export async function generateMetadata({ params }: CategoryPageProps): Promise<M
 
     return {
         title: `${decodedCategory} Products | Let's Ride`,
-        description: `Shop our collection of ${decodedCategory.toLowerCase()} for cycling. Find the perfect gear for your next adventure.`,
+        description: `Shop from our collection of ${decodedCategory.toLowerCase()} for cycling. Find the perfect gear for your next adventure.`,
         openGraph: {
             title: `${decodedCategory} Products | Let's Ride`,
-            description: `Shop our collection of ${decodedCategory.toLowerCase()} for cycling. Find the perfect gear for your next adventure.`,
+            description: `Shop from our collection of ${decodedCategory.toLowerCase()} for cycling. Find the perfect gear for your next adventure.`,
             type: 'website',
         },
     };
@@ -88,8 +88,11 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
 
     return (
         <ProductPage
-            title={decodedCategory}
-            description={`Find the perfect ${decodedCategory.toLowerCase()} for your cycling adventures.`}
+            title={`${decodedCategory} Section`}
+            description={decodedCategory.toLowerCase() === 'kids'
+                ? 'Find the perfect kids products from our collection.'
+                : `Find the perfect ${decodedCategory.toLowerCase()} for your cycling adventures.`
+            }
             initialProducts={initialBatch.products}
             availableBrands={categoryBrands}
             availableCategories={[]}

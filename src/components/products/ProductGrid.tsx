@@ -130,7 +130,7 @@ export default function ProductGrid({ initialProducts = [], filters, viewMode }:
 
   // Show initial loading skeleton or filter change loading
   if ((isLoading && products.length === 0) || isFilterChanging) {
-    return <ProductGridSkeleton />;
+    return <ProductGridSkeleton viewMode={viewMode} />;
   }
 
   // Show error state with retry functionality
@@ -245,16 +245,40 @@ export default function ProductGrid({ initialProducts = [], filters, viewMode }:
                 </div>
               </div>
 
-              {/* Skeleton grid for upcoming products */}
-              <div className={gridClasses}>
-                {Array.from({ length: 4 }).map((_, i) => (
-                  <div key={`skeleton-${i}`} className="animate-pulse">
-                    <div className="bg-gray-200 aspect-square rounded-lg mb-3"></div>
-                    <div className="bg-gray-200 h-4 rounded mb-2"></div>
-                    <div className="bg-gray-200 h-4 w-3/4 rounded"></div>
-                  </div>
-                ))}
-              </div>
+              {/* Skeleton for upcoming products based on view mode */}
+              {viewMode === 'list' ? (
+                <div className="flex flex-col gap-4">
+                  {Array.from({ length: 3 }).map((_, i) => (
+                    <div key={`list-skeleton-${i}`} className="bg-white rounded-lg shadow-sm border animate-pulse">
+                      <div className="flex gap-4 p-4">
+                        <div className="w-32 h-32 bg-gray-200 rounded-lg flex-shrink-0"></div>
+                        <div className="flex-1 space-y-3">
+                          <div className="h-5 bg-gray-200 rounded w-3/4"></div>
+                          <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                          <div className="h-4 bg-gray-200 rounded w-2/3"></div>
+                          <div className="flex items-center justify-between mt-4">
+                            <div className="h-6 bg-gray-200 rounded w-1/4"></div>
+                            <div className="h-8 bg-gray-200 rounded w-20"></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className={gridClasses}>
+                  {Array.from({ length: 4 }).map((_, i) => (
+                    <div key={`grid-skeleton-${i}`} className="bg-white rounded-lg shadow-sm border animate-pulse">
+                      <div className="aspect-square bg-gray-200 rounded-t-lg"></div>
+                      <div className="p-4 space-y-3">
+                        <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                        <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                        <div className="h-6 bg-gray-200 rounded w-1/3"></div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           ) : (
             <div className="text-center text-muted-foreground py-8">

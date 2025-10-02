@@ -8,7 +8,6 @@
 //////////////////////////////
 // - add items in model:
 //   - inventory/stock count -  show out of stock label if <1 stock in single product page and gridview/listview
-//   - save discounted price in model
 //   - isFeatured boolean for home page products / highest rated products on homepage
 
 
@@ -19,9 +18,9 @@
 // - check gridview/listview for web and mobile
 // - check searchbar implementation
 
-// remove this sentence from above the gridview: Find the perfect kids for your cycling adventures.
-// instead, just keep the header, like Categoryname section
+// url is case sensitive right now, make it case insensitive
 
+// Fix the infinite scroll/sort issue
 
 
 
