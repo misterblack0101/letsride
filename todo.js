@@ -15,19 +15,7 @@
 
 //////////////////////////////
 // current todo
-// - bottomnav links add
-// - use discounted price for price based sort/filter once added in model
 // - check gridview/listview for web and mobile
-// - check searchbar implementation
-
-
-//////////////////////////////
-// Home page:
-/*
-carousels with shop button for
-top bikes
-top accesories etc.
-*/
 
 //////////////////////////////
 // cart page

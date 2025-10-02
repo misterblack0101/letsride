@@ -15,9 +15,11 @@
             "https://picsum.photos/seed/415615/800/600",
             "https://picsum.photos/seed/415715/800/600"
         ],
+        "image": "https://picsum.photos/seed/415515/800/600",
         "price": 5342,
         "inventory": 22,
-        "isFeatured": true
+        "isFeatured": true,
+        "isRecommended": true
     },
     {
         "id": "98ef3b1b-c4a4-488c-ae27-47862a84d607",
@@ -35,9 +37,11 @@
             "https://picsum.photos/seed/9931/800/600",
             "https://picsum.photos/seed/10031/800/600"
         ],
+        "image": "https://picsum.photos/seed/9831/800/600",
         "price": 3627,
         "inventory": 71,
-        "isFeatured": false
+        "isFeatured": false,
+        "isRecommended": true
     },
     {
         "id": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
@@ -55,9 +59,11 @@
             "https://picsum.photos/seed/1334/800/600",
             "https://picsum.photos/seed/1434/800/600"
         ],
+        "image": "https://picsum.photos/seed/1234/800/600",
         "price": 3613,
         "inventory": 57,
-        "isFeatured": true
+        "isFeatured": true,
+        "isRecommended": true
     },
     {
         "id": "b2c3d4e5-f6g7-8901-2345-678901bcdefg",
@@ -77,7 +83,9 @@
         ],
         "price": 8234,
         "inventory": 22,
-        "isFeatured": false
+        "isFeatured": false,
+        "image": "https://picsum.photos/seed/2345/800/600",
+        "isRecommended": true
     },
     {
         "id": "c3d4e5f6-g7h8-9012-3456-789012cdefgh",
@@ -97,7 +105,9 @@
         ],
         "price": 3036,
         "inventory": 28,
-        "isFeatured": false
+        "isFeatured": false,
+        "image": "https://picsum.photos/seed/3456/800/600",
+        "isRecommended": true
     },
     {
         "id": "d4e5f6g7-h8i9-0123-4567-890123defghi",
@@ -117,7 +127,9 @@
         ],
         "price": 6373,
         "inventory": 88,
-        "isFeatured": false
+        "isFeatured": false,
+        "image": "https://picsum.photos/seed/4567/800/600",
+        "isRecommended": true
     },
     {
         "id": "e5f6g7h8-i9j0-1234-5678-901234efghij",
@@ -137,7 +149,9 @@
         ],
         "price": 2370,
         "inventory": 60,
-        "isFeatured": false
+        "isFeatured": false,
+        "image": "https://picsum.photos/seed/5678/800/600",
+        "isRecommended": true
     },
     {
         "id": "f6g7h8i9-j0k1-2345-6789-012345fghijk",
@@ -157,7 +171,9 @@
         ],
         "price": 1521,
         "inventory": 27,
-        "isFeatured": false
+        "isFeatured": false,
+        "image": "https://picsum.photos/seed/6789/800/600",
+        "isRecommended": false
     },
     {
         "id": "g7h8i9j0-k1l2-3456-7890-123456ghijkl",
@@ -177,7 +193,9 @@
         ],
         "price": 2021,
         "inventory": 40,
-        "isFeatured": false
+        "isFeatured": false,
+        "image": "https://picsum.photos/seed/7890/800/600",
+        "isRecommended": false
     },
     {
         "id": "h8i9j0k1-l2m3-4567-8901-234567hijklm",
@@ -197,7 +215,9 @@
         ],
         "price": 1418,
         "inventory": 98,
-        "isFeatured": false
+        "isFeatured": false,
+        "image": "https://picsum.photos/seed/8901/800/600",
+        "isRecommended": false
     },
     {
         "id": "i9j0k1l2-m3n4-5678-9012-345678ijklmn",
@@ -217,7 +237,9 @@
         ],
         "price": 1160,
         "inventory": 52,
-        "isFeatured": true
+        "isFeatured": true,
+        "image": "https://picsum.photos/seed/9012/800/600",
+        "isRecommended": false
     },
     {
         "id": "j0k1l2m3-n4o5-6789-0123-456789jklmno",
@@ -237,7 +259,9 @@
         ],
         "price": 1764,
         "inventory": 21,
-        "isFeatured": false
+        "isFeatured": false,
+        "image": "https://picsum.photos/seed/123/800/600",
+        "isRecommended": false
     },
     {
         "id": "k1l2m3n4-o5p6-7890-1234-567890klmnop",
@@ -257,7 +281,9 @@
         ],
         "price": 3206,
         "inventory": 48,
-        "isFeatured": false
+        "isFeatured": false,
+        "image": "https://picsum.photos/seed/1234/800/600",
+        "isRecommended": true
     },
     {
         "id": "l2m3n4o5-p6q7-8901-2345-678901lmnopq",
@@ -277,7 +303,9 @@
         ],
         "price": 7876,
         "inventory": 99,
-        "isFeatured": false
+        "isFeatured": false,
+        "image": "https://picsum.photos/seed/2345/800/600",
+        "isRecommended": true
     },
     {
         "id": "m3n4o5p6-q7r8-9012-3456-789012mnopqr",
@@ -297,7 +325,9 @@
         ],
         "price": 5535,
         "inventory": 25,
-        "isFeatured": true
+        "isFeatured": true,
+        "image": "https://picsum.photos/seed/3456/800/600",
+        "isRecommended": true
     },
     {
         "id": "n4o5p6q7-r8s9-0123-4567-890123nopqrs",
@@ -317,7 +347,9 @@
         ],
         "price": 11574,
         "inventory": 40,
-        "isFeatured": true
+        "isFeatured": true,
+        "image": "https://picsum.photos/seed/4567/800/600",
+        "isRecommended": true
     },
     {
         "id": "o5p6q7r8-s9t0-1234-5678-901234opqrst",
@@ -337,7 +369,9 @@
         ],
         "price": 7608,
         "inventory": 78,
-        "isFeatured": false
+        "isFeatured": false,
+        "image": "https://picsum.photos/seed/5678/800/600",
+        "isRecommended": true
     },
     {
         "id": "p6q7r8s9-t0u1-2345-6789-012345pqrstu",
@@ -357,7 +391,9 @@
         ],
         "price": 4438,
         "inventory": 92,
-        "isFeatured": false
+        "isFeatured": false,
+        "image": "https://picsum.photos/seed/6789/800/600",
+        "isRecommended": true
     },
     {
         "id": "q7r8s9t0-u1v2-3456-7890-123456qrstuv",
@@ -377,7 +413,9 @@
         ],
         "price": 23703,
         "inventory": 84,
-        "isFeatured": true
+        "isFeatured": true,
+        "image": "https://picsum.photos/seed/7890/800/600",
+        "isRecommended": true
     },
     {
         "id": "r8s9t0u1-v2w3-4567-8901-234567rstuvw",
@@ -397,7 +435,9 @@
         ],
         "price": 12980,
         "inventory": 40,
-        "isFeatured": false
+        "isFeatured": false,
+        "image": "https://picsum.photos/seed/8901/800/600",
+        "isRecommended": false
     },
     {
         "id": "s9t0u1v2-w3x4-5678-9012-345678stuvwx",
@@ -417,7 +457,9 @@
         ],
         "price": 17434,
         "inventory": 98,
-        "isFeatured": true
+        "isFeatured": true,
+        "image": "https://picsum.photos/seed/9012/800/600",
+        "isRecommended": false
     },
     {
         "id": "t0u1v2w3-x4y5-6789-0123-456789tuvwxy",
@@ -437,7 +479,9 @@
         ],
         "price": 17955,
         "inventory": 37,
-        "isFeatured": true
+        "isFeatured": true,
+        "image": "https://picsum.photos/seed/123/800/600",
+        "isRecommended": false
     },
     {
         "id": "u1v2w3x4-y5z6-7890-1234-567890uvwxyz",
@@ -457,7 +501,9 @@
         ],
         "price": 13388,
         "inventory": 63,
-        "isFeatured": false
+        "isFeatured": false,
+        "image": "https://picsum.photos/seed/1234/800/600",
+        "isRecommended": false
     },
     {
         "id": "v2w3x4y5-z6a7-8901-2345-678901vwxyza",
@@ -477,7 +523,9 @@
         ],
         "price": 21573,
         "inventory": 70,
-        "isFeatured": false
+        "isFeatured": false,
+        "image": "https://picsum.photos/seed/2345/800/600",
+        "isRecommended": false
     },
     {
         "id": "w3x4y5z6-a7b8-9012-3456-789012wxyzab",
@@ -497,7 +545,9 @@
         ],
         "price": 10360,
         "inventory": 86,
-        "isFeatured": false
+        "isFeatured": false,
+        "image": "https://picsum.photos/seed/3456/800/600",
+        "isRecommended": false
     },
     {
         "id": "x4y5z6a7-b8c9-0123-4567-890123xyzabc",
@@ -517,7 +567,9 @@
         ],
         "price": 12980,
         "inventory": 100,
-        "isFeatured": false
+        "isFeatured": false,
+        "image": "https://picsum.photos/seed/4567/800/600",
+        "isRecommended": false
     },
     {
         "id": "y5z6a7b8-c9d0-1234-5678-901234yzabcd",
@@ -537,7 +589,9 @@
         ],
         "price": 3713,
         "inventory": 81,
-        "isFeatured": false
+        "isFeatured": false,
+        "image": "https://picsum.photos/seed/5678/800/600",
+        "isRecommended": false
     },
     {
         "id": "z6a7b8c9-d0e1-2345-6789-012345zabcde",
@@ -557,7 +611,9 @@
         ],
         "price": 2419,
         "inventory": 39,
-        "isFeatured": false
+        "isFeatured": false,
+        "image": "https://picsum.photos/seed/6789/800/600",
+        "isRecommended": false
     },
     {
         "id": "a7b8c9d0-e1f2-3456-7890-123456abcdef",
@@ -577,7 +633,9 @@
         ],
         "price": 2691,
         "inventory": 43,
-        "isFeatured": false
+        "isFeatured": false,
+        "image": "https://picsum.photos/seed/7890/800/600",
+        "isRecommended": false
     },
     {
         "id": "b8c9d0e1-f2g3-4567-8901-234567bcdefg",
@@ -597,7 +655,9 @@
         ],
         "price": 3528,
         "inventory": 38,
-        "isFeatured": false
+        "isFeatured": false,
+        "image": "https://picsum.photos/seed/8901/800/600",
+        "isRecommended": false
     },
     {
         "id": "c9d0e1f2-g3h4-5678-9012-345678cdefgh",
@@ -617,7 +677,9 @@
         ],
         "price": 465025,
         "inventory": 5,
-        "isFeatured": true
+        "isFeatured": true,
+        "image": "https://picsum.photos/seed/9012/800/600",
+        "isRecommended": true
     },
     {
         "id": "d0e1f2g3-h4i5-6789-0123-456789defghi",
@@ -637,7 +699,9 @@
         ],
         "price": 363400,
         "inventory": 14,
-        "isFeatured": true
+        "isFeatured": true,
+        "image": "https://picsum.photos/seed/123/800/600",
+        "isRecommended": true
     },
     {
         "id": "e1f2g3h4-i5j6-7890-1234-567890efghij",
@@ -657,7 +721,9 @@
         ],
         "price": 250800,
         "inventory": 5,
-        "isFeatured": false
+        "isFeatured": false,
+        "image": "https://picsum.photos/seed/1234/800/600",
+        "isRecommended": true
     },
     {
         "id": "f2g3h4i5-j6k7-8901-2345-678901fghijk",
@@ -677,7 +743,9 @@
         ],
         "price": 418300,
         "inventory": 7,
-        "isFeatured": false
+        "isFeatured": false,
+        "image": "https://picsum.photos/seed/2345/800/600",
+        "isRecommended": true
     },
     {
         "id": "g3h4i5j6-k7l8-9012-3456-789012ghijkl",
@@ -697,7 +765,9 @@
         ],
         "price": 395250,
         "inventory": 11,
-        "isFeatured": false
+        "isFeatured": false,
+        "image": "https://picsum.photos/seed/3456/800/600",
+        "isRecommended": true
     },
     {
         "id": "h4i5j6k7-l8m9-0123-4567-890123hijklm",
@@ -717,7 +787,9 @@
         ],
         "price": 346500,
         "inventory": 6,
-        "isFeatured": true
+        "isFeatured": true,
+        "image": "https://picsum.photos/seed/4567/800/600",
+        "isRecommended": true
     },
     {
         "id": "i5j6k7l8-m9n0-1234-5678-901234ijklmn",
@@ -737,7 +809,9 @@
         ],
         "price": 80750,
         "inventory": 37,
-        "isFeatured": false
+        "isFeatured": false,
+        "image": "https://picsum.photos/seed/5678/800/600",
+        "isRecommended": true
     },
     {
         "id": "j6k7l8m9-n0o1-2345-6789-012345jklmno",
@@ -757,7 +831,9 @@
         ],
         "price": 53300,
         "inventory": 30,
-        "isFeatured": false
+        "isFeatured": false,
+        "image": "https://picsum.photos/seed/6789/800/600",
+        "isRecommended": false
     },
     {
         "id": "k7l8m9n0-o1p2-3456-7890-123456klmnop",
@@ -777,7 +853,9 @@
         ],
         "price": 74800,
         "inventory": 45,
-        "isFeatured": false
+        "isFeatured": false,
+        "image": "https://picsum.photos/seed/7890/800/600",
+        "isRecommended": false
     },
     {
         "id": "l8m9n0o1-p2q3-4567-8901-234567lmnopq",
@@ -797,7 +875,9 @@
         ],
         "price": 299000,
         "inventory": 12,
-        "isFeatured": false
+        "isFeatured": false,
+        "image": "https://picsum.photos/seed/8901/800/600",
+        "isRecommended": false
     },
     {
         "id": "m9n0o1p2-q3r4-5678-9012-345678mnopqr",
@@ -817,7 +897,9 @@
         ],
         "price": 256500,
         "inventory": 15,
-        "isFeatured": true
+        "isFeatured": true,
+        "image": "https://picsum.photos/seed/9012/800/600",
+        "isRecommended": false
     },
     {
         "id": "n0o1p2q3-r4s5-6789-0123-456789nopqrs",
@@ -837,7 +919,9 @@
         ],
         "price": 215600,
         "inventory": 8,
-        "isFeatured": false
+        "isFeatured": false,
+        "image": "https://picsum.photos/seed/123/800/600",
+        "isRecommended": false
     },
     {
         "id": "o1p2q3r4-s5t6-7890-1234-567890opqrst",
@@ -857,7 +941,9 @@
         ],
         "price": 7160,
         "inventory": 31,
-        "isFeatured": false
+        "isFeatured": false,
+        "image": "https://picsum.photos/seed/1234/800/600",
+        "isRecommended": true
     },
     {
         "id": "p2q3r4s5-t6u7-8901-2345-678901pqrstu",
@@ -877,7 +963,9 @@
         ],
         "price": 5063,
         "inventory": 90,
-        "isFeatured": false
+        "isFeatured": false,
+        "image": "https://picsum.photos/seed/2345/800/600",
+        "isRecommended": true
     },
     {
         "id": "q3r4s5t6-u7v8-9012-3456-789012qrstuv",
@@ -897,7 +985,9 @@
         ],
         "price": 11008,
         "inventory": 65,
-        "isFeatured": true
+        "isFeatured": true,
+        "image": "https://picsum.photos/seed/3456/800/600",
+        "isRecommended": true
     },
     {
         "id": "r4s5t6u7-v8w9-0123-4567-890123rstuvw",
@@ -917,7 +1007,9 @@
         ],
         "price": 22455,
         "inventory": 77,
-        "isFeatured": false
+        "isFeatured": false,
+        "image": "https://picsum.photos/seed/4567/800/600",
+        "isRecommended": true
     },
     {
         "id": "s5t6u7v8-w9x0-1234-5678-901234stuvwx",
@@ -937,7 +1029,9 @@
         ],
         "price": 16676,
         "inventory": 26,
-        "isFeatured": false
+        "isFeatured": false,
+        "image": "https://picsum.photos/seed/5678/800/600",
+        "isRecommended": true
     },
     {
         "id": "t6u7v8w9-x0y1-2345-6789-012345tuvwxy",
@@ -957,7 +1051,9 @@
         ],
         "price": 30314,
         "inventory": 41,
-        "isFeatured": false
+        "isFeatured": false,
+        "image": "https://picsum.photos/seed/6789/800/600",
+        "isRecommended": true
     },
     {
         "id": "u7v8w9x0-y1z2-3456-7890-123456uvwxyz",
@@ -977,7 +1073,9 @@
         ],
         "price": 7339,
         "inventory": 91,
-        "isFeatured": false
+        "isFeatured": false,
+        "image": "https://picsum.photos/seed/7890/800/600",
+        "isRecommended": true
     },
     {
         "id": "v8w9x0y1-z2a3-4567-8901-234567vwxyza",
@@ -997,7 +1095,9 @@
         ],
         "price": 5265,
         "inventory": 47,
-        "isFeatured": false
+        "isFeatured": false,
+        "image": "https://picsum.photos/seed/8901/800/600",
+        "isRecommended": false
     },
     {
         "id": "w9x0y1z2-a3b4-5678-9012-345678wxyzab",
@@ -1017,7 +1117,9 @@
         ],
         "price": 3713,
         "inventory": 37,
-        "isFeatured": true
+        "isFeatured": true,
+        "image": "https://picsum.photos/seed/9012/800/600",
+        "isRecommended": false
     },
     {
         "id": "x0y1z2a3-b4c5-6789-0123-456789xyzabc",
@@ -1037,7 +1139,9 @@
         ],
         "price": 90203,
         "inventory": 22,
-        "isFeatured": false
+        "isFeatured": false,
+        "image": "https://picsum.photos/seed/123/800/600",
+        "isRecommended": false
     },
     {
         "id": "y1z2a3b4-c5d6-7890-1234-567890yzabcd",
@@ -1057,7 +1161,9 @@
         ],
         "price": 114954,
         "inventory": 50,
-        "isFeatured": false
+        "isFeatured": false,
+        "image": "https://picsum.photos/seed/1234/800/600",
+        "isRecommended": false
     },
     {
         "id": "z2a3b4c5-d6e7-8901-2345-678901zabcde",
@@ -1077,7 +1183,9 @@
         ],
         "price": 29708,
         "inventory": 52,
-        "isFeatured": false
+        "isFeatured": false,
+        "image": "https://picsum.photos/seed/2345/800/600",
+        "isRecommended": false
     },
     {
         "id": "a3b4c5d6-e7f8-9012-3456-789012abcdef",
@@ -1097,7 +1205,9 @@
         ],
         "price": 10360,
         "inventory": 88,
-        "isFeatured": false
+        "isFeatured": false,
+        "image": "https://picsum.photos/seed/3456/800/600",
+        "isRecommended": false
     },
     {
         "id": "b4c5d6e7-f8g9-0123-4567-890123bcdefg",
@@ -1117,7 +1227,9 @@
         ],
         "price": 6713,
         "inventory": 58,
-        "isFeatured": false
+        "isFeatured": false,
+        "image": "https://picsum.photos/seed/4567/800/600",
+        "isRecommended": false
     },
     {
         "id": "c5d6e7f8-g9h0-1234-5678-901234cdefgh",
@@ -1137,7 +1249,9 @@
         ],
         "price": 21956,
         "inventory": 63,
-        "isFeatured": false
+        "isFeatured": false,
+        "image": "https://picsum.photos/seed/5678/800/600",
+        "isRecommended": false
     },
     {
         "id": "d6e7f8g9-h0i1-2345-6789-012345defghi",
@@ -1157,7 +1271,9 @@
         ],
         "price": 2065,
         "inventory": 90,
-        "isFeatured": false
+        "isFeatured": false,
+        "image": "https://picsum.photos/seed/6789/800/600",
+        "isRecommended": false
     },
     {
         "id": "e7f8g9h0-i1j2-3456-7890-123456efghij",
@@ -1177,7 +1293,9 @@
         ],
         "price": 2484,
         "inventory": 49,
-        "isFeatured": false
+        "isFeatured": false,
+        "image": "https://picsum.photos/seed/7890/800/600",
+        "isRecommended": false
     },
     {
         "id": "f8g9h0i1-j2k3-4567-8901-234567fghijk",
@@ -1197,7 +1315,9 @@
         ],
         "price": 553,
         "inventory": 77,
-        "isFeatured": false
+        "isFeatured": false,
+        "image": "https://picsum.photos/seed/8901/800/600",
+        "isRecommended": false
     },
     {
         "id": "g9h0i1j2-k3l4-5678-9012-345678ghijkl",
@@ -1217,7 +1337,9 @@
         ],
         "price": 17055,
         "inventory": 25,
-        "isFeatured": true
+        "isFeatured": true,
+        "image": "https://picsum.photos/seed/9012/800/600",
+        "isRecommended": true
     },
     {
         "id": "h0i1j2k3-l4m5-6789-0123-456789hijklm",
@@ -1237,7 +1359,9 @@
         ],
         "price": 22954,
         "inventory": 33,
-        "isFeatured": false
+        "isFeatured": false,
+        "image": "https://picsum.photos/seed/123/800/600",
+        "isRecommended": true
     },
     {
         "id": "i1j2k3l4-m5n6-7890-1234-567890ijklmn",
@@ -1257,7 +1381,9 @@
         ],
         "price": 7608,
         "inventory": 64,
-        "isFeatured": false
+        "isFeatured": false,
+        "image": "https://picsum.photos/seed/1234/800/600",
+        "isRecommended": true
     },
     {
         "id": "j2k3l4m5-n6o7-8901-2345-678901jklmno",
@@ -1277,7 +1403,9 @@
         ],
         "price": 4356,
         "inventory": 61,
-        "isFeatured": false
+        "isFeatured": false,
+        "image": "https://picsum.photos/seed/2345/800/600",
+        "isRecommended": true
     },
     {
         "id": "k3l4m5n6-o7p8-9012-3456-789012klmnop",
@@ -1297,7 +1425,9 @@
         ],
         "price": 3157,
         "inventory": 77,
-        "isFeatured": false
+        "isFeatured": false,
+        "image": "https://picsum.photos/seed/3456/800/600",
+        "isRecommended": true
     },
     {
         "id": "l4m5n6o7-p8q9-0123-4567-890123lmnopq",
@@ -1317,7 +1447,9 @@
         ],
         "price": 5355,
         "inventory": 30,
-        "isFeatured": false
+        "isFeatured": false,
+        "image": "https://picsum.photos/seed/4567/800/600",
+        "isRecommended": true
     },
     {
         "id": "m5n6o7p8-q9r0-1234-5678-901234mnopqr",
@@ -1337,7 +1469,9 @@
         ],
         "price": 7608,
         "inventory": 75,
-        "isFeatured": false
+        "isFeatured": false,
+        "image": "https://picsum.photos/seed/5678/800/600",
+        "isRecommended": true
     },
     {
         "id": "n6o7p8q9-r0s1-2345-6789-012345nopqrs",
@@ -1357,7 +1491,9 @@
         ],
         "price": 3960,
         "inventory": 58,
-        "isFeatured": false
+        "isFeatured": false,
+        "image": "https://picsum.photos/seed/6789/800/600",
+        "isRecommended": false
     },
     {
         "id": "o7p8q9r0-s1t2-3456-7890-123456opqrst",
@@ -1377,7 +1513,9 @@
         ],
         "price": 11396,
         "inventory": 65,
-        "isFeatured": false
+        "isFeatured": false,
+        "image": "https://picsum.photos/seed/7890/800/600",
+        "isRecommended": false
     },
     {
         "id": "p8q9r0s1-t2u3-4567-8901-234567pqrstu",
@@ -1397,7 +1535,9 @@
         ],
         "price": 13754,
         "inventory": 73,
-        "isFeatured": false
+        "isFeatured": false,
+        "image": "https://picsum.photos/seed/8901/800/600",
+        "isRecommended": false
     },
     {
         "id": "q9r0s1t2-u3v4-5678-9012-345678qrstuv",
@@ -1417,6 +1557,8 @@
         ],
         "price": 22455,
         "inventory": 58,
-        "isFeatured": true
+        "isFeatured": true,
+        "image": "https://picsum.photos/seed/9012/800/600",
+        "isRecommended": false
     }
 ]

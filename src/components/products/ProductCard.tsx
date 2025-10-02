@@ -132,7 +132,7 @@ export default function ProductCard({ product, viewMode = 'grid', hidePricing = 
           <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
         </figure>
 
-        <div className="card-body p-2 space-y-1">
+        <div className="card-body p-1.5 sm:p-2 space-y-1">
           {/* Brand and Rating */}
           <div className="flex items-center justify-between">
             {/* Brand */}
@@ -153,7 +153,7 @@ export default function ProductCard({ product, viewMode = 'grid', hidePricing = 
                     {product.brand.charAt(0).toUpperCase()}
                   </span>
                 </div>
-                <span className="text-base-content/70 text-sm font-medium truncate">
+                <span className="text-base-content/70 text-xs sm:text-sm font-medium truncate">
                   {product.brand}
                 </span>
               </div>
@@ -176,7 +176,7 @@ export default function ProductCard({ product, viewMode = 'grid', hidePricing = 
           </div>
 
           {/* Product Title */}
-          <h2 className="card-title text-base leading-tight hover:text-primary transition-colors duration-300 line-clamp-2">
+          <h2 className="text-sm sm:text-base leading-tight hover:text-primary transition-colors duration-300 font-semibold overflow-hidden text-ellipsis whitespace-nowrap">
             {product.name}
           </h2>
 
@@ -184,11 +184,11 @@ export default function ProductCard({ product, viewMode = 'grid', hidePricing = 
           {/* Pricing */}
           {!hidePricing && (
             <div className="flex items-center gap-1.5">
-              <span className="text-sm font-bold text-base-content font-currency">
+              <span className="text-xs sm:text-sm font-bold text-base-content font-currency">
                 ₹{product.discountedPrice.toLocaleString('en-IN')}
               </span>
               {product.discountPercentage && product.actualPrice && (
-                <span className="text-base-content/50 line-through text-xs font-currency">
+                <span className="text-base-content/50 line-through text-[10px] sm:text-xs font-currency">
                   ₹{product.actualPrice.toLocaleString('en-IN')}
                 </span>
               )}

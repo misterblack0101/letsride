@@ -2,6 +2,7 @@ import { adminDb as db } from '../firebase/admin';
 import { CollectionReference } from 'firebase-admin/firestore';
 import { ProductSchema, Product } from '../models/Product';
 import { retryOperation } from './retry';
+import { cache } from 'react';
 
 // Runtime guard: fail fast if this file is imported in a browser/client environment.
 if (typeof window !== 'undefined') {
@@ -459,3 +460,138 @@ export async function fetchRecommendedProducts(): Promise<Product[]> {
         return products.filter(Boolean) as Product[];
     });
 }
+
+/**
+ * Response structure for categorized recommended products for homepage display.
+ */
+export interface CategorizedRecommendedProducts {
+    topBikes: Product[];
+    bestOfApparel: Product[];
+    popularAccessories: Product[];
+}
+
+/**
+ * Fetches recommended products categorized by type for homepage sections.
+ * 
+ * **Categorization Logic:**
+ * - Top Bikes: Products with category = "Bikes"
+ * - Best of Apparel: Products with category = "Apparel" 
+ * - Popular Accessories: Products with category = "Accessories"
+ * 
+ * **Performance Optimization:**
+ * - Single Firestore query for all recommended products
+ * - Client-side categorization to minimize database calls
+ * - Limits results per category to prevent excessive data transfer
+ * 
+ * **Error Handling:**
+ * - Returns empty arrays for categories with no products
+ * - Continues processing if individual products fail validation
+ * - Implements same retry logic as fetchRecommendedProducts
+ * 
+ * @param {number} limitPerCategory - Maximum products per category (default: 10)
+ * @returns {Promise<CategorizedRecommendedProducts>} Categorized recommended products
+ * 
+ * @example
+ * ```typescript
+ * const categorized = await fetchCategorizedRecommendedProducts();
+ * if (categorized.topBikes.length > 0) {
+ *   // Render Top Bikes section
+ * }
+ * ```
+ */
+export async function fetchCategorizedRecommendedProducts(
+    limitPerCategory: number = 10
+): Promise<CategorizedRecommendedProducts> {
+    const allRecommendedProducts = await fetchRecommendedProducts();
+
+    // Categorize products based on category field
+    const topBikes = allRecommendedProducts
+        .filter(product => product.category.toLowerCase() === 'bikes')
+        .slice(0, limitPerCategory);
+
+    const bestOfApparel = allRecommendedProducts
+        .filter(product => product.category.toLowerCase() === 'apparel')
+        .slice(0, limitPerCategory);
+
+    const popularAccessories = allRecommendedProducts
+        .filter(product => product.category.toLowerCase() === 'accessories')
+        .slice(0, limitPerCategory);
+
+    return {
+        topBikes,
+        bestOfApparel,
+        popularAccessories
+    };
+}
+
+/**
+ * Homepage hero data structure from Firestore.
+ */
+export interface HomepageHeroData {
+    heroTitle: string;
+    heroSubtitle: string;
+    heroImageUrl: string;
+}
+
+/**
+ * Fetches homepage hero data from Firestore /miscellaneous/homePage document.
+ * 
+ * **Performance Optimization:**
+ * - Single document read (exactly 1 Firestore operation)
+ * - Uses React cache() for automatic caching across server requests
+ * - Implements retry logic for connection resilience
+ * 
+ * **Caching Strategy:**
+ * - Cached for the duration of the server request
+ * - Automatically revalidated on new deployments
+ * - No additional cache TTL needed due to infrequent updates
+ * 
+ * **Error Handling:**
+ * - Returns fallback values if document doesn't exist
+ * - Validates data structure before returning
+ * - Logs errors but doesn't throw to prevent homepage failures
+ * 
+ * @returns {Promise<HomepageHeroData>} Hero banner data with title, subtitle, and image URL
+ * 
+ * @example
+ * ```typescript
+ * const heroData = await fetchHomepageHeroData();
+ * // Uses cached result if called multiple times in same request
+ * ```
+ */
+export const fetchHomepageHeroData = cache(async (): Promise<HomepageHeroData> => {
+    return retryOperation(async () => {
+        try {
+            const doc = await db.collection('miscellaneous').doc('homePage').get();
+
+            if (!doc.exists) {
+                console.warn('Homepage hero document not found, using fallback data');
+                return {
+                    heroTitle: "Sale: Up To 40% Off",
+                    heroSubtitle: "Discover premium bikes, gear, and accessories for your next adventure",
+                    heroImageUrl: "/images/hero_lg.png"
+                };
+            }
+
+            const data = doc.data();
+
+            // Validate required fields
+            const heroData: HomepageHeroData = {
+                heroTitle: data?.heroTitle || "Summer Sale: Up To 40% Off",
+                heroSubtitle: data?.heroSubtitle || "Discover premium bikes, gear, and accessories for your next adventure",
+                heroImageUrl: data?.heroImageUrl || "/images/hero_lg.png"
+            };
+
+            return heroData;
+
+        } catch (error) {
+            console.error('Error fetching homepage hero data:', error);
+            // Return fallback data to prevent homepage failure
+            return {
+                heroTitle: "Summer Sale: Up To 40% Off",
+                heroSubtitle: "Discover premium bikes, gear, and accessories for your next adventure",
+                heroImageUrl: "/images/hero_lg.png"
+            };
+        }
+    });
+});

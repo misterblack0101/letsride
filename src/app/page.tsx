@@ -1,119 +1,77 @@
 
-import React from 'react'
-import Link from 'next/link'
-import { ArrowRight, Star, Shield, Truck } from 'lucide-react'
-import RecommendedProducts from '@/components/recommended-products/RecommendedProducts'
+import React from 'react';
+import { fetchCategorizedRecommendedProducts, fetchHomepageHeroData } from '@/lib/server/products.server';
+import HeroBanner from '@/components/homepage/HeroBanner';
+import HorizontalProductSection from '@/components/homepage/HorizontalProductSection';
+import FindYourRideCTA from '@/components/homepage/FindYourRideCTA';
+import NewsletterSignup from '@/components/homepage/NewsletterSignup';
 
+/**
+ * Homepage component with server-side rendering of recommended products.
+ * 
+ * **Architecture:**
+ * - Server component for optimal performance and SEO
+ * - Fetches categorized recommended products from Firestore
+ * - Renders horizontal product sections with conditional display
+ * - Uses modular components for maintainable UI structure
+ * 
+ * **Data Flow:**
+ * - Server-side data fetching via fetchCategorizedRecommendedProducts
+ * - Passes product data to client components for interactivity
+ * - Sections only render if products are available
+ * 
+ * **Performance:**
+ * - Static data fetching for faster initial load
+ * - Horizontal scrolling implemented client-side for smooth UX
+ * - Optimized images with Next.js Image component
+ */
 const HomePage = async () => {
+  // Fetch categorized recommended products and hero data server-side
+  const [categorizedProducts, heroData] = await Promise.all([
+    fetchCategorizedRecommendedProducts(),
+    fetchHomepageHeroData()
+  ]);
 
   return (
-    <div className="space-y-12">
-      <div className="w-full rounded-2xl shadow-2xl overflow-hidden">
-        <img
-          src="/images/hero_sm.png"
-          alt="Cyclist on a bike"
-          className="w-full h-auto object-cover block md:hidden"
-        />
-        <img
-          src="/images/hero_lg.png"
-          alt="Cyclist on a bike"
-          className="w-full h-auto object-cover hidden md:block"
-        />
-      </div>
-      {/* <div className="hero bg-gradient-to-r from-primary to-secondary rounded-2xl text-primary-content">
-        <div className="hero-content flex-col lg:flex-row-reverse py-20 gap-12">
-          <div className="max-w-md rounded-lg shadow-2xl overflow-hidden">
-            <img
-              src="/images/hero_lg.png"
-              alt="Cyclist on a bike"
-              className="w-full h-full object-cover"
-            />
-          </div>
-          <div className="max-w-2xl text-center lg:text-left">
-            <h1 className="text-5xl font-bold font-headline mb-6">
-              Let's Ride Together
-            </h1>
-            <p className="text-xl mb-8 opacity-90">
-              Your one-stop shop for premium cycles, gear, and accessories.
-              Discover the perfect ride for your next adventure.
-            </p>
-            <Link href="/products" className="btn btn-accent btn-lg gap-2">
-              Explore Products
-              <ArrowRight className="w-5 h-5" />
-            </Link>
-          </div>
-        </div>
-      </div> */}
+    <div className="space-y-12 pb-12">
+      {/* Hero Banner */}
+      <HeroBanner
+        heroTitle={heroData.heroTitle}
+        heroSubtitle={heroData.heroSubtitle}
+        heroImageUrl={heroData.heroImageUrl}
+      />
 
-      {/* Features Section */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <div className="card bg-base-100 shadow-lg">
-          <div className="card-body text-center">
-            <div className="flex justify-center mb-4">
-              <div className="p-3 bg-primary/10 rounded-full">
-                <Star className="w-8 h-8 text-primary" />
-              </div>
-            </div>
-            <h3 className="card-title justify-center text-xl">Premium Quality</h3>
-            <p className="text-base-content/70">
-              Only the finest bikes and accessories from trusted brands
-            </p>
-          </div>
-        </div>
+      {/* Top Bikes Section */}
+      <HorizontalProductSection
+        title="Top Bikes"
+        products={categorizedProducts.topBikes}
+        viewAllLink="/products/bikes"
+        showShopAll={true}
+      />
 
-        <div className="card bg-base-100 shadow-lg">
-          <div className="card-body text-center">
-            <div className="flex justify-center mb-4">
-              <div className="p-3 bg-secondary/10 rounded-full">
-                <Shield className="w-8 h-8 text-secondary" />
-              </div>
-            </div>
-            <h3 className="card-title justify-center text-xl">Warranty Guaranteed</h3>
-            <p className="text-base-content/70">
-              Comprehensive warranty on all products for your peace of mind
-            </p>
-          </div>
-        </div>
+      {/* Best of Apparel Section */}
+      <HorizontalProductSection
+        title="Best of Apparel"
+        products={categorizedProducts.bestOfApparel}
+        viewAllLink="/products/apparel"
+        showShopAll={true}
+      />
 
-        <div className="card bg-base-100 shadow-lg">
-          <div className="card-body text-center">
-            <div className="flex justify-center mb-4">
-              <div className="p-3 bg-accent/10 rounded-full">
-                <Truck className="w-8 h-8 text-accent" />
-              </div>
-            </div>
-            <h3 className="card-title justify-center text-xl">Fast Delivery</h3>
-            <p className="text-base-content/70">
-              Quick and reliable delivery straight to your doorstep
-            </p>
-          </div>
-        </div>
-      </div>
+      {/* Popular Accessories Section */}
+      <HorizontalProductSection
+        title="Popular Accessories"
+        products={categorizedProducts.popularAccessories}
+        viewAllLink="/products/accessories"
+        showShopAll={true}
+      />
 
-      <div className="space-y-12">
-        <RecommendedProducts />
-      </div>
+      {/* Find Your Perfect Ride CTA */}
+      <FindYourRideCTA />
 
-
-
-      {/* CTA Section */}
-      <div className="card bg-base-200">
-        <div className="card-body text-center py-12">
-          <h2 className="card-title justify-center text-3xl font-headline mb-4">
-            Ready to Start Your Cycling Journey?
-          </h2>
-          <p className="text-lg text-base-content/70 mb-6">
-            Browse our collection of premium bikes and accessories
-          </p>
-          <div className="card-actions justify-center">
-            <Link href="/products" className="btn btn-primary btn-lg">
-              Shop Now
-            </Link>
-          </div>
-        </div>
-      </div>
+      {/* Newsletter Signup */}
+      <NewsletterSignup />
     </div>
-  )
-}
+  );
+};
 
-export default HomePage
+export default HomePage;
