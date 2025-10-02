@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import dynamic from 'next/dynamic';
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 
 interface LoadingSpinnerProps {
@@ -116,20 +117,47 @@ interface ProductGridSkeletonProps {
 }
 
 export function ProductGridSkeleton({ viewMode = 'grid' }: ProductGridSkeletonProps) {
+    // Ensure this component only renders on the client side
+    if (typeof window === 'undefined') {
+        return null;
+    }
+
     if (viewMode === 'list') {
         return (
             <div className="flex flex-col gap-4">
                 {[...Array(6)].map((_, i) => (
-                    <div key={i} className="bg-white rounded-lg shadow-sm border animate-pulse">
-                        <div className="flex gap-4 p-4">
-                            <div className="w-32 h-32 bg-gray-200 rounded-lg flex-shrink-0"></div>
-                            <div className="flex-1 space-y-3">
-                                <div className="h-5 bg-gray-200 rounded w-3/4"></div>
-                                <div className="h-4 bg-gray-200 rounded w-1/2"></div>
-                                <div className="h-4 bg-gray-200 rounded w-2/3"></div>
-                                <div className="flex items-center justify-between mt-4">
-                                    <div className="h-6 bg-gray-200 rounded w-1/4"></div>
-                                    <div className="h-8 bg-gray-200 rounded w-20"></div>
+                    <div key={i} className="bg-white rounded-xl shadow-lg border border-gray-200 animate-pulse h-32 sm:h-40">
+                        <div className="flex w-full h-full">
+                            {/* Image skeleton - matches ProductCard mobile/desktop sizing */}
+                            <div className="w-30 h-30 sm:w-40 sm:h-40 bg-gray-200 rounded-l-xl flex-shrink-0"></div>
+
+                            {/* Content skeleton - matches ProductCard responsive padding */}
+                            <div className="flex-1 p-2 sm:p-3 flex flex-col justify-between">
+                                {/* Top section */}
+                                <div className="space-y-2">
+                                    {/* Brand and Rating row */}
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-2">
+                                            <div className="w-4 h-4 bg-gray-200 rounded"></div>
+                                            <div className="h-3 bg-gray-200 rounded w-16"></div>
+                                        </div>
+                                        <div className="h-3 bg-gray-200 rounded w-12"></div>
+                                    </div>
+
+                                    {/* Product title */}
+                                    <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+
+                                    {/* Short description */}
+                                    <div className="h-3 bg-gray-200 rounded w-2/3"></div>
+                                </div>
+
+                                {/* Bottom section - Pricing */}
+                                <div className="flex items-center justify-between mt-2">
+                                    <div className="flex items-center gap-2">
+                                        <div className="h-5 bg-gray-200 rounded w-16"></div>
+                                        <div className="h-3 bg-gray-200 rounded w-12"></div>
+                                    </div>
+                                    <div className="w-6 h-6 bg-gray-200 rounded-full"></div>
                                 </div>
                             </div>
                         </div>
@@ -140,14 +168,31 @@ export function ProductGridSkeleton({ viewMode = 'grid' }: ProductGridSkeletonPr
     }
 
     return (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-4 lg:gap-6">
             {[...Array(8)].map((_, i) => (
-                <div key={i} className="bg-white rounded-lg shadow-sm border animate-pulse">
-                    <div className="aspect-square bg-gray-200 rounded-t-lg"></div>
-                    <div className="p-4 space-y-3">
-                        <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                        <div className="h-3 bg-gray-200 rounded w-1/2"></div>
-                        <div className="h-6 bg-gray-200 rounded w-1/3"></div>
+                <div key={i} className="bg-white rounded-xl shadow-lg border border-gray-200 animate-pulse overflow-hidden">
+                    {/* Image skeleton - aspect-square to match ProductCard */}
+                    <div className="aspect-square bg-gray-200"></div>
+
+                    {/* Content skeleton - matches ProductCard mobile responsive padding */}
+                    <div className="p-1.5 sm:p-2 space-y-1">
+                        {/* Brand and Rating row */}
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                                <div className="w-4 h-4 bg-gray-200 rounded"></div>
+                                <div className="h-3 bg-gray-200 rounded w-12"></div>
+                            </div>
+                            <div className="h-3 bg-gray-200 rounded w-8"></div>
+                        </div>
+
+                        {/* Product title - single line to match truncation */}
+                        <div className="h-4 bg-gray-200 rounded w-4/5"></div>
+
+                        {/* Pricing */}
+                        <div className="flex items-center gap-1.5">
+                            <div className="h-4 bg-gray-200 rounded w-12"></div>
+                            <div className="h-3 bg-gray-200 rounded w-8"></div>
+                        </div>
                     </div>
                 </div>
             ))}

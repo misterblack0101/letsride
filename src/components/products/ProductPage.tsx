@@ -88,24 +88,11 @@ export default function ProductPage({
     return (
         <div className="container mx-auto px-4 pt-0 pb-3">
             <h1 className="text-4xl font-bold font-headline text-center mb-1">{title}</h1>
-            <p className="text-lg text-muted-foreground text-center mb-6">
+            <p className="text-lg text-muted-foreground text-center mb-2 sm:mb-0">
                 {description}
             </p>
 
-            {/* Mobile Filters Button */}
-            <div className="block lg:hidden mb-6">
-                <ServerProductFilters
-                    availableBrands={availableBrands}
-                    availableCategories={availableCategories}
-                    selectedCategories={selectedCategories}
-                    selectedBrands={selectedBrands}
-                    selectedMinPrice={selectedMinPrice}
-                    selectedMaxPrice={selectedMaxPrice}
-                    currentCategory={currentCategory}
-                    currentSubcategory={currentSubcategory}
-                    currentSubcategories={currentSubcategories}
-                />
-            </div>
+            {/* Mobile Filters moved to controls row - see below */}
 
             <div className="flex gap-8">
                 {/* Desktop Filters Sidebar */}
@@ -176,11 +163,42 @@ export default function ProductPage({
                                 <div className="h-12" aria-hidden="true"></div>
                             )}
                         </div>
-                        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto order-1 sm:order-2">
-                            <div className="flex-1 sm:flex-initial">
-                                <ServerProductSort currentSort={sortBy} />
+                        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto order-1 sm:order-2">
+                            {/* Mobile/Tablet Layout - show until desktop sidebar appears */}
+                            <div className="flex lg:hidden flex-col gap-2 w-full">
+                                {/* First row: Filters and Sort with maximum spacing */}
+                                <div className="flex justify-between items-center w-full gap-4">
+                                    <div className="flex-shrink-0">
+                                        <ServerProductFilters
+                                            availableBrands={availableBrands}
+                                            availableCategories={availableCategories}
+                                            selectedCategories={selectedCategories}
+                                            selectedBrands={selectedBrands}
+                                            selectedMinPrice={selectedMinPrice}
+                                            selectedMaxPrice={selectedMaxPrice}
+                                            currentCategory={currentCategory}
+                                            currentSubcategory={currentSubcategory}
+                                            currentSubcategories={currentSubcategories}
+                                        />
+                                    </div>
+                                    <div className="flex-1"></div>
+                                    <div className="flex-shrink-0">
+                                        <ServerProductSort currentSort={sortBy} />
+                                    </div>
+                                </div>
+                                {/* Second row: View Toggle below sort button on mobile */}
+                                <div className="flex justify-end">
+                                    <ServerViewToggle currentView={viewMode} />
+                                </div>
                             </div>
-                            <ServerViewToggle currentView={viewMode} />
+
+                            {/* Desktop Layout - only show when sidebar is present */}
+                            <div className="hidden lg:flex items-center gap-3">
+                                <div className="flex-1 sm:flex-initial">
+                                    <ServerProductSort currentSort={sortBy} />
+                                </div>
+                                <ServerViewToggle currentView={viewMode} />
+                            </div>
                         </div>
                     </div>
 

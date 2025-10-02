@@ -89,10 +89,16 @@ export default function ServerProductFilters({
     currentSubcategory,
     currentSubcategories
 }: ServerProductFiltersProps) {
+    // Ensure this component only renders on the client side
+    if (typeof window === 'undefined') {
+        return null;
+    }
+
     const router = useRouter();
     const searchParams = useSearchParams();
     const isMobile = useIsMobile();
     const [isPending, startTransition] = useTransition();
+    const [isSheetOpen, setIsSheetOpen] = useState<boolean>(false);
 
     // Local state for instant UI feedback
     const [localSelectedBrands, setLocalSelectedBrands] = useState<string[]>(selectedBrands);
@@ -162,6 +168,9 @@ export default function ServerProductFilters({
         }
 
         router.push(`${baseUrl}?${params.toString()}`);
+
+        // Close sheet on mobile after applying filters
+        setIsSheetOpen(false);
     };
 
     /**
@@ -237,6 +246,9 @@ export default function ServerProductFilters({
             // If not in a category context, go back to all products
             router.push('/products');
         }
+
+        // Close sheet on mobile after clearing filters
+        setIsSheetOpen(false);
     };
 
     /** Determines if any filters are currently active for UI state */
@@ -364,12 +376,23 @@ export default function ServerProductFilters({
         </div>
     );
 
+    // Show button for mobile and tablet (non-desktop)
     if (isMobile) {
         return (
-            <Sheet>
+            <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
                 <SheetTrigger asChild>
-                    <Button variant="outline" className="w-full">
-                        <Filter className="w-4 h-4 mr-2" />
+                    <Button
+                        variant="outline"
+                        className="justify-start min-w-24 h-10 border-gray-200"
+                        style={{
+                            backgroundColor: '#f3f4f6',
+                            color: '#374151',
+                            transition: 'background-color 0.2s ease-in-out'
+                        }}
+                        onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#e5e7eb')}
+                        onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#f3f4f6')}
+                    >
+                        <Filter className="w-3 h-3 mr-1" />
                         Filters
                         {hasActiveFilters && (
                             <span className="ml-2 bg-primary text-primary-foreground rounded-full w-5 h-5 text-xs flex items-center justify-center">
@@ -378,11 +401,11 @@ export default function ServerProductFilters({
                         )}
                     </Button>
                 </SheetTrigger>
-                <SheetContent side="left" className="w-80">
+                <SheetContent side="left" className="w-80 overflow-y-auto">
                     <SheetHeader>
                         <SheetTitle>Filters</SheetTitle>
                     </SheetHeader>
-                    <div className="mt-6">
+                    <div className="mt-6 pb-6">
                         <FilterContent />
                     </div>
                 </SheetContent>
@@ -390,6 +413,7 @@ export default function ServerProductFilters({
         );
     }
 
+    // Show full card layout for desktop only
     return (
         <Card className="w-full">
             <CardHeader>

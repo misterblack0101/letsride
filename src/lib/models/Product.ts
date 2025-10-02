@@ -15,7 +15,6 @@ const baseBrandLogoUrl = 'https://yourcdn.com/brands';
  * - Calculates `discountedPrice` from price and discount percentage
  * - Generates `brandLogo` URL based on brand name
  * - Sets default `isRecommended` to false
- * - Sets default `isFeatured` to false
  * - Sets default `inventory` to 1 if not provided
  * 
  * **Usage:**
@@ -46,7 +45,6 @@ export const ProductSchema = z.object({
   images: z.array(z.string()).optional(),
   inventory: z.number().default(1),
   isRecommended: z.boolean().default(false),
-  isFeatured: z.boolean().default(false),
 }).transform(product => {
   const discountedPrice = product.price != null
     ? product.price
@@ -85,7 +83,6 @@ export const ProductSchema = z.object({
  * - `images`: Array of image URLs
  * - `inventory`: Stock count/quantity available
  * - `isRecommended`: Whether product appears in recommendation sections
- * - `isFeatured`: Whether product appears on home page featured section
  * 
  * @example
  * ```typescript
@@ -100,7 +97,6 @@ export const ProductSchema = z.object({
  *   discountPercentage: 10,
  *   rating: 4.5,
  *   inventory: 15,
- *   isFeatured: true,
  *   brandLogo: 'https://yourcdn.com/brands/trek.png', // Computed
  *   isRecommended: false
  * };

@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Star, Plus } from 'lucide-react';
@@ -18,91 +19,97 @@ export default function ProductCard({ product, viewMode = 'grid', hidePricing = 
 
   if (viewMode === 'list') {
     return (
-      <Link href={`/product/${product.id}`} className="block group">
-        <div className="card card-side bg-base-100 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.01] border border-base-200 hover:border-primary/30 rounded-xl overflow-hidden">
-          <figure className={`${isMobile ? 'w-full h-32' : 'w-48 h-full'} relative overflow-hidden`}>
+      <Link href={`/product/${product.id}`} className="block group w-full">
+        <div className={`bg-base-100 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.01] border border-base-200 hover:border-primary/30 rounded-xl overflow-hidden flex w-full ${isMobile ? 'h-32' : 'h-40'}`}>
+          {/* Image - Square aspect ratio, responsive sizing */}
+          <figure className={`${isMobile ? 'w-30 h-30' : 'w-40 h-40'} relative overflow-hidden flex-shrink-0`}>
             <Image
               src={product.images?.[0] || '/images/bicycle_no_bg.png'}
               alt={product.name}
               width={400}
-              height={300}
+              height={400}
               className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
             />
             {/* Discount Badge */}
             {product.discountPercentage && (
-              <div className="absolute top-1 left-1  bg-red-500 text-white w-14 h-5 flex items-center justify-center rounded text-xs font-bold shadow-md z-10">
+              <div className="absolute top-1 left-1 bg-red-500 text-white w-12 h-4 flex items-center justify-center rounded text-xs font-bold shadow-md z-10">
                 {product.discountPercentage}% OFF
               </div>
             )}
           </figure>
-          <div className="card-body p-4 space-y-2">
-            {/* Brand and Rating */}
-            <div className="flex items-center justify-between">
-              {/* Brand */}
-              {product.brand && (
-                <div className="flex items-center gap-2">
-                  <div className="w-5 h-5 bg-base-200 rounded flex items-center justify-center flex-shrink-0">
-                    <Image
-                      src={product.brandLogo}
-                      alt={product.brand}
-                      width={20}
-                      height={20}
-                      className="object-contain rounded"
-                      onError={(e) => {
-                        e.currentTarget.style.display = 'none';
-                      }}
-                    />
-                    <span className="text-xs font-bold text-base-content/60">
-                      {product.brand.charAt(0).toUpperCase()}
+
+          {/* Content - Remaining width, full height */}
+          <div className={`flex-1 ${isMobile ? 'p-2' : 'p-3'} flex flex-col justify-between`}>
+            {/* Top section */}
+            <div className="space-y-2">
+              {/* Brand and Rating */}
+              <div className="flex items-center justify-between">
+                {/* Brand */}
+                {product.brand && (
+                  <div className="flex items-center gap-2">
+                    <div className="w-4 h-4 bg-base-200 rounded flex items-center justify-center flex-shrink-0">
+                      <Image
+                        src={product.brandLogo}
+                        alt={product.brand}
+                        width={16}
+                        height={16}
+                        className="object-contain rounded"
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                        }}
+                      />
+                      <span className="text-xs font-bold text-base-content/60">
+                        {product.brand.charAt(0).toUpperCase()}
+                      </span>
+                    </div>
+                    <span className="text-base-content/70 text-sm font-medium truncate">
+                      {product.brand}
                     </span>
                   </div>
-                  <span className="text-base-content/70 text-sm font-medium truncate">
-                    {product.brand}
-                  </span>
-                </div>
-              )}
+                )}
 
-              {/* Rating */}
-              <div className="flex items-center gap-1">
-                <div className="flex items-center gap-0.5">
-                  {Array.from({ length: 5 }, (_, i) => (
-                    <Star
-                      key={`list-star-${product.id}-${i}`}
-                      className={`w-3.5 h-3.5 ${i < Math.floor(product.rating) ? 'text-amber-400 fill-amber-400' : 'text-base-300'}`}
-                    />
-                  ))}
+                {/* Rating */}
+                <div className="flex items-center gap-1">
+                  <div className="flex items-center gap-0.5">
+                    {Array.from({ length: 5 }, (_, i) => (
+                      <Star
+                        key={`list-star-${product.id}-${i}`}
+                        className={`w-3 h-3 ${i < Math.floor(product.rating) ? 'text-amber-400 fill-amber-400' : 'text-base-300'}`}
+                      />
+                    ))}
+                  </div>
+                  <span className="font-semibold text-xs">{product.rating}</span>
                 </div>
-                <span className="font-semibold text-sm">{product.rating}</span>
               </div>
+
+              {/* Product Title */}
+              <h2 className="text-base font-semibold hover:text-primary transition-colors duration-300 leading-tight line-clamp-1">
+                {product.name}
+              </h2>
+
+              {/* Short Description */}
+              {product.shortDescription && (
+                <p className="text-base-content/70 text-xs leading-relaxed line-clamp-1">
+                  {product.shortDescription}
+                </p>
+              )}
             </div>
 
-            {/* Product Title */}
-            <h2 className="card-title text-lg hover:text-primary transition-colors duration-300 leading-tight line-clamp-2">
-              {product.name}
-            </h2>
-
-            {/* Short Description */}
-            {product.shortDescription && (
-              <p className="text-base-content/70 text-sm leading-relaxed line-clamp-2">
-                {product.shortDescription}
-              </p>
-            )}
-
-            {/* Pricing */}
+            {/* Bottom section - Pricing */}
             {!hidePricing && (
-              <div className="flex items-center justify-between mt-auto">
+              <div className="flex items-center justify-between mt-2">
                 <div className="flex items-center gap-2">
-                  <span className="text-xl font-bold text-base-content font-currency">
+                  <span className="text-lg font-bold text-base-content font-currency">
                     ₹{product.discountedPrice.toLocaleString('en-IN')}
                   </span>
                   {product.discountPercentage && product.actualPrice && (
-                    <span className="text-base-content/60 line-through text-sm font-currency">
+                    <span className="text-base-content/60 line-through text-xs font-currency">
                       ₹{product.actualPrice.toLocaleString('en-IN')}
                     </span>
                   )}
                 </div>
-                <button className="btn btn-circle btn-sm bg-base-200 hover:bg-base-300 border-base-300 hover:border-base-400 shadow-sm transform hover:scale-105 transition-all duration-200">
-                  <Plus className="w-4 h-4 text-base-content" />
+                <button className="btn btn-circle btn-xs bg-base-200 hover:bg-base-300 border-base-300 hover:border-base-400 shadow-sm transform hover:scale-105 transition-all duration-200">
+                  <Plus className="w-3 h-3 text-base-content" />
                 </button>
               </div>
             )}

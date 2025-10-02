@@ -33,7 +33,7 @@ const HomePage = async () => {
   ]);
 
   return (
-    <div className="space-y-12 pb-12">
+    <div className="px-4 sm:px-0 space-y-12 pb-12">
       {/* Hero Banner */}
       <HeroBanner
         heroTitle={heroData.heroTitle}

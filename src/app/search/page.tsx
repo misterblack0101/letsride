@@ -37,7 +37,6 @@ function convertToProducts(lightweightResults: LightweightSearchResult[]): Produ
         brandLogo: '/images/placeholder.jpg', // Use placeholder instead of empty string
         inventory: 1, // Assume in stock for search results
         isRecommended: false,
-        isFeatured: false,
         shortDescription: '',
         details: '',
         tags: []

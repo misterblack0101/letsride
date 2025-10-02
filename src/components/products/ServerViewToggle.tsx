@@ -28,26 +28,32 @@ export default function ServerViewToggle({ currentView }: ServerViewToggleProps)
     };
 
     return (
-        <div className={`flex items-center border rounded-lg p-1 ${isMobile ? 'w-full' : ''}`}>
+        <div className="flex items-center border border-gray-200 rounded-lg p-1 bg-gray-100 h-10">
             <Button
                 variant={currentView === 'grid' ? 'default' : 'ghost'}
-                size={isMobile ? 'default' : 'sm'}
+                size="sm"
                 onClick={() => handleViewChange('grid')}
-                className={`${isMobile ? 'flex-1' : 'px-3'} flex items-center justify-center`}
+                className="px-2 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 text-gray-700"
+                style={{
+                    backgroundColor: currentView === 'grid' ? 'hsl(197, 78%, 52%)' : '#f3f4f6',
+                    color: currentView === 'grid' ? '#ffffff' : '#374151'
+                }}
                 type="button"
             >
                 <Grid3X3 className="w-4 h-4" />
-                {isMobile && <span className="ml-2">Grid</span>}
             </Button>
             <Button
                 variant={currentView === 'list' ? 'default' : 'ghost'}
-                size={isMobile ? 'default' : 'sm'}
+                size="sm"
                 onClick={() => handleViewChange('list')}
-                className={`${isMobile ? 'flex-1' : 'px-3'} flex items-center justify-center`}
+                className="px-2 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 text-gray-700"
+                style={{
+                    backgroundColor: currentView === 'list' ? 'hsl(197, 78%, 52%)' : '#f3f4f6',
+                    color: currentView === 'list' ? '#ffffff' : '#374151'
+                }}
                 type="button"
             >
                 <List className="w-4 h-4" />
-                {isMobile && <span className="ml-2">List</span>}
             </Button>
         </div>
     );

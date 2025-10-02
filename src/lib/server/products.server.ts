@@ -1,4 +1,4 @@
-import { adminDb as db } from '../firebase/admin';
+import { adminDb as db, getDatabase } from '../firebase/admin';
 import { CollectionReference } from 'firebase-admin/firestore';
 import { ProductSchema, Product } from '../models/Product';
 import { retryOperation } from './retry';
@@ -534,10 +534,13 @@ export interface HomepageHeroData {
 }
 
 /**
- * Fetches homepage hero data from Firestore /miscellaneous/homePage document.
+ * Fetches homepage hero data from Firebase Realtime Database /homeScreenData.
+ * 
+ * **Data Source:** Firebase Realtime Database at `/homeScreenData`
+ * **URL:** https://letsridecycles-default-rtdb.firebaseio.com/homeScreenData
  * 
  * **Performance Optimization:**
- * - Single document read (exactly 1 Firestore operation)
+ * - Single Realtime DB read (exactly 1 database operation)
  * - Uses React cache() for automatic caching across server requests
  * - Implements retry logic for connection resilience
  * 
@@ -547,7 +550,7 @@ export interface HomepageHeroData {
  * - No additional cache TTL needed due to infrequent updates
  * 
  * **Error Handling:**
- * - Returns fallback values if document doesn't exist
+ * - Returns fallback values if data doesn't exist
  * - Validates data structure before returning
  * - Logs errors but doesn't throw to prevent homepage failures
  * 
@@ -562,10 +565,13 @@ export interface HomepageHeroData {
 export const fetchHomepageHeroData = cache(async (): Promise<HomepageHeroData> => {
     return retryOperation(async () => {
         try {
-            const doc = await db.collection('miscellaneous').doc('homePage').get();
+            const realtimeDb = getDatabase();
+            const ref = realtimeDb.ref('homeScreenData');
+            const snapshot = await ref.once('value');
+            const data = snapshot.val();
 
-            if (!doc.exists) {
-                console.warn('Homepage hero document not found, using fallback data');
+            if (!data) {
+                console.warn('Homepage hero data not found in Realtime DB, using fallback data');
                 return {
                     heroTitle: "Sale: Up To 40% Off",
                     heroSubtitle: "Discover premium bikes, gear, and accessories for your next adventure",
@@ -573,9 +579,7 @@ export const fetchHomepageHeroData = cache(async (): Promise<HomepageHeroData> =
                 };
             }
 
-            const data = doc.data();
-
-            // Validate required fields
+            // Validate required fields and return data from Realtime DB
             const heroData: HomepageHeroData = {
                 heroTitle: data?.heroTitle || "Summer Sale: Up To 40% Off",
                 heroSubtitle: data?.heroSubtitle || "Discover premium bikes, gear, and accessories for your next adventure",
@@ -585,7 +589,7 @@ export const fetchHomepageHeroData = cache(async (): Promise<HomepageHeroData> =
             return heroData;
 
         } catch (error) {
-            console.error('Error fetching homepage hero data:', error);
+            console.error('Error fetching homepage hero data from Realtime DB:', error);
             // Return fallback data to prevent homepage failure
             return {
                 heroTitle: "Summer Sale: Up To 40% Off",

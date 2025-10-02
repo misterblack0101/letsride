@@ -9,6 +9,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import { ArrowUpDown } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 type ServerProductSortProps = {
@@ -56,7 +57,7 @@ export default function ServerProductSort({ currentSort }: ServerProductSortProp
     return (
         <Select value={currentSort} onValueChange={handleSortChange} disabled={isPending}>
             <SelectTrigger
-                className={`w-full ${isMobile ? 'h-10' : 'h-9'} border-gray-200 ${isPending ? 'opacity-50' : ''}`}
+                className={`min-w-32 ${isMobile ? 'h-10' : 'h-9'} border-gray-200 ${isPending ? 'opacity-50' : ''}`}
                 style={{
                     backgroundColor: '#f3f4f6',
                     color: '#374151',
@@ -71,7 +72,10 @@ export default function ServerProductSort({ currentSort }: ServerProductSortProp
                         <span>Sorting...</span>
                     </div>
                 ) : (
-                    <SelectValue placeholder="Sort by" />
+                    <div className="flex items-center gap-2">
+                        <ArrowUpDown className="w-4 h-4" />
+                        <SelectValue placeholder="Sort by" />
+                    </div>
                 )}
             </SelectTrigger>
             <SelectContent>
