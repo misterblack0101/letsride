@@ -70,20 +70,20 @@ interface ProductFormProps {
     onCancel: () => void;
 }
 
-// Form validation schema
+// Form validation schema - matches API creation schema
 const ProductFormSchema = z.object({
     name: z.string().min(1, 'Product name is required'),
     category: z.string().min(1, 'Category is required'),
     subCategory: z.string().min(1, 'Subcategory is required'),
-    brand: z.string().optional(),
-    price: z.number().min(0, 'Price must be non-negative'),
+    brand: z.string().min(1, 'Brand is required'),
+    price: z.number().min(0, 'Price must be non-negative').optional(),
     actualPrice: z.number().min(0, 'Actual price must be non-negative'),
     discountPercentage: z.number().min(0).max(100).nullable().optional(),
     rating: z.number().min(0).max(5, 'Rating must be between 0 and 5'),
     shortDescription: z.string().optional(),
     details: z.string().optional(),
-    images: z.array(z.string()).min(1, 'At least one image is required'),
-    image: z.string().min(1, 'Thumbnail image is required'), // Main thumbnail
+    images: z.array(z.string()).optional(), // Made optional - will be validated at submission
+    image: z.string().optional(), // Made optional - will be validated at submission
     inventory: z.number().min(0, 'Inventory must be non-negative'),
     isRecommended: z.boolean(),
 });
@@ -117,7 +117,10 @@ export default function ProductForm({ product, onSuccess, onCancel }: ProductFor
         brand: '',
         price: 0,
         actualPrice: 0,
+        discountPercentage: null,
         rating: 4.5,
+        shortDescription: '',
+        details: '',
         inventory: 1,
         isRecommended: false,
         images: [],
@@ -131,6 +134,7 @@ export default function ProductForm({ product, onSuccess, onCancel }: ProductFor
     const [uploadProgress, setUploadProgress] = useState(0);
     const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
     const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
+    const [operationType, setOperationType] = useState<'saving' | 'deleting'>('saving');
 
     // Initialize form with existing product data
     useEffect(() => {
@@ -156,18 +160,94 @@ export default function ProductForm({ product, onSuccess, onCancel }: ProductFor
 
     // Handle form field changes
     const handleChange = (field: keyof FormData, value: any) => {
-        setFormData(prev => ({ ...prev, [field]: value }));
-
         // Clear field error when user starts typing
         if (errors[field]) {
             setErrors(prev => ({ ...prev, [field]: '' }));
         }
+
+        setFormData(prev => {
+            const updated = { ...prev, [field]: value };
+
+            // Auto-calculate discount/price when one changes
+            if (field === 'price' && value && updated.actualPrice) {
+                // Calculate discount percentage from selling price
+                const discount = ((updated.actualPrice - value) / updated.actualPrice) * 100;
+                updated.discountPercentage = discount > 0 ? Math.round(discount * 100) / 100 : 0;
+            } else if (field === 'discountPercentage' && value !== null && updated.actualPrice) {
+                // Calculate selling price from discount percentage
+                updated.price = updated.actualPrice * (1 - value / 100);
+            } else if (field === 'actualPrice' && value) {
+                // Recalculate based on existing discount or price
+                if (updated.discountPercentage && updated.discountPercentage > 0) {
+                    updated.price = value * (1 - updated.discountPercentage / 100);
+                } else if (updated.price && updated.price > 0) {
+                    const discount = ((value - updated.price) / value) * 100;
+                    updated.discountPercentage = discount > 0 ? Math.round(discount * 100) / 100 : 0;
+                }
+            }
+
+            return updated;
+        });
     };
 
     // Prevent form submission on Enter key
     const handleKeyDown = (e: React.KeyboardEvent<HTMLFormElement>) => {
         if (e.key === 'Enter' && e.target !== e.currentTarget) {
             e.preventDefault();
+        }
+    };
+
+    // Handle product deletion
+    const handleDelete = async () => {
+        if (!product?.id) {
+            toast({
+                title: "Error",
+                description: "Cannot delete a product that hasn't been created yet",
+                variant: "destructive",
+            });
+            return;
+        }
+
+        // Show confirmation dialog
+        const confirmed = window.confirm(
+            `Are you sure you want to delete "${product.name}"?\n\nThis action cannot be undone and will permanently remove the product and all its images.`
+        );
+
+        if (!confirmed) return;
+
+        setOperationType('deleting');
+        setLoading(true);
+
+        try {
+            const response = await fetch(`/api/admin/products?id=${product.id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Failed to delete product');
+            }
+
+            toast({
+                title: "Success!",
+                description: "Product deleted successfully",
+                variant: "success",
+            });
+
+            onSuccess(); // Navigate back to product list
+
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Failed to delete product';
+            toast({
+                title: "Delete Error",
+                description: errorMessage,
+                variant: "destructive",
+            });
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -347,6 +427,7 @@ export default function ProductForm({ product, onSuccess, onCancel }: ProductFor
             return;
         }
 
+        setOperationType('saving');
         setLoading(true);
 
         try {
@@ -354,7 +435,35 @@ export default function ProductForm({ product, onSuccess, onCancel }: ProductFor
             let isNewProduct = !productId;
             let finalFormData = { ...formData }; // Track the final form data
 
-            // Step 1: Save product data first (without images for new products)
+            // Validate form data before processing
+            try {
+                ProductFormSchema.parse(formData);
+            } catch (error) {
+                if (error instanceof z.ZodError) {
+                    const newErrors: Record<string, string> = {};
+                    const errorDetails: string[] = [];
+
+                    error.errors.forEach(err => {
+                        const field = err.path[0] as string;
+                        const message = err.message;
+                        if (field) {
+                            newErrors[field] = message;
+                            errorDetails.push(`${field}: ${message}`);
+                        }
+                    });
+
+                    // Show detailed validation error toast
+                    toast({
+                        title: "Validation Failed",
+                        description: `Please fix the following errors: ${errorDetails.join(', ')}`,
+                        variant: "destructive",
+                    });
+
+                    setErrors(newErrors);
+                    return;
+                }
+                throw error;
+            }            // Step 1: Save product data first (without images for new products)
             if (isNewProduct) {
                 // For new products, create product record first to get real ID
                 const tempProductData = {
@@ -373,6 +482,7 @@ export default function ProductForm({ product, onSuccess, onCancel }: ProductFor
 
                 if (!response.ok) {
                     const errorData = await response.json();
+                    console.error('API error:', errorData);
                     throw new Error(errorData.error || 'Failed to create product');
                 }
 
@@ -453,22 +563,28 @@ export default function ProductForm({ product, onSuccess, onCancel }: ProductFor
                 } catch (error) {
                     if (error instanceof z.ZodError) {
                         const newErrors: Record<string, string> = {};
+                        const errorDetails: string[] = [];
+
                         error.errors.forEach(err => {
-                            if (err.path.length > 0) {
-                                newErrors[err.path[0]] = err.message;
+                            const field = err.path[0] as string;
+                            const message = err.message;
+                            if (field) {
+                                newErrors[field] = message;
+                                errorDetails.push(`${field}: ${message}`);
                             }
                         });
 
-                        // Show validation error toast
+                        // Show detailed validation error toast
                         toast({
-                            title: "Form Validation Error",
-                            description: "Please fix the errors and try again",
+                            title: "Validation Failed",
+                            description: `Please fix the following errors: ${errorDetails.join(', ')}`,
                             variant: "destructive",
                         });
 
                         setErrors(newErrors);
                         return;
                     }
+                    throw error;
                 }
 
                 const response = await fetch('/api/admin/products', {
@@ -496,15 +612,16 @@ export default function ProductForm({ product, onSuccess, onCancel }: ProductFor
 
         } catch (error) {
             // Show error toast
+            const errorMessage = error instanceof Error ? error.message : 'Failed to save product';
             toast({
                 title: "Error",
-                description: error instanceof Error ? error.message : 'Failed to save product',
+                description: errorMessage,
                 variant: "destructive",
             });
 
             setErrors(prev => ({
                 ...prev,
-                submit: error instanceof Error ? error.message : 'Failed to save product'
+                submit: errorMessage
             }));
         } finally {
             setLoading(false);
@@ -520,7 +637,8 @@ export default function ProductForm({ product, onSuccess, onCancel }: ProductFor
                     <div className="bg-white rounded-lg p-6 w-96 max-w-sm mx-4">
                         <div className="text-center space-y-4">
                             <div className="text-lg font-medium">
-                                {uploadingImages ? 'Uploading Images...' : 'Saving Product...'}
+                                {uploadingImages ? 'Uploading Images...' :
+                                    operationType === 'deleting' ? 'Deleting Product...' : 'Saving Product...'}
                             </div>
 
                             {uploadingImages && uploadProgress > 0 && (
@@ -641,7 +759,7 @@ export default function ProductForm({ product, onSuccess, onCancel }: ProductFor
 
                         {/* Brand */}
                         <div className="space-y-2">
-                            <Label htmlFor="brand">Brand</Label>
+                            <Label htmlFor="brand">Brand *</Label>
                             <select
                                 id="brand"
                                 value={formData.brand}
@@ -650,11 +768,17 @@ export default function ProductForm({ product, onSuccess, onCancel }: ProductFor
                                 className={`w-full p-2 border border-input rounded-md bg-background ${!formData.category ? 'opacity-50' : ''
                                     }`}
                             >
-                                <option value="">Select brand (optional)</option>
+                                <option value="">Select brand</option>
                                 {formData.category && brandData[formData.category as keyof typeof brandData]?.map(brand => (
                                     <option key={brand} value={brand}>{brand}</option>
                                 ))}
                             </select>
+                            {errors.brand && (
+                                <p className="text-sm text-destructive flex items-center gap-1">
+                                    <AlertCircle className="w-3 h-3" />
+                                    {errors.brand}
+                                </p>
+                            )}
                         </div>
                     </div>
                 </Card>
@@ -669,7 +793,7 @@ export default function ProductForm({ product, onSuccess, onCancel }: ProductFor
                             <Input
                                 id="actualPrice"
                                 type="number"
-                                value={formData.actualPrice}
+                                value={formData.actualPrice || ''}
                                 onChange={(e) => handleChange('actualPrice', parseFloat(e.target.value) || 0)}
                                 placeholder="0"
                                 min="0"
@@ -793,7 +917,7 @@ export default function ProductForm({ product, onSuccess, onCancel }: ProductFor
                                     checked={formData.isRecommended}
                                     onCheckedChange={(checked) => handleChange('isRecommended', checked)}
                                 />
-                                <Label htmlFor="isRecommended">Mark as recommended product</Label>
+                                <Label htmlFor="isRecommended">Show on home screen</Label>
                             </div>
                         </div>
                     </div>
@@ -979,27 +1103,55 @@ export default function ProductForm({ product, onSuccess, onCancel }: ProductFor
                 </Card>
 
                 {/* Form Actions */}
-                <div className="flex items-center justify-end gap-4">
-                    {errors.submit && (
-                        <p className="text-sm text-destructive flex items-center gap-1">
-                            <AlertCircle className="w-3 h-3" />
-                            {errors.submit}
-                        </p>
-                    )}
-
-                    <Button type="button" variant="outline" onClick={onCancel}>
-                        <X className="w-4 h-4 mr-2" />
-                        Cancel
-                    </Button>
-
-                    <Button type="submit" disabled={loading}>
-                        {loading ? (
-                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                        ) : (
-                            <Save className="w-4 h-4 mr-2" />
+                <div className="flex items-center justify-between gap-4">
+                    {/* Delete button - left side (only for existing products) */}
+                    <div className="flex items-center gap-4">
+                        {product?.id && (
+                            <Button
+                                type="button"
+                                variant="destructive"
+                                onClick={handleDelete}
+                                disabled={loading}
+                                className="h-10"
+                            >
+                                <Trash2 className="w-4 h-4 mr-2" />
+                                Delete Product
+                            </Button>
                         )}
-                        {product?.id ? 'Update Product' : 'Create Product'}
-                    </Button>
+                    </div>
+
+                    {/* Error message and action buttons - right side */}
+                    <div className="flex items-center gap-4">
+                        {errors.submit && (
+                            <p className="text-sm text-destructive flex items-center gap-1">
+                                <AlertCircle className="w-3 h-3" />
+                                {errors.submit}
+                            </p>
+                        )}
+
+                        <Button
+                            type="button"
+                            variant="outline"
+                            onClick={onCancel}
+                            className="h-10"
+                        >
+                            <X className="w-4 h-4 mr-2" />
+                            Cancel
+                        </Button>
+
+                        <Button
+                            type="submit"
+                            disabled={loading}
+                            className="h-10"
+                        >
+                            {loading ? (
+                                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                            ) : (
+                                <Save className="w-4 h-4 mr-2" />
+                            )}
+                            {product?.id ? 'Update Product' : 'Create Product'}
+                        </Button>
+                    </div>
                 </div>
             </form>
         </div>

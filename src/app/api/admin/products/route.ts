@@ -4,6 +4,7 @@ import { ProductSchema, type Product } from '@/lib/models/Product';
 import { z } from 'zod';
 import { CollectionReference } from 'firebase-admin/firestore';
 import { createQueryBuilder } from '@/lib/server/firestore-query-builder';
+import { cleanupProductImages } from '@/lib/utils/firebaseStorage';
 
 /**
  * Admin-only API endpoint for product management.
@@ -166,11 +167,26 @@ export async function POST(req: NextRequest) {
     try {
         const body = await req.json();
 
-        // Validate product data
-        const validatedProduct = ProductSchema.parse({
-            ...body,
-            id: undefined, // Will be auto-generated
+        // Create schema for product creation (without id field)
+        const CreateProductSchema = z.object({
+            name: z.string(),
+            category: z.string(),
+            subCategory: z.string(),
+            brand: z.string().optional(),
+            price: z.number().optional(),
+            actualPrice: z.number(),
+            discountPercentage: z.number().nullable().optional(),
+            rating: z.number(),
+            shortDescription: z.string().optional(),
+            details: z.string().optional(),
+            image: z.string().optional(),
+            images: z.array(z.string()).optional(),
+            inventory: z.number().default(1),
+            isRecommended: z.boolean().default(false),
         });
+
+        // Validate product data (without id since it will be auto-generated)
+        const validatedProduct = CreateProductSchema.parse(body);
 
         // Add to Firestore
         const docRef = await adminDb.collection('products').add({
@@ -183,7 +199,8 @@ export async function POST(req: NextRequest) {
 
         return NextResponse.json({
             message: 'Product created successfully',
-            product: newProduct
+            product: newProduct,
+            id: docRef.id
         }, { status: 201 });
 
     } catch (error) {
@@ -262,6 +279,15 @@ export async function DELETE(req: NextRequest) {
         const doc = await adminDb.collection('products').doc(id).get();
         if (!doc.exists) {
             return NextResponse.json({ error: 'Product not found' }, { status: 404 });
+        }
+
+        // Delete all product images from Firebase Storage
+        try {
+            await cleanupProductImages(id);
+            console.log('Successfully cleaned up images for product:', id);
+        } catch (error) {
+            console.error('Error cleaning up product images:', error);
+            // Continue with product deletion even if image cleanup fails
         }
 
         // Delete from Firestore
