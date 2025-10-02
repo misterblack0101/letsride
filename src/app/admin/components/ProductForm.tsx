@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
+import { useToast } from '@/hooks/use-toast';
 import {
     Save,
     X,
@@ -107,6 +108,8 @@ const brandData = {
 };
 
 export default function ProductForm({ product, onSuccess, onCancel }: ProductFormProps) {
+    const { toast } = useToast();
+
     const [formData, setFormData] = useState<FormData>({
         name: '',
         category: '',
@@ -192,9 +195,15 @@ export default function ProductForm({ product, onSuccess, onCancel }: ProductFor
             setErrors(prev => ({ ...prev, images: '' }));
 
         } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Failed to select images';
+            toast({
+                title: "Image Selection Error",
+                description: errorMessage,
+                variant: "destructive",
+            });
             setErrors(prev => ({
                 ...prev,
-                images: error instanceof Error ? error.message : 'Failed to select images'
+                images: errorMessage
             }));
         }
     };
@@ -209,9 +218,15 @@ export default function ProductForm({ product, onSuccess, onCancel }: ProductFor
             setThumbnailFile(file);
             setErrors(prev => ({ ...prev, image: '' }));
         } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Failed to select thumbnail';
+            toast({
+                title: "Thumbnail Selection Error",
+                description: errorMessage,
+                variant: "destructive",
+            });
             setErrors(prev => ({
                 ...prev,
-                image: error instanceof Error ? error.message : 'Failed to select thumbnail'
+                image: errorMessage
             }));
         }
     };
@@ -288,6 +303,14 @@ export default function ProductForm({ product, onSuccess, onCancel }: ProductFor
                         newErrors[err.path[0]] = err.message;
                     }
                 });
+
+                // Show validation error toast
+                toast({
+                    title: "Form Validation Error",
+                    description: "Please fix the errors below and try again",
+                    variant: "destructive",
+                });
+
                 setErrors(newErrors);
             }
             return false;
@@ -305,11 +328,21 @@ export default function ProductForm({ product, onSuccess, onCancel }: ProductFor
 
         // Validate minimum image requirements
         if (!hasNewImages && !hasExistingImages) {
+            toast({
+                title: "Validation Error",
+                description: "At least one image is required",
+                variant: "destructive",
+            });
             setErrors(prev => ({ ...prev, images: 'At least one image is required' }));
             return;
         }
 
         if (!thumbnailFile && !hasExistingThumbnail) {
+            toast({
+                title: "Validation Error",
+                description: "Thumbnail image is required",
+                variant: "destructive",
+            });
             setErrors(prev => ({ ...prev, image: 'Thumbnail image is required' }));
             return;
         }
@@ -425,6 +458,14 @@ export default function ProductForm({ product, onSuccess, onCancel }: ProductFor
                                 newErrors[err.path[0]] = err.message;
                             }
                         });
+
+                        // Show validation error toast
+                        toast({
+                            title: "Form Validation Error",
+                            description: "Please fix the errors and try again",
+                            variant: "destructive",
+                        });
+
                         setErrors(newErrors);
                         return;
                     }
@@ -444,9 +485,23 @@ export default function ProductForm({ product, onSuccess, onCancel }: ProductFor
                 }
             }
 
+            // Show success toast
+            toast({
+                title: "Success!",
+                description: product?.id ? "Product updated successfully" : "Product created successfully",
+                variant: "success",
+            });
+
             onSuccess();
 
         } catch (error) {
+            // Show error toast
+            toast({
+                title: "Error",
+                description: error instanceof Error ? error.message : 'Failed to save product',
+                variant: "destructive",
+            });
+
             setErrors(prev => ({
                 ...prev,
                 submit: error instanceof Error ? error.message : 'Failed to save product'
@@ -459,6 +514,41 @@ export default function ProductForm({ product, onSuccess, onCancel }: ProductFor
 
     return (
         <div className="space-y-6">
+            {/* Upload Progress Modal */}
+            {(uploadingImages || loading) && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white rounded-lg p-6 w-96 max-w-sm mx-4">
+                        <div className="text-center space-y-4">
+                            <div className="text-lg font-medium">
+                                {uploadingImages ? 'Uploading Images...' : 'Saving Product...'}
+                            </div>
+
+                            {uploadingImages && uploadProgress > 0 && (
+                                <>
+                                    <div className="text-sm text-gray-600">
+                                        {uploadProgress}% complete
+                                    </div>
+                                    <div className="w-full bg-gray-200 rounded-full h-3">
+                                        <div
+                                            className="bg-blue-600 h-3 rounded-full transition-all duration-300"
+                                            style={{ width: `${uploadProgress}%` }}
+                                        />
+                                    </div>
+                                </>
+                            )}
+
+                            {loading && !uploadingImages && (
+                                <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
+                            )}
+
+                            <div className="text-sm text-gray-500">
+                                Please wait, do not close this page...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {/* Header */}
             <div className="flex items-center gap-4">
                 <Button variant="outline" size="sm" onClick={onCancel}>
@@ -881,22 +971,6 @@ export default function ProductForm({ product, onSuccess, onCancel }: ProductFor
                                                 </Button>
                                             </div>
                                         ))}
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* Upload Progress */}
-                            {uploadingImages && uploadProgress > 0 && (
-                                <div className="space-y-2">
-                                    <div className="flex justify-between text-sm">
-                                        <span>Uploading images...</span>
-                                        <span>{uploadProgress}%</span>
-                                    </div>
-                                    <div className="w-full bg-gray-200 rounded-full h-2">
-                                        <div
-                                            className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-                                            style={{ width: `${uploadProgress}%` }}
-                                        />
                                     </div>
                                 </div>
                             )}

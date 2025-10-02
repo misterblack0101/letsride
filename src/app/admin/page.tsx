@@ -1,14 +1,18 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import LoginForm from './LoginForm';
 import AdminPanel from './AdminPanel';
 
 export default function AdminLogin() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const hasCheckedLogin = useRef(false);
 
     // Check login status via cookies
     const checkLoginStatus = async () => {
+        if (hasCheckedLogin.current) return;
+        hasCheckedLogin.current = true;
+
         const response = await fetch('/api/admin/verify', {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' },
