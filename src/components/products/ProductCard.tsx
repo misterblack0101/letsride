@@ -24,7 +24,7 @@ export default function ProductCard({ product, viewMode = 'grid', hidePricing = 
           {/* Image - Square aspect ratio, responsive sizing */}
           <figure className={`${isMobile ? 'w-30 h-30' : 'w-40 h-40'} relative overflow-hidden flex-shrink-0`}>
             <Image
-              src={product.images?.[0] || '/images/bicycle_no_bg.png'}
+              src={product.image || product.images?.[0] || '/images/bicycle_no_bg.png'}
               alt={product.name}
               width={400}
               height={400}
@@ -124,7 +124,7 @@ export default function ProductCard({ product, viewMode = 'grid', hidePricing = 
       <div className="card bg-base-100 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] h-full border border-base-200 hover:border-primary/30 overflow-hidden rounded-xl">
         <figure className="aspect-square relative overflow-hidden">
           <Image
-            src={product.images?.[0] || '/images/bicycle_no_bg.png'}
+            src={product.image || product.images?.[0] || '/images/bicycle_no_bg.png'}
             alt={product.name}
             width={400}
             height={400}

@@ -42,6 +42,7 @@ export const ProductSchema = z.object({
   rating: z.number(),
   shortDescription: z.string().optional(),
   details: z.string().optional(),
+  image: z.string().optional(), // Main thumbnail image URL
   images: z.array(z.string()).optional(),
   inventory: z.number().default(1),
   isRecommended: z.boolean().default(false),
@@ -80,7 +81,8 @@ export const ProductSchema = z.object({
  * - `rating`: Product rating (typically 0-5 scale)
  * - `shortDescription`: Brief product summary
  * - `details`: Full product description
- * - `images`: Array of image URLs
+ * - `image`: Main thumbnail image URL (single image for display)
+ * - `images`: Array of additional product image URLs
  * - `inventory`: Stock count/quantity available
  * - `isRecommended`: Whether product appears in recommendation sections
  * 

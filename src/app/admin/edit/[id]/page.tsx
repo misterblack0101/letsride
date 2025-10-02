@@ -23,7 +23,7 @@ interface ProductEditPageProps {
 }
 
 export default async function ProductEditPage({ params }: ProductEditPageProps) {
-    const { id } = params;
+    const { id } = await params;
 
     try {
         // Fetch product data server-side
@@ -44,7 +44,7 @@ export default async function ProductEditPage({ params }: ProductEditPageProps) 
  * Generate metadata for SEO
  */
 export async function generateMetadata({ params }: ProductEditPageProps) {
-    const { id } = params;
+    const { id } = await params;
 
     try {
         const product = await getProductById(id);

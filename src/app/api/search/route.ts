@@ -88,7 +88,7 @@ export async function GET(request: NextRequest) {
             price: product.price || 0,
             discountedPrice: product.discountedPrice,
             rating: product.rating,
-            imageUrl: product.images?.[0] || '/images/placeholder.jpg',
+            imageUrl: product.image || product.images?.[0] || '/images/placeholder.jpg',
             category: product.category,
             subCategory: product.subCategory
         }));

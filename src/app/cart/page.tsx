@@ -50,7 +50,7 @@ export default function CartPage() {
                     <TableRow key={item.id}>
                       <TableCell className="hidden md:table-cell">
                         <Image
-                          src={item.images?.[0] || "/images/placeholder.jpg"}
+                          src={item.image || item.images?.[0] || "/images/placeholder.jpg"}
                           alt={item.name}
                           width={80}
                           height={80}
