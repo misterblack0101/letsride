@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -90,23 +90,6 @@ const ProductFormSchema = z.object({
 
 type FormData = z.infer<typeof ProductFormSchema>;
 
-// Category and subcategory data
-const categoryData = {
-    Bikes: ['Mountain', 'Road', 'Hybrid', 'Gravel'],
-    Accessories: ['Bags', 'Lights', 'Fenders', 'Phone Case/Mount'],
-    Apparel: ['Topwear', 'Bottomwear', 'Footwear', 'Helmet', 'Eyewear', 'Gloves'],
-    Kids: ['Tricycles', 'Electric Car/Bike', 'Ride-Ons', 'Prams', 'Baby Swing', 'Baby Essentials'],
-    Spares: ['Braking System', 'Tyres & Tubes', 'Pedals', 'Saddles', 'Grips', 'Gear systems'],
-};
-
-const brandData = {
-    Bikes: ['Trek', 'Giant', 'Specialized', 'Cannondale', 'Scott'],
-    Accessories: ['Bontrager', 'Topeak', 'Ortlieb', 'Giro', 'Bell'],
-    Apparel: ['Pearl Izumi', 'Castelli', 'Gore Wear', 'Assos', 'Endura'],
-    Kids: ['Strider', 'Woom', 'Puky', 'Radio Flyer', 'Fisher-Price'],
-    Spares: ['Shimano', 'SRAM', 'Campagnolo', 'Continental', 'Schwalbe'],
-};
-
 export default function ProductForm({ product, onSuccess, onCancel }: ProductFormProps) {
     const { toast } = useToast();
 
@@ -136,8 +119,58 @@ export default function ProductForm({ product, onSuccess, onCancel }: ProductFor
     const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
     const [operationType, setOperationType] = useState<'saving' | 'deleting'>('saving');
 
+    // Dynamic category data state
+    const [categoryData, setCategoryData] = useState<{
+        categories: Record<string, any>;
+        subcategoriesByCategory: Record<string, string[]>;
+        brandsBySubcategory: Record<string, Record<string, string[]>>;
+        allBrands: string[];
+        brandsByCategory: Record<string, string[]>;
+    }>({
+        categories: {},
+        subcategoriesByCategory: {},
+        brandsBySubcategory: {},
+        allBrands: [],
+        brandsByCategory: {}
+    });
+
+    // Remove the old dynamic brands state as it's now part of categoryData
+    const [dataLoading, setDataLoading] = useState(false);
+    const hasFetchedData = useRef(false);
+
+    // Fetch all category data from API
+    const fetchCategoryData = async () => {
+        if (hasFetchedData.current) return;
+        hasFetchedData.current = true;
+
+        setDataLoading(true);
+        try {
+            const response = await fetch('/api/admin/categories');
+            if (!response.ok) {
+                throw new Error('Failed to fetch category data');
+            }
+
+            const result = await response.json();
+            setCategoryData(result.data);
+        } catch (error) {
+            console.error('Error fetching category data:', error);
+            // Provide empty fallback structure
+            setCategoryData({
+                categories: {},
+                subcategoriesByCategory: {},
+                brandsBySubcategory: {},
+                allBrands: [],
+                brandsByCategory: {}
+            });
+        } finally {
+            setDataLoading(false);
+        }
+    };
+
     // Initialize form with existing product data
     useEffect(() => {
+        fetchCategoryData(); // Fetch category data on component mount
+
         if (product) {
             setFormData({
                 name: product.name,
@@ -156,9 +189,7 @@ export default function ProductForm({ product, onSuccess, onCancel }: ProductFor
                 isRecommended: product.isRecommended,
             });
         }
-    }, [product]);
-
-    // Handle form field changes
+    }, [product]);    // Handle form field changes
     const handleChange = (field: keyof FormData, value: any) => {
         // Clear field error when user starts typing
         if (errors[field]) {
@@ -167,6 +198,16 @@ export default function ProductForm({ product, onSuccess, onCancel }: ProductFor
 
         setFormData(prev => {
             const updated = { ...prev, [field]: value };
+
+            // Reset dependent fields when category or subcategory changes
+            if (field === 'category') {
+                // Reset subcategory and brand when category changes
+                updated.subCategory = '';
+                updated.brand = '';
+            } else if (field === 'subCategory') {
+                // Reset brand when subcategory changes
+                updated.brand = '';
+            }
 
             // Auto-calculate discount/price when one changes
             if (field === 'price' && value && updated.actualPrice) {
@@ -188,9 +229,7 @@ export default function ProductForm({ product, onSuccess, onCancel }: ProductFor
 
             return updated;
         });
-    };
-
-    // Prevent form submission on Enter key
+    };    // Prevent form submission on Enter key
     const handleKeyDown = (e: React.KeyboardEvent<HTMLFormElement>) => {
         if (e.key === 'Enter' && e.target !== e.currentTarget) {
             e.preventDefault();
@@ -721,7 +760,7 @@ export default function ProductForm({ product, onSuccess, onCancel }: ProductFor
                                     }`}
                             >
                                 <option value="">Select category</option>
-                                {Object.keys(categoryData).map(cat => (
+                                {Object.keys(categoryData.categories).map((cat: string) => (
                                     <option key={cat} value={cat}>{cat}</option>
                                 ))}
                             </select>
@@ -745,7 +784,7 @@ export default function ProductForm({ product, onSuccess, onCancel }: ProductFor
                                     } ${!formData.category ? 'opacity-50' : ''}`}
                             >
                                 <option value="">Select subcategory</option>
-                                {formData.category && categoryData[formData.category as keyof typeof categoryData]?.map(subcat => (
+                                {formData.category && categoryData.subcategoriesByCategory[formData.category]?.map((subcat: string) => (
                                     <option key={subcat} value={subcat}>{subcat}</option>
                                 ))}
                             </select>
@@ -764,14 +803,22 @@ export default function ProductForm({ product, onSuccess, onCancel }: ProductFor
                                 id="brand"
                                 value={formData.brand}
                                 onChange={(e) => handleChange('brand', e.target.value)}
-                                disabled={!formData.category}
-                                className={`w-full p-2 border border-input rounded-md bg-background ${!formData.category ? 'opacity-50' : ''
+                                disabled={!formData.subCategory || dataLoading}
+                                className={`w-full p-2 border border-input rounded-md bg-background ${!formData.subCategory || dataLoading ? 'opacity-50' : ''
                                     }`}
                             >
-                                <option value="">Select brand</option>
-                                {formData.category && brandData[formData.category as keyof typeof brandData]?.map(brand => (
-                                    <option key={brand} value={brand}>{brand}</option>
-                                ))}
+                                <option value="">
+                                    {dataLoading
+                                        ? 'Loading data...'
+                                        : !formData.subCategory
+                                            ? 'Select subcategory first'
+                                            : 'Select brand'
+                                    }
+                                </option>
+                                {formData.category && formData.subCategory &&
+                                    categoryData.brandsBySubcategory[formData.category]?.[formData.subCategory]?.map((brand: string) => (
+                                        <option key={brand} value={brand}>{brand}</option>
+                                    ))}
                             </select>
                             {errors.brand && (
                                 <p className="text-sm text-destructive flex items-center gap-1">

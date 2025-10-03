@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Star, Plus } from 'lucide-react';
@@ -15,6 +15,7 @@ type ProductCardProps = {
 
 export default function ProductCard({ product, viewMode = 'grid', hidePricing = false }: ProductCardProps) {
   const isMobile = useIsMobile();
+  const [brandLogoLoaded, setBrandLogoLoaded] = useState(true);
 
 
   if (viewMode === 'list') {
@@ -48,19 +49,20 @@ export default function ProductCard({ product, viewMode = 'grid', hidePricing = 
                 {product.brand && (
                   <div className="flex items-center gap-2">
                     <div className="w-4 h-4 bg-base-200 rounded flex items-center justify-center flex-shrink-0">
-                      <Image
-                        src={product.brandLogo}
-                        alt={product.brand}
-                        width={16}
-                        height={16}
-                        className="object-contain rounded"
-                        onError={(e) => {
-                          e.currentTarget.style.display = 'none';
-                        }}
-                      />
-                      <span className="text-xs font-bold text-base-content/60">
-                        {product.brand.charAt(0).toUpperCase()}
-                      </span>
+                      {brandLogoLoaded ? (
+                        <Image
+                          src={product.brandLogo}
+                          alt={product.brand}
+                          width={16}
+                          height={16}
+                          className="object-contain rounded"
+                          onError={() => setBrandLogoLoaded(false)}
+                        />
+                      ) : (
+                        <span className="text-xs font-bold text-base-content/60">
+                          {product.brand.charAt(0).toUpperCase()}
+                        </span>
+                      )}
                     </div>
                     <span className="text-base-content/70 text-sm font-medium truncate">
                       {product.brand}
@@ -146,19 +148,20 @@ export default function ProductCard({ product, viewMode = 'grid', hidePricing = 
             {product.brand && (
               <div className="flex items-center gap-2">
                 <div className="w-4 h-4 bg-base-200 rounded flex items-center justify-center flex-shrink-0">
-                  <Image
-                    src={product.brandLogo}
-                    alt={product.brand}
-                    width={16}
-                    height={16}
-                    className="object-contain rounded"
-                    onError={(e) => {
-                      e.currentTarget.style.display = 'none';
-                    }}
-                  />
-                  <span className="text-xs font-bold text-base-content/60">
-                    {product.brand.charAt(0).toUpperCase()}
-                  </span>
+                  {brandLogoLoaded ? (
+                    <Image
+                      src={product.brandLogo}
+                      alt={product.brand}
+                      width={16}
+                      height={16}
+                      className="object-contain rounded"
+                      onError={() => setBrandLogoLoaded(false)}
+                    />
+                  ) : (
+                    <span className="text-xs font-bold text-base-content/60">
+                      {product.brand.charAt(0).toUpperCase()}
+                    </span>
+                  )}
                 </div>
                 <span className="text-base-content/70 text-xs sm:text-sm font-medium truncate">
                   {product.brand}

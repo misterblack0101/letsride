@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-const baseBrandLogoUrl = 'https://yourcdn.com/brands';
+const baseBrandLogoUrl = 'https://firebasestorage.googleapis.com/v0/b/letsridecycles.firebasestorage.app/o/brandLogos';
 
 /**
  * Zod schema for product data validation and transformation.
@@ -56,8 +56,8 @@ export const ProductSchema = z.object({
   return {
     ...product,
     brandLogo: product.brand
-      ? `${baseBrandLogoUrl}/${product.brand.toLowerCase().replace(/\s+/g, '-')}.png`
-      : `${baseBrandLogoUrl}/default.png`,
+      ? `${baseBrandLogoUrl}%2F${product.brand.toLowerCase().replace(/\s+/g, '-')}.png?alt=media`
+      : `${baseBrandLogoUrl}%2Fdefault.png?alt=media`,
     discountedPrice,
   };
 });

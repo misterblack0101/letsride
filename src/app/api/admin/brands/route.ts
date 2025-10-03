@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { adminDb } from '@/lib/firebase/admin';
 import { z } from 'zod';
+import { deleteBrandLogo } from '@/lib/utils/firebaseStorage';
 
 /**
  * Admin-only API endpoint for brand management.
@@ -207,6 +208,15 @@ export async function DELETE(req: NextRequest) {
 
         // Remove the brand
         existingBrands.splice(brandIndex, 1);
+
+        // Delete brand logo from Firebase Storage
+        try {
+            await deleteBrandLogo(brandName);
+            console.log('Successfully deleted brand logo for:', brandName);
+        } catch (error) {
+            console.error('Error deleting brand logo:', error);
+            // Continue with brand deletion even if logo deletion fails
+        }
 
         // Update the categories document
         await categoriesDocRef.update({

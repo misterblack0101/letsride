@@ -230,6 +230,78 @@ export const UPLOAD_CONFIG = {
     MIN_IMAGES: 1,
     MAIN_IMAGE_SIZE_RANGE: { min: 150 * 1024, max: 300 * 1024 }, // 150-300KB
     THUMBNAIL_SIZE_RANGE: { min: 50 * 1024, max: 100 * 1024 }, // 50-100KB
+    BRAND_LOGO_SIZE_RANGE: { min: 20 * 1024, max: 50 * 1024 }, // 20-50KB
     ALLOWED_TYPES: ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'],
     MAX_INPUT_SIZE: 10 * 1024 * 1024, // 10MB max input
 };
+
+/**
+ * Upload brand logo to Firebase Storage
+ * 
+ * @param file - Brand logo file to upload
+ * @param brandName - Brand name for file naming
+ * @returns Promise<string> - Download URL of uploaded logo
+ */
+export async function uploadBrandLogo(file: File, brandName: string): Promise<string> {
+    try {
+        validateImageFile(file);
+
+        // Compress logo using thumbnail compression (targets ~50KB which is perfect for brand logos)
+        const compressedFile = await compressThumbnail(file);
+
+        // Generate filename: brand-name.png (consistent with the pattern)
+        const fileName = `${brandName.toLowerCase().replace(/\s+/g, '-')}.png`;
+        const logoRef = ref(storage, `brandLogos/${fileName}`);
+
+        // Upload to Firebase Storage
+        await uploadBytes(logoRef, compressedFile);
+
+        // Get download URL
+        const downloadURL = await getDownloadURL(logoRef);
+
+        console.log('Brand logo uploaded successfully:', fileName);
+        return downloadURL;
+
+    } catch (error) {
+        console.error('Error uploading brand logo:', error);
+        throw error;
+    }
+}
+
+/**
+ * Delete brand logo from Firebase Storage
+ * 
+ * @param brandName - Brand name to generate filename
+ * @returns Promise<void>
+ */
+export async function deleteBrandLogo(brandName: string): Promise<void> {
+    try {
+        const fileName = `${brandName.toLowerCase().replace(/\s+/g, '-')}.png`;
+        const logoRef = ref(storage, `brandLogos/${fileName}`);
+
+        await deleteObject(logoRef);
+        console.log('Brand logo deleted successfully:', fileName);
+    } catch (error) {
+        console.error('Error deleting brand logo:', error);
+        // Don't throw here as deletion failure shouldn't break the flow
+    }
+}
+
+/**
+ * Get brand logo URL (for checking if exists)
+ * 
+ * @param brandName - Brand name to generate filename
+ * @returns Promise<string | null> - Download URL if exists, null otherwise
+ */
+export async function getBrandLogoUrl(brandName: string): Promise<string | null> {
+    try {
+        const fileName = `${brandName.toLowerCase().replace(/\s+/g, '-')}.png`;
+        const logoRef = ref(storage, `brandLogos/${fileName}`);
+
+        const downloadURL = await getDownloadURL(logoRef);
+        return downloadURL;
+    } catch (error) {
+        // Logo doesn't exist
+        return null;
+    }
+}

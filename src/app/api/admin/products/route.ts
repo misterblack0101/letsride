@@ -104,8 +104,8 @@ export async function GET(req: NextRequest) {
                 .where('name', '<=', searchTerm + '\uf8ff');
         }
 
-        // Default sort by createdAt descending to show latest items first
-        queryBuilder.orderBy('createdAt', 'desc');
+        // Default sort by updatedAt descending to show most recently updated items first
+        queryBuilder.orderBy('updatedAt', 'desc');
 
         // Apply cursor pagination
         if (filters.startAfterId) {

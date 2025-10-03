@@ -50,7 +50,7 @@ function convertToProducts(lightweightResults: LightweightSearchResult[]): Produ
  * - Uses the same double-loading prevention pattern as ProductGrid component
  * - Uses ProductCard components with search page styling (grid view, no pricing)
  * - Converts lightweight search results to full Product format (same as search page)
- * - Initial load displays all products via /api/products for admin overview
+ * - Initial load displays all products via /api/admin/products for admin overview
  * - Manual cursor-based pagination with "Load More" button (no auto-triggers)
  * - Algolia-powered search interface via secure server-side API routes
  * - Single search bar for finding products by name, brand, category, etc.
@@ -122,7 +122,7 @@ export default function ProductManagement() {
         setSearchOffset(0);
 
         try {
-            const response = await fetch('/api/products?pageSize=24');
+            const response = await fetch('/api/admin/products?pageSize=24');
             if (!response.ok) {
                 throw new Error(`Failed to load products: ${response.status}`);
             }
@@ -151,7 +151,7 @@ export default function ProductManagement() {
         setError(null);
 
         try {
-            let url = '/api/products?pageSize=24';
+            let url = '/api/admin/products?pageSize=24';
             if (lastProductId) {
                 url += `&startAfterId=${lastProductId}`;
             }

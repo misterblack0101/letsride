@@ -21,6 +21,8 @@ interface LightweightSearchResult {
     subCategory: string;
 }
 
+const baseBrandLogoUrl = 'https://firebasestorage.googleapis.com/v0/b/letsridecycles.firebasestorage.app/o/brandLogos';
+
 // Convert lightweight results to Product format for ProductCard
 function convertToProducts(lightweightResults: LightweightSearchResult[]): Product[] {
     return lightweightResults.map(result => ({
@@ -34,7 +36,9 @@ function convertToProducts(lightweightResults: LightweightSearchResult[]): Produ
         actualPrice: result.price,
         rating: result.rating,
         images: result.imageUrl ? [result.imageUrl] : ['/images/placeholder.jpg'],
-        brandLogo: '/images/placeholder.jpg', // Use placeholder instead of empty string
+        brandLogo: result.brand
+            ? `${baseBrandLogoUrl}%2F${result.brand.toLowerCase().replace(/\s+/g, '-')}.png?alt=media`
+            : `${baseBrandLogoUrl}%2Fdefault.png?alt=media`,
         inventory: 1, // Assume in stock for search results
         isRecommended: false,
         shortDescription: '',

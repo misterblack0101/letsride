@@ -1,11 +1,12 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
+import { useToast } from '@/hooks/use-toast';
 import {
     Plus,
     Search,
@@ -13,8 +14,11 @@ import {
     Tags,
     AlertCircle,
     Save,
-    X
+    X,
+    Upload
 } from 'lucide-react';
+import { uploadBrandLogo } from '@/lib/utils/firebaseStorage';
+import { validateImageFile } from '@/lib/utils/imageCompression';
 
 /**
  * Brand Management Interface for Admin Panel.
@@ -49,24 +53,30 @@ interface CategoryStructure {
 }
 
 export default function BrandManagement() {
+    const { toast } = useToast();
+
     const [brands, setBrands] = useState<Brand[]>([]);
     const [categoryStructure, setCategoryStructure] = useState<CategoryStructure>({});
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [showAddForm, setShowAddForm] = useState(false);
-
-    // Add brand form state
+    const hasFetchedBrands = useRef(false);    // Add brand form state
     const [newBrand, setNewBrand] = useState({
         name: '',
         category: '',
         subcategory: '',
     });
+    const [logoFile, setLogoFile] = useState<File | null>(null);
     const [addingBrand, setAddingBrand] = useState(false);
+    const [uploadingLogo, setUploadingLogo] = useState(false);
     const [addError, setAddError] = useState<string | null>(null);
 
     // Fetch brands and category structure
     const fetchBrands = async () => {
+        if (hasFetchedBrands.current) return;
+        hasFetchedBrands.current = true;
+
         setLoading(true);
         setError(null);
 
@@ -121,10 +131,36 @@ export default function BrandManagement() {
             return;
         }
 
+        if (!logoFile) {
+            setAddError('Brand logo is required');
+            return;
+        }
+
+        // Validate logo file
+        try {
+            validateImageFile(logoFile);
+        } catch (error) {
+            setAddError(error instanceof Error ? error.message : 'Invalid logo file');
+            return;
+        }
+
+        // Show confirmation dialog
+        const confirmed = window.confirm(
+            `Are you sure you want to add "${newBrand.name}" to ${newBrand.category} > ${newBrand.subcategory}?\n\nThis will upload the brand logo and add the brand to the category.`
+        );
+
+        if (!confirmed) return;
+
         setAddingBrand(true);
         setAddError(null);
 
         try {
+            // First upload the logo
+            setUploadingLogo(true);
+            await uploadBrandLogo(logoFile, newBrand.name);
+            setUploadingLogo(false);
+
+            // Then add the brand to the database
             const response = await fetch('/api/admin/brands', {
                 method: 'POST',
                 headers: {
@@ -138,28 +174,51 @@ export default function BrandManagement() {
                 throw new Error(errorData.error || 'Failed to add brand');
             }
 
+            // Show success toast
+            toast({
+                title: "Success!",
+                description: `Brand "${newBrand.name}" added successfully with logo`,
+                variant: "success",
+            });
+
             // Optimistically update the UI
             setBrands(prev => [...prev, newBrand]);
 
             // Reset form
             setNewBrand({ name: '', category: '', subcategory: '' });
+            setLogoFile(null);
             setShowAddForm(false);
 
             // Refresh data to ensure consistency
             fetchBrands();
 
         } catch (err) {
-            setAddError(err instanceof Error ? err.message : 'Failed to add brand');
+            const errorMessage = err instanceof Error ? err.message : 'Failed to add brand';
+            setAddError(errorMessage);
+
+            toast({
+                title: "Error",
+                description: errorMessage,
+                variant: "destructive",
+            });
         } finally {
             setAddingBrand(false);
+            setUploadingLogo(false);
         }
     };
 
     // Handle removing brand
     const handleRemoveBrand = async (brand: Brand) => {
-        if (!confirm(`Are you sure you want to remove "${brand.name}" from ${brand.category} > ${brand.subcategory}?`)) {
-            return;
-        }
+        // Show detailed confirmation dialog
+        const confirmed = window.confirm(
+            `Are you sure you want to delete "${brand.name}"?\n\n` +
+            `This will:\n` +
+            `• Remove the brand from ${brand.category} > ${brand.subcategory}\n` +
+            `• Delete the brand logo from storage\n` +
+            `• This action cannot be undone`
+        );
+
+        if (!confirmed) return;
 
         try {
             const response = await fetch(`/api/admin/brands?name=${encodeURIComponent(brand.name)}&category=${encodeURIComponent(brand.category)}&subcategory=${encodeURIComponent(brand.subcategory)}`, {
@@ -171,13 +230,27 @@ export default function BrandManagement() {
                 throw new Error(errorData.error || 'Failed to remove brand');
             }
 
+            // Show success toast
+            toast({
+                title: "Success!",
+                description: `Brand "${brand.name}" deleted successfully`,
+                variant: "success",
+            });
+
             // Optimistically update the UI
             setBrands(prev => prev.filter(b =>
                 !(b.name === brand.name && b.category === brand.category && b.subcategory === brand.subcategory)
             ));
 
         } catch (err) {
-            setError(err instanceof Error ? err.message : 'Failed to remove brand');
+            const errorMessage = err instanceof Error ? err.message : 'Failed to remove brand';
+            setError(errorMessage);
+
+            toast({
+                title: "Error",
+                description: errorMessage,
+                variant: "destructive",
+            });
         }
     };
 
@@ -229,6 +302,7 @@ export default function BrandManagement() {
                             setShowAddForm(false);
                             setAddError(null);
                             setNewBrand({ name: '', category: '', subcategory: '' });
+                            setLogoFile(null);
                         }}>
                             <X className="w-4 h-4" />
                         </Button>
@@ -286,6 +360,44 @@ export default function BrandManagement() {
                             </div>
                         </div>
 
+                        {/* Brand Logo Upload */}
+                        <div className="space-y-2">
+                            <Label htmlFor="brandLogo">Brand Logo *</Label>
+                            <div className="space-y-2">
+                                <Input
+                                    id="brandLogo"
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={(e) => {
+                                        const file = e.target.files?.[0];
+                                        if (file) {
+                                            try {
+                                                validateImageFile(file);
+                                                setLogoFile(file);
+                                                setAddError(null);
+                                            } catch (error) {
+                                                setAddError(error instanceof Error ? error.message : 'Invalid logo file');
+                                                setLogoFile(null);
+                                                e.target.value = '';
+                                            }
+                                        } else {
+                                            setLogoFile(null);
+                                        }
+                                    }}
+                                    className="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-primary-foreground hover:file:bg-primary/80"
+                                />
+                                <p className="text-xs text-muted-foreground">
+                                    Upload a logo image (JPEG, PNG, WebP). Will be compressed to under 50KB.
+                                </p>
+                                {logoFile && (
+                                    <div className="flex items-center gap-2 text-sm text-green-600">
+                                        <Upload className="w-3 h-3" />
+                                        Selected: {logoFile.name} ({(logoFile.size / 1024).toFixed(1)}KB)
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
                         {addError && (
                             <div className="text-sm text-destructive flex items-center gap-1">
                                 <AlertCircle className="w-3 h-3" />
@@ -294,13 +406,23 @@ export default function BrandManagement() {
                         )}
 
                         <div className="flex items-center gap-2">
-                            <Button type="submit" disabled={addingBrand} className="flex items-center gap-2">
-                                {addingBrand ? (
-                                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                            <Button type="submit" disabled={addingBrand || uploadingLogo} className="flex items-center gap-2">
+                                {uploadingLogo ? (
+                                    <>
+                                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                                        Uploading Logo...
+                                    </>
+                                ) : addingBrand ? (
+                                    <>
+                                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                                        Adding Brand...
+                                    </>
                                 ) : (
-                                    <Save className="w-4 h-4" />
+                                    <>
+                                        <Save className="w-4 h-4" />
+                                        Add Brand
+                                    </>
                                 )}
-                                Add Brand
                             </Button>
                         </div>
                     </form>
