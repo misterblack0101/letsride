@@ -21,9 +21,9 @@ export default function ProductCard({ product, viewMode = 'grid', hidePricing = 
   if (viewMode === 'list') {
     return (
       <Link href={`/product/${product.id}`} className="block group w-full">
-        <div className={`bg-base-100 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.01] border border-base-200 hover:border-primary/30 rounded-xl overflow-hidden flex w-full ${isMobile ? 'h-32' : 'h-40'}`}>
+        <div className={`bg-base-100 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.01] border border-base-200 hover:border-primary/30 rounded-xl overflow-hidden flex w-full ${isMobile ? 'h-24' : 'h-40'}`}>
           {/* Image - Square aspect ratio, responsive sizing */}
-          <figure className={`${isMobile ? 'w-30 h-30' : 'w-40 h-40'} relative overflow-hidden flex-shrink-0`}>
+          <figure className={`${isMobile ? 'w-24 h-24' : 'w-40 h-40'} relative overflow-hidden flex-shrink-0`}>
             <Image
               src={product.image || product.images?.[0] || '/images/bicycle_no_bg.png'}
               alt={product.name}
@@ -31,10 +31,19 @@ export default function ProductCard({ product, viewMode = 'grid', hidePricing = 
               height={400}
               className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
             />
-            {/* Discount Badge */}
-            {product.discountPercentage && (
-              <div className="absolute top-1 left-1 bg-red-500 text-white w-12 h-4 flex items-center justify-center rounded text-xs font-bold shadow-md z-10">
-                {product.discountPercentage}% OFF
+            {/* Discount Badge & Out of Stock stacked (image) - only on mobile */}
+            {(product.discountPercentage || (typeof product.inventory === 'number' && product.inventory < 1 && isMobile)) && (
+              <div className="absolute top-1 left-1 flex flex-col gap-1 z-10">
+                {product.discountPercentage && (
+                  <div className="bg-red-500 text-white w-12 h-4 flex items-center justify-center rounded text-xs font-bold shadow-md">
+                    {product.discountPercentage}% OFF
+                  </div>
+                )}
+                {typeof product.inventory === 'number' && product.inventory < 1 && isMobile && (
+                  <div className="bg-red-100 text-red-700 w-16 h-4 flex items-center justify-center rounded text-xs font-bold shadow-md">
+                    Out of Stock
+                  </div>
+                )}
               </div>
             )}
           </figure>
@@ -95,6 +104,10 @@ export default function ProductCard({ product, viewMode = 'grid', hidePricing = 
                   {product.shortDescription}
                 </p>
               )}
+              {/* Out of Stock Label */}
+              {typeof product.inventory === 'number' && product.inventory < 1 && (
+                <span className="inline-block bg-red-100 text-red-700 text-xs font-bold px-2 py-1 rounded mt-1">Out of Stock</span>
+              )}
             </div>
 
             {/* Bottom section - Pricing */}
@@ -133,9 +146,19 @@ export default function ProductCard({ product, viewMode = 'grid', hidePricing = 
             className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
           />
           {/* Discount Badge */}
-          {product.discountPercentage && (
-            <div className="absolute top-3 left-3 bg-red-500 text-white px-3 py-1 rounded-lg text-sm font-bold shadow-lg">
-              {product.discountPercentage}% OFF
+          {/* Discount Badge & Out of Stock stacked (Grid View) */}
+          {(product.discountPercentage || (typeof product.inventory === 'number' && product.inventory < 1)) && (
+            <div className="absolute top-3 left-3 flex flex-col gap-1 z-10">
+              {product.discountPercentage && (
+                <div className="bg-red-500 text-white px-3 py-1 rounded-lg text-xs font-bold shadow-lg">
+                  {product.discountPercentage}% OFF
+                </div>
+              )}
+              {typeof product.inventory === 'number' && product.inventory < 1 && (
+                <div className="bg-red-100 text-red-700 px-3 py-1 rounded-lg text-xs font-bold shadow-lg">
+                  Out of Stock
+                </div>
+              )}
             </div>
           )}
           <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>

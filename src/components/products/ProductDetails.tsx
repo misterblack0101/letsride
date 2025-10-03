@@ -32,60 +32,45 @@ export default function ProductDetails({ product }: { product: Product }) {
 
   return (
     <>
-      {/* Breadcrumb - Enhanced style like subcategories */}
-      <div className="max-w-[1400px] mx-auto px-8 pt-0 pb-3">
-        <div className="flex flex-col gap-1">
-          <span className="text-xl font-extrabold text-gray-700 uppercase tracking-wider pb-2">
-            Product Details
-          </span>
-          <div className="flex items-center gap-2 text-sm">
-            <a
-              href="/"
-              className="bg-gray-100 text-gray-700 px-2 py-1 rounded-md font-medium hover:bg-gray-200 hover:text-primary transition-colors cursor-pointer"
-            >
-              Home
-            </a>
-            <svg className="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-            <a
-              href="/products"
-              className="bg-gray-100 text-gray-700 px-2 py-1 rounded-md font-medium hover:bg-gray-200 hover:text-primary transition-colors cursor-pointer"
-            >
-              Products
-            </a>
-            <svg className="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-            <a
-              href={`/products/${encodeURIComponent(product.category)}`}
-              className="bg-gray-100 text-gray-700 px-2 py-1 rounded-md font-medium hover:bg-gray-200 hover:text-primary transition-colors cursor-pointer"
-            >
-              {product.category}
-            </a>
-            <svg className="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-            <span className="bg-primary/20 text-primary px-2 py-1 rounded-md font-medium">
-              {product.name}
-            </span>
-          </div>
+      {/* Breadcrumbs: desktop unchanged, mobile font size consistent */}
+      <div className="max-w-[1400px] mx-auto px-4 pt-2 pb-3">
+        {/* Desktop: original breadcrumbs */}
+        <nav className="hidden sm:flex items-center gap-2 text-sm">
+          <a href="/" className="bg-gray-100 text-gray-700 px-2 py-1 rounded font-medium hover:bg-gray-200 hover:text-primary transition-colors">Home</a>
+          <span className="text-gray-400">›</span>
+          <a href="/products" className="bg-gray-100 text-gray-700 px-2 py-1 rounded font-medium hover:bg-gray-200 hover:text-primary transition-colors">Products</a>
+          <span className="text-gray-400">›</span>
+          <a href={`/products/${encodeURIComponent(product.category)}`} className="bg-gray-100 text-gray-700 px-2 py-1 rounded font-medium hover:bg-gray-200 hover:text-primary transition-colors">{product.category}</a>
+          <span className="text-gray-400">›</span>
+          <span className="bg-primary/10 text-primary px-2 py-1 rounded font-medium">{product.name}</span>
+        </nav>
+        {/* Mobile: breadcrumbs smaller font size, blue wraps only if needed */}
+        <div className="sm:hidden">
+          <nav className="flex items-center gap-2 text-sm font-medium flex-wrap">
+            <a href="/" className="bg-gray-100 text-gray-700 px-2 py-1 rounded hover:bg-gray-200 hover:text-primary transition-colors">Home</a>
+            <span className="text-gray-400">›</span>
+            <a href="/products" className="bg-gray-100 text-gray-700 px-2 py-1 rounded hover:bg-gray-200 hover:text-primary transition-colors">Products</a>
+            <span className="text-gray-400">›</span>
+            <a href={`/products/${encodeURIComponent(product.category)}`} className="bg-gray-100 text-gray-700 px-2 py-1 rounded hover:bg-gray-200 hover:text-primary transition-colors">{product.category}</a>
+            <span className="text-gray-400">›</span>
+            <span className="bg-primary/10 text-primary px-2 py-1 rounded font-medium break-words max-w-[60vw]">{product.name}</span>
+          </nav>
         </div>
       </div>
 
       <div className="max-w-[1400px] mx-auto px-8 pb-16">
-        <div className={`grid gap-16 mb-16 ${hasImages ? 'grid-cols-1 lg:grid-cols-2' : 'grid-cols-1 place-items-center'}`}>
-          {/* Image Section - Only show if there are images */}
+        <div className={`grid gap-8 mb-10 sm:gap-16 sm:mb-16 ${hasImages ? 'grid-cols-1 lg:grid-cols-2' : 'grid-cols-1 place-items-center'}`}>
+          {/* Image Section - Responsive for mobile, thumbnails left on desktop */}
           {hasImages && (
-            <div className="lg:sticky lg:top-8 lg:h-fit pt-2">
-              <div className="flex gap-4">
-                {/* Thumbnail List - Left side on desktop */}
+            <div className="pt-2 pb-2 sm:pb-0">
+              <div className="flex flex-col items-center gap-2 lg:flex-row lg:items-start lg:gap-8">
+                {/* Thumbnails - left on desktop/web only */}
                 {hasMultipleImages && (
-                  <div className="hidden lg:flex flex-col gap-3 w-20">
-                    {images.slice(0, 4).map((image, index) => (
+                  <div className="hidden lg:flex flex-col gap-3 mr-4">
+                    {images.slice(0, 6).map((image, index) => (
                       <div
                         key={index}
-                        className={`relative aspect-square overflow-hidden rounded-lg cursor-pointer border-2 transition-all ${selectedImageIndex === index
+                        className={`relative aspect-square w-14 h-14 lg:w-20 lg:h-20 overflow-hidden rounded-lg cursor-pointer border-2 transition-all ${selectedImageIndex === index
                           ? 'border-blue-500'
                           : 'border-transparent hover:border-gray-300'
                           }`}
@@ -102,9 +87,9 @@ export default function ProductDetails({ product }: { product: Product }) {
                         <Image
                           src={image}
                           alt={`${product.name} view ${index + 1}`}
-                          width={80}
-                          height={80}
-                          className={`w-full h-full object-cover transition-opacity duration-300 ${thumbnailLoading[index] ? 'opacity-0' : 'opacity-100'}`}
+                          fill
+                          className={`object-cover transition-opacity duration-300 ${thumbnailLoading[index] ? 'opacity-0' : 'opacity-100'}`}
+                          sizes="80px"
                           onLoad={() => setThumbnailLoading(prev => ({ ...prev, [index]: false }))}
                           onLoadingComplete={() => setThumbnailLoading(prev => ({ ...prev, [index]: false }))}
                         />
@@ -112,37 +97,32 @@ export default function ProductDetails({ product }: { product: Product }) {
                     ))}
                   </div>
                 )}
-
                 {/* Main Image Container */}
-                <div className="flex-1">
-                  {/* Main Image */}
-                  <div className="relative mb-4">
-                    <div className="relative aspect-square overflow-hidden rounded-xl bg-gray-50">
-                      {imageLoading && (
-                        <div className="absolute inset-0 bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 animate-pulse">
-                          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent animate-shimmer"></div>
-                        </div>
-                      )}
-                      <Image
-                        src={images[selectedImageIndex]}
-                        alt={product.name}
-                        fill
-                        className={`object-cover transition-opacity duration-300 ${imageLoading ? 'opacity-0' : 'opacity-100'}`}
-                        sizes="(max-width: 768px) 100vw, 50vw"
-                        priority
-                        onLoad={() => setImageLoading(false)}
-                        onLoadingComplete={() => setImageLoading(false)}
-                      />
-                    </div>
+                <div className="w-full max-w-xs lg:max-w-md mx-auto">
+                  <div className="relative aspect-square overflow-hidden rounded-xl bg-gray-50">
+                    {imageLoading && (
+                      <div className="absolute inset-0 bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 animate-pulse">
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent animate-shimmer"></div>
+                      </div>
+                    )}
+                    <Image
+                      src={images[selectedImageIndex]}
+                      alt={product.name}
+                      fill
+                      className={`object-cover transition-opacity duration-300 ${imageLoading ? 'opacity-0' : 'opacity-100'}`}
+                      sizes="(max-width: 480px) 90vw, (max-width: 768px) 60vw, 50vw"
+                      priority
+                      onLoad={() => setImageLoading(false)}
+                      onLoadingComplete={() => setImageLoading(false)}
+                    />
                   </div>
-
-                  {/* Thumbnail Grid - Bottom on mobile */}
+                  {/* Thumbnails - bottom on mobile only, less margin below */}
                   {hasMultipleImages && (
-                    <div className="grid grid-cols-4 gap-3 lg:hidden">
-                      {images.slice(0, 4).map((image, index) => (
+                    <div className="flex gap-2 mt-2 mb-2 overflow-x-auto pb-1 lg:hidden">
+                      {images.slice(0, 6).map((image, index) => (
                         <div
                           key={index}
-                          className={`relative aspect-square overflow-hidden rounded-lg cursor-pointer border-2 transition-all ${selectedImageIndex === index
+                          className={`relative aspect-square w-14 h-14 overflow-hidden rounded-lg cursor-pointer border-2 transition-all ${selectedImageIndex === index
                             ? 'border-blue-500'
                             : 'border-transparent hover:border-gray-300'
                             }`}
@@ -159,9 +139,9 @@ export default function ProductDetails({ product }: { product: Product }) {
                           <Image
                             src={image}
                             alt={`${product.name} view ${index + 1}`}
-                            width={200}
-                            height={200}
-                            className={`w-full h-full object-cover transition-opacity duration-300 ${thumbnailLoading[index] ? 'opacity-0' : 'opacity-100'}`}
+                            fill
+                            className={`object-cover transition-opacity duration-300 ${thumbnailLoading[index] ? 'opacity-0' : 'opacity-100'}`}
+                            sizes="(max-width: 480px) 14vw, (max-width: 768px) 10vw, 80px"
                             onLoad={() => setThumbnailLoading(prev => ({ ...prev, [index]: false }))}
                             onLoadingComplete={() => setThumbnailLoading(prev => ({ ...prev, [index]: false }))}
                           />
@@ -181,6 +161,10 @@ export default function ProductDetails({ product }: { product: Product }) {
               <h1 className="text-4xl font-bold text-gray-900 leading-tight">
                 {product.name}
               </h1>
+              {/* Out of Stock Label */}
+              {typeof product.inventory === 'number' && product.inventory < 1 && (
+                <span className="inline-block bg-red-100 text-red-700 text-sm font-bold px-3 py-1 rounded ml-2 align-middle">Out of Stock</span>
+              )}
               {/* Brand Name */}
               {product.brand && (
                 <a

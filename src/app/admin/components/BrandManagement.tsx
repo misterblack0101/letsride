@@ -16,7 +16,9 @@ import {
     AlertCircle,
     Save,
     X,
-    Upload
+    Upload,
+    ChevronDown,
+    ChevronUp
 } from 'lucide-react';
 import { uploadBrandLogo } from '@/lib/utils/firebaseStorage';
 import { validateImageFile } from '@/lib/utils/imageCompression';
@@ -63,6 +65,7 @@ export default function BrandManagement() {
     const [error, setError] = useState<string | null>(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [showAddForm, setShowAddForm] = useState(false);
+    const [collapsedCategories, setCollapsedCategories] = useState<Set<string>>(new Set());
     const hasFetchedBrands = useRef(false);    // Add brand form state
     const [newBrand, setNewBrand] = useState({
         name: '',
@@ -73,6 +76,19 @@ export default function BrandManagement() {
     const [addingBrand, setAddingBrand] = useState(false);
     const [uploadingLogo, setUploadingLogo] = useState(false);
     const [addError, setAddError] = useState<string | null>(null);
+
+    // Toggle category collapse state
+    const toggleCategory = (category: string) => {
+        setCollapsedCategories(prev => {
+            const newSet = new Set(prev);
+            if (newSet.has(category)) {
+                newSet.delete(category);
+            } else {
+                newSet.add(category);
+            }
+            return newSet;
+        });
+    };
 
     // Fetch brands and category structure
     const fetchBrands = async () => {
@@ -486,55 +502,82 @@ export default function BrandManagement() {
 
                     {/* Brands by Category */}
                     {Object.keys(brandsByCategory).length > 0 ? (
-                        <div className="space-y-6">
-                            {Object.entries(brandsByCategory).map(([category, subcategories]) => (
-                                <Card key={category} className="p-6">
-                                    <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                                        <Badge variant="default" className="bg-primary/10 text-primary">
-                                            {category}
-                                        </Badge>
-                                        <span className="text-sm text-muted-foreground">
-                                            ({Object.values(subcategories).flat().length} brands)
-                                        </span>
-                                    </h2>
-
-                                    <div className="space-y-4">
-                                        {Object.entries(subcategories).map(([subcategory, brandNames]) => (
-                                            <div key={subcategory} className="space-y-2">
-                                                <h3 className="font-medium text-foreground flex items-center gap-2">
-                                                    <Badge variant="outline">{subcategory}</Badge>
-                                                    <span className="text-sm text-muted-foreground">
-                                                        ({brandNames.length} brands)
-                                                    </span>
-                                                </h3>
-
-                                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
-                                                    {brandNames.map((brandName) => (
-                                                        <div
-                                                            key={`${category}-${subcategory}-${brandName}`}
-                                                            className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border"
-                                                        >
-                                                            <span className="font-medium text-sm">{brandName}</span>
-                                                            <Button
-                                                                variant="outline"
-                                                                size="sm"
-                                                                onClick={() => handleRemoveBrand({
-                                                                    name: brandName,
-                                                                    category,
-                                                                    subcategory
-                                                                })}
-                                                                className="h-6 w-6 p-0 text-destructive hover:bg-destructive/10"
-                                                            >
-                                                                <Trash2 className="w-3 h-3" />
-                                                            </Button>
-                                                        </div>
-                                                    ))}
+                        <div className="space-y-8">
+                            {Object.entries(brandsByCategory).map(([category, subcategories]) => {
+                                const isCollapsed = collapsedCategories.has(category);
+                                return (
+                                    <Card key={category} className="overflow-hidden">
+                                        {/* Category Header - Collapsible */}
+                                        <button
+                                            onClick={() => toggleCategory(category)}
+                                            className="w-full bg-gradient-to-r from-primary/10 to-primary/5 border-b px-6 py-4 hover:from-primary/15 hover:to-primary/10 transition-colors"
+                                        >
+                                            <div className="flex items-center justify-between">
+                                                <div className="flex items-center gap-3">
+                                                    <h2 className="text-xl font-bold text-foreground">
+                                                        {category}
+                                                    </h2>
+                                                    <Badge variant="secondary" className="text-sm font-medium">
+                                                        {Object.values(subcategories).flat().length} brands
+                                                    </Badge>
+                                                </div>
+                                                <div className="text-muted-foreground">
+                                                    {isCollapsed ? (
+                                                        <ChevronDown className="w-5 h-5" />
+                                                    ) : (
+                                                        <ChevronUp className="w-5 h-5" />
+                                                    )}
                                                 </div>
                                             </div>
-                                        ))}
-                                    </div>
-                                </Card>
-                            ))}
+                                        </button>
+
+                                        {/* Collapsible Content */}
+                                        {!isCollapsed && (
+                                            <div className="p-6 space-y-6">
+                                                {Object.entries(subcategories).map(([subcategory, brandNames]) => (
+                                                    <div key={subcategory}>
+                                                        {/* Subcategory Header */}
+                                                        <div className="flex items-center gap-2 mb-3 pb-2 border-b">
+                                                            <h3 className="text-base font-semibold text-foreground">
+                                                                {subcategory}
+                                                            </h3>
+                                                            <span className="text-sm text-muted-foreground font-medium">
+                                                                ({brandNames.length})
+                                                            </span>
+                                                        </div>
+
+                                                        {/* Brand Items - Compact Grid */}
+                                                        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2">
+                                                            {brandNames.map((brandName) => (
+                                                                <div
+                                                                    key={`${category}-${subcategory}-${brandName}`}
+                                                                    className="group flex items-center justify-between px-3 py-2 bg-background border border-border rounded-md hover:border-primary/50 hover:bg-primary/5 transition-colors"
+                                                                >
+                                                                    <span className="text-sm font-medium truncate flex-1 mr-2">
+                                                                        {brandName}
+                                                                    </span>
+                                                                    <Button
+                                                                        variant="ghost"
+                                                                        size="sm"
+                                                                        onClick={() => handleRemoveBrand({
+                                                                            name: brandName,
+                                                                            category,
+                                                                            subcategory
+                                                                        })}
+                                                                        className="h-7 w-7 p-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10 opacity-0 group-hover:opacity-100 transition-opacity"
+                                                                    >
+                                                                        <Trash2 className="w-3.5 h-3.5" />
+                                                                    </Button>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </Card>
+                                );
+                            })}
                         </div>
                     ) : (
                         <div className="text-center py-12 text-muted-foreground">
