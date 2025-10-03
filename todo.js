@@ -32,7 +32,8 @@
 // -  make the api endpoints secure as well, so that it cannot be accessed directly via postman etc.
 // - add seo tags
 // - add meta description tags
-// - sitemap?
+// - sitemap? 
+// - migrate product/id to product /name, and make name unique for client
 // - top rated products in 404 page / redirect 404 to homepage
 
 /////////////////////////////

@@ -1,78 +1,61 @@
 "use client";
 
-import { useState, useEffect, useRef } from 'react';
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/context/auth-context';
 import LoginForm from './LoginForm';
 import AdminPanel from './AdminPanel';
 
+/**
+ * Admin Page with Firebase Authentication Protection.
+ * 
+ * **Features:**
+ * - Automatic authentication check on page load
+ * - Redirect to home if not authenticated
+ * - Firebase Auth integration for secure access
+ * - Loading state during authentication check
+ * 
+ * **Flow:**
+ * 1. Check if user is authenticated via Firebase Auth
+ * 2. If not authenticated, show login form
+ * 3. If authenticated, show admin panel
+ * 4. Handle sign out and cleanup
+ */
+
 export default function AdminLogin() {
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const hasCheckedLogin = useRef(false);
+    const { user, loading, signOut } = useAuth();
+    const router = useRouter();
 
-    // Check login status via cookies
-    const checkLoginStatus = async () => {
-        if (hasCheckedLogin.current) return;
-        hasCheckedLogin.current = true;
-
-        const response = await fetch('/api/admin/verify', {
-            method: 'GET',
-            headers: { 'Content-Type': 'application/json' },
-        });
-        if (response.ok) {
-            setIsLoggedIn(true);
-        } else {
-            setIsLoggedIn(false);
+    const handleLogout = async () => {
+        try {
+            await signOut();
+            router.push('/');
+        } catch (error) {
+            console.error('Logout error:', error);
         }
     };
 
-    useEffect(() => {
-        checkLoginStatus();
-    }, []);
-
-    // const handleSubmit = async (e: React.FormEvent) => {
-    //     e.preventDefault();
-    //     setError('');
-
-    //     try {
-    //         const response = await fetch('/api/admin/login', {
-    //             method: 'POST',
-    //             headers: { 'Content-Type': 'application/json' },
-    //             body: JSON.stringify({ id, password }),
-    //         });
-    //         console.log(response);
-
-    //         if (response.ok) {
-    //             console.log('Login successful, redirecting to admin panel');
-
-    //             setIsLoggedIn(true);
-    //         } else {
-    //             const data = await response.json();
-    //             setError(data.message || 'Invalid credentials');
-    //         }
-    //     } catch (err) {
-    //         console.error('Fetch request failed:', err); // Log detailed error
-    //         setError('An error occurred. Please try again.');
-    //     }
-    // };
-
-    const handleLogout = async () => {
-        // Clear cookies and reset login state
-        await fetch('/api/admin/logout', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-        });
-        setIsLoggedIn(false);
-    };
-
-    if (isLoggedIn) {
-        return <AdminPanel
-            logoutCallback={handleLogout} />;
+    // Show loading state while checking authentication
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center min-h-screen">
+                <div className="text-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
+                    <p className="mt-4 text-gray-600">Loading...</p>
+                </div>
+            </div>
+        );
     }
 
+    // Show admin panel if authenticated
+    if (user) {
+        return <AdminPanel logoutCallback={handleLogout} />;
+    }
+
+    // Show login form if not authenticated
     return (
-        <div className="flex items-center justify-center min-h-screen ">
-            <LoginForm
-                setIsloggedIn={setIsLoggedIn}
-            />
+        <div className="flex items-center justify-center min-h-screen">
+            <LoginForm setIsloggedIn={() => { }} />
         </div>
     );
 }

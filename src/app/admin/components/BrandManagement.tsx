@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/context/auth-context';
 import {
     Plus,
     Search,
@@ -54,6 +55,7 @@ interface CategoryStructure {
 
 export default function BrandManagement() {
     const { toast } = useToast();
+    const { getIdToken } = useAuth();
 
     const [brands, setBrands] = useState<Brand[]>([]);
     const [categoryStructure, setCategoryStructure] = useState<CategoryStructure>({});
@@ -81,7 +83,17 @@ export default function BrandManagement() {
         setError(null);
 
         try {
-            const response = await fetch('/api/admin/brands');
+            const token = await getIdToken();
+            if (!token) {
+                throw new Error('No authentication token available');
+            }
+
+            const response = await fetch('/api/admin/brands', {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+            });
 
             if (!response.ok) {
                 throw new Error('Failed to fetch brands');
@@ -161,9 +173,15 @@ export default function BrandManagement() {
             setUploadingLogo(false);
 
             // Then add the brand to the database
+            const token = await getIdToken();
+            if (!token) {
+                throw new Error('No authentication token available');
+            }
+
             const response = await fetch('/api/admin/brands', {
                 method: 'POST',
                 headers: {
+                    'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(newBrand),
@@ -221,8 +239,17 @@ export default function BrandManagement() {
         if (!confirmed) return;
 
         try {
+            const token = await getIdToken();
+            if (!token) {
+                throw new Error('No authentication token available');
+            }
+
             const response = await fetch(`/api/admin/brands?name=${encodeURIComponent(brand.name)}&category=${encodeURIComponent(brand.category)}&subcategory=${encodeURIComponent(brand.subcategory)}`, {
                 method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
             });
 
             if (!response.ok) {

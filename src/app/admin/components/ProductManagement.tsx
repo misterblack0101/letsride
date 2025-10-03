@@ -7,6 +7,7 @@ import ProductCard from '@/components/products/ProductCard';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Package, Plus, Search, X, Loader2 } from 'lucide-react';
+import { useAuth } from '@/context/auth-context';
 
 // Interface for lightweight search results from API
 interface LightweightSearchResult {
@@ -97,6 +98,7 @@ function convertToProducts(lightweightResults: LightweightSearchResult[]): Produ
 
 export default function ProductManagement() {
     const router = useRouter();
+    const { getIdToken } = useAuth();
     const [searchTerm, setSearchTerm] = useState('');
     const [products, setProducts] = useState<Product[]>([]);
     const [isLoading, setIsLoading] = useState(false);
@@ -122,7 +124,17 @@ export default function ProductManagement() {
         setSearchOffset(0);
 
         try {
-            const response = await fetch('/api/admin/products?pageSize=24');
+            const token = await getIdToken();
+            if (!token) {
+                throw new Error('No authentication token available');
+            }
+
+            const response = await fetch('/api/admin/products?pageSize=24', {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+            });
             if (!response.ok) {
                 throw new Error(`Failed to load products: ${response.status}`);
             }
@@ -139,7 +151,7 @@ export default function ProductManagement() {
         } finally {
             setIsLoading(false);
         }
-    }, []); // Empty dependency array like resetAndLoad in ProductGrid
+    }, [getIdToken]); // Include getIdToken in dependencies
 
     /**
      * Load more products for pagination (manual trigger only)
@@ -151,12 +163,22 @@ export default function ProductManagement() {
         setError(null);
 
         try {
+            const token = await getIdToken();
+            if (!token) {
+                throw new Error('No authentication token available');
+            }
+
             let url = '/api/admin/products?pageSize=24';
             if (lastProductId) {
                 url += `&startAfterId=${lastProductId}`;
             }
 
-            const response = await fetch(url);
+            const response = await fetch(url, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+            });
             if (!response.ok) {
                 throw new Error(`Failed to load more products: ${response.status}`);
             }
@@ -171,7 +193,7 @@ export default function ProductManagement() {
         } finally {
             setIsLoadingMore(false);
         }
-    }, [isLoadingMore, hasMore, isSearchMode, lastProductId]);    /**
+    }, [isLoadingMore, hasMore, isSearchMode, lastProductId, getIdToken]);    /**
      * Handle search execution using server-side API with pagination support
      */
     const executeSearch = useCallback(async (isLoadMore = false) => {

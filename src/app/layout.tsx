@@ -3,6 +3,7 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
 import Footer from "@/components/Footer"
 import { CartProvider } from '@/context/cart-context';
+import { AuthProvider } from '@/context/auth-context';
 import Header from '@/components/header/Header';
 
 export const metadata: Metadata = {
@@ -24,18 +25,20 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet" />
       </head>
       <body className="font-body antialiased">
-        <CartProvider>
-          <div className="flex flex-col min-h-screen bg-base-100">
-            <Header />
-            <main className="flex-grow">
-              <div className="container mx-auto px-0 sm:px-4 py-8">
-                {children}
-              </div>
-            </main>
-            <Footer />
-          </div>
-          <Toaster />
-        </CartProvider>
+        <AuthProvider>
+          <CartProvider>
+            <div className="flex flex-col min-h-screen bg-base-100">
+              <Header />
+              <main className="flex-grow">
+                <div className="container mx-auto px-0 sm:px-4 py-8">
+                  {children}
+                </div>
+              </main>
+              <Footer />
+            </div>
+            <Toaster />
+          </CartProvider>
+        </AuthProvider>
       </body>
     </html>
   );

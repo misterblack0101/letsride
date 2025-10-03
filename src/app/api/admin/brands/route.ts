@@ -2,18 +2,20 @@ import { NextRequest, NextResponse } from 'next/server';
 import { adminDb } from '@/lib/firebase/admin';
 import { z } from 'zod';
 import { deleteBrandLogo } from '@/lib/utils/firebaseStorage';
+import { verifyAdminAuth } from '@/lib/server/auth-middleware';
 
 /**
  * Admin-only API endpoint for brand management.
  * 
  * **Security:**
- * - Requires valid admin session cookie
+ * - Requires valid Firebase ID token in Authorization header
  * - Validates all input data with Zod schemas
  * - Server-side only using Firebase Admin SDK
  * 
  * **Operations:**
  * - GET: Fetch all brands from the categories structure
- * - PUT: Update brand information in categories
+ * - POST: Add new brand
+ * - DELETE: Remove brand
  */
 
 // Brand schema for validation
@@ -23,28 +25,13 @@ const BrandSchema = z.object({
     subcategory: z.string().min(1, 'Subcategory is required'),
 });
 
-// Middleware to verify admin authentication
-async function verifyAdminAuth(req: NextRequest) {
-    const sessionCookie = req.cookies.get('session')?.value;
-
-    if (!sessionCookie) {
-        return false;
-    }
-
-    try {
-        const sessionData = JSON.parse(sessionCookie);
-        return sessionData.role === 'admin';
-    } catch {
-        return false;
-    }
-}
-
 /**
  * GET: Fetch all brands organized by category and subcategory
  */
 export async function GET(req: NextRequest) {
-    if (!await verifyAdminAuth(req)) {
-        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    const authResult = await verifyAdminAuth(req);
+    if (!authResult.authenticated) {
+        return authResult.response!;
     }
 
     try {
@@ -100,8 +87,9 @@ export async function GET(req: NextRequest) {
  * POST: Add a new brand to a category/subcategory
  */
 export async function POST(req: NextRequest) {
-    if (!await verifyAdminAuth(req)) {
-        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    const authResult = await verifyAdminAuth(req);
+    if (!authResult.authenticated) {
+        return authResult.response!;
     }
 
     try {
@@ -166,8 +154,9 @@ export async function POST(req: NextRequest) {
  * DELETE: Remove a brand from a category/subcategory
  */
 export async function DELETE(req: NextRequest) {
-    if (!await verifyAdminAuth(req)) {
-        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    const authResult = await verifyAdminAuth(req);
+    if (!authResult.authenticated) {
+        return authResult.response!;
     }
 
     try {

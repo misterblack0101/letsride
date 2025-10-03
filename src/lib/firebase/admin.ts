@@ -1,6 +1,7 @@
 // firebase/admin.ts
 import { initializeApp, cert, getApps, App } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
+import { getAuth } from 'firebase-admin/auth';
 import { getEnvironmentConfig } from '../env';
 import { getDatabase } from 'firebase-admin/database';
 
@@ -23,4 +24,5 @@ if (!getApps().length) {
 }
 
 export const adminDb = getFirestore(app);
+export const adminAuth = getAuth(app);
 export { getDatabase };

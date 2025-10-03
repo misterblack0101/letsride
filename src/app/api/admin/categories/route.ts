@@ -2,10 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getCategoriesFromDB } from '@/lib/services/categories';
 
 /**
- * Admin API endpoint for category, subcategory, and brand data.
+ * Public API endpoint for category, subcategory, and brand data.
  * 
  * **Security:**
- * - Requires valid admin session cookie
+ * - No authentication required (public data)
  * - Server-side only using Firebase Admin SDK
  * 
  * **Data Source:**
@@ -16,22 +16,6 @@ import { getCategoriesFromDB } from '@/lib/services/categories';
  * **Operations:**
  * - GET: Fetch complete category structure with brands
  */
-
-// Middleware to verify admin authentication
-async function verifyAdminAuth(req: NextRequest) {
-    const sessionCookie = req.cookies.get('session')?.value;
-
-    if (!sessionCookie) {
-        return false;
-    }
-
-    try {
-        const sessionData = JSON.parse(sessionCookie);
-        return sessionData.role === 'admin';
-    } catch {
-        return false;
-    }
-}
 
 /**
  * GET: Fetch complete category, subcategory, and brand data
@@ -66,10 +50,6 @@ async function verifyAdminAuth(req: NextRequest) {
  * ```
  */
 export async function GET(req: NextRequest) {
-    if (!await verifyAdminAuth(req)) {
-        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
     try {
         const categoryData = await getCategoriesFromDB();
 

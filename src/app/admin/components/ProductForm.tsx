@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Card } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/context/auth-context';
 import {
     Save,
     X,
@@ -92,6 +93,7 @@ type FormData = z.infer<typeof ProductFormSchema>;
 
 export default function ProductForm({ product, onSuccess, onCancel }: ProductFormProps) {
     const { toast } = useToast();
+    const { getIdToken } = useAuth();
 
     const [formData, setFormData] = useState<FormData>({
         name: '',
@@ -145,7 +147,11 @@ export default function ProductForm({ product, onSuccess, onCancel }: ProductFor
 
         setDataLoading(true);
         try {
-            const response = await fetch('/api/admin/categories');
+            const response = await fetch('/api/admin/categories', {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
             if (!response.ok) {
                 throw new Error('Failed to fetch category data');
             }
@@ -258,9 +264,15 @@ export default function ProductForm({ product, onSuccess, onCancel }: ProductFor
         setLoading(true);
 
         try {
+            const token = await getIdToken();
+            if (!token) {
+                throw new Error('No authentication token available');
+            }
+
             const response = await fetch(`/api/admin/products?id=${product.id}`, {
                 method: 'DELETE',
                 headers: {
+                    'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
                 },
             });
@@ -511,9 +523,15 @@ export default function ProductForm({ product, onSuccess, onCancel }: ProductFor
                     image: '', // Empty for now
                 };
 
+                const token = await getIdToken();
+                if (!token) {
+                    throw new Error('No authentication token available');
+                }
+
                 const response = await fetch('/api/admin/products', {
                     method: 'POST',
                     headers: {
+                        'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify(tempProductData),
@@ -583,9 +601,15 @@ export default function ProductForm({ product, onSuccess, onCancel }: ProductFor
             // Step 3: Submit final data
             if (isNewProduct) {
                 // Update the newly created product with image URLs
+                const token = await getIdToken();
+                if (!token) {
+                    throw new Error('No authentication token available');
+                }
+
                 const updateResponse = await fetch('/api/admin/products', {
                     method: 'PUT',
                     headers: {
+                        'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({ ...finalFormData, id: productId }),
@@ -626,9 +650,15 @@ export default function ProductForm({ product, onSuccess, onCancel }: ProductFor
                     throw error;
                 }
 
+                const token = await getIdToken();
+                if (!token) {
+                    throw new Error('No authentication token available');
+                }
+
                 const response = await fetch('/api/admin/products', {
                     method: 'PUT',
                     headers: {
+                        'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({ ...finalFormData, id: productId }),

@@ -1,21 +1,26 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+/**
+ * Next.js Middleware for Route Protection
+ * 
+ * **Architecture:**
+ * - Firebase authentication is client-side only (browser)
+ * - Admin route protection happens via client components (useAuth hook)
+ * - API routes protected via Firebase Admin SDK token verification
+ * 
+ * **Note:**
+ * - This middleware currently allows all /admin/* routes through
+ * - Actual authentication checks happen in client components
+ * - Unauthenticated users are redirected to / by useAuth hook in components
+ * 
+ * **Future Enhancement:**
+ * - Could add server-side session cookies for SSR auth
+ * - Would require Firebase session cookie creation on login
+ */
+
 export default async function middleware(req: NextRequest) {
-    const protectedRoutes = ['/admin'];
-    const path = req.nextUrl.pathname;
-
-    // Check if the current route is protected
-    if (protectedRoutes.includes(path)) {
-        const cookie = req.cookies.get('session')?.value;
-        const session = cookie ? JSON.parse(cookie) : null;
-
-        // Redirect to login if no valid session is found
-        if (!session || session.role !== 'admin') {
-            return NextResponse.redirect(new URL('/admin/LoginForm', req.nextUrl));
-        }
-    }
-
-    // Allow access to other routes
+    // Admin routes are protected by client-side auth checks in components
+    // API routes are protected by Firebase Admin SDK token verification
     return NextResponse.next();
 }
 

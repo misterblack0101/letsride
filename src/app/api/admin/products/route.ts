@@ -5,12 +5,13 @@ import { z } from 'zod';
 import { CollectionReference } from 'firebase-admin/firestore';
 import { createQueryBuilder } from '@/lib/server/firestore-query-builder';
 import { cleanupProductImages } from '@/lib/utils/firebaseStorage';
+import { verifyAdminAuth } from '@/lib/server/auth-middleware';
 
 /**
  * Admin-only API endpoint for product management.
  * 
  * **Security:**
- * - Requires valid admin session cookie
+ * - Requires valid Firebase ID token in Authorization header
  * - Validates all input data with Zod schemas
  * - Server-side only using Firebase Admin SDK
  * 
@@ -20,22 +21,6 @@ import { cleanupProductImages } from '@/lib/utils/firebaseStorage';
  * - PUT: Update existing product
  * - DELETE: Delete product
  */
-
-// Middleware to verify admin authentication
-async function verifyAdminAuth(req: NextRequest) {
-    const sessionCookie = req.cookies.get('session')?.value;
-
-    if (!sessionCookie) {
-        return false;
-    }
-
-    try {
-        const sessionData = JSON.parse(sessionCookie);
-        return sessionData.role === 'admin';
-    } catch {
-        return false;
-    }
-}
 
 // Schema for product filtering and infinite scroll (simplified without sort options)
 const AdminProductFilterSchema = z.object({
@@ -59,10 +44,10 @@ interface AdminInfiniteScrollResponse {
  * Fetch products with infinite scroll pagination and filtering for admin panel
  */
 export async function GET(req: NextRequest) {
-    // Verify admin authentication
-    const isAuthorized = await verifyAdminAuth(req);
-    if (!isAuthorized) {
-        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    // Verify Firebase authentication
+    const authResult = await verifyAdminAuth(req);
+    if (!authResult.authenticated) {
+        return authResult.response!;
     }
 
     try {
@@ -160,8 +145,9 @@ export async function GET(req: NextRequest) {
  * POST: Create new product
  */
 export async function POST(req: NextRequest) {
-    if (!await verifyAdminAuth(req)) {
-        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    const authResult = await verifyAdminAuth(req);
+    if (!authResult.authenticated) {
+        return authResult.response!;
     }
 
     try {
@@ -220,8 +206,9 @@ export async function POST(req: NextRequest) {
  * PUT: Update existing product
  */
 export async function PUT(req: NextRequest) {
-    if (!await verifyAdminAuth(req)) {
-        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    const authResult = await verifyAdminAuth(req);
+    if (!authResult.authenticated) {
+        return authResult.response!;
     }
 
     try {
@@ -263,8 +250,9 @@ export async function PUT(req: NextRequest) {
  * DELETE: Delete product
  */
 export async function DELETE(req: NextRequest) {
-    if (!await verifyAdminAuth(req)) {
-        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    const authResult = await verifyAdminAuth(req);
+    if (!authResult.authenticated) {
+        return authResult.response!;
     }
 
     try {
