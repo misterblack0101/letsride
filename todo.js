@@ -3,7 +3,8 @@
 // - add remove items
 // - add quantity change
 // - add total price calculation
-// - add checkout button w/whatsapp link
+// - UI like the current theme of website
+// - add checkout button w/whatsapp link- this should open a whatsapp chat with a prefilled message containing the cart items and total price, and send to a predefined number
 
 
 
@@ -15,7 +16,6 @@
 // - add seo tags
 // - add meta description tags
 // - sitemap? 
-// - migrate product/id to product /name, and make name unique for client
 // - share button on product details page in web and mweb
 
 /////////////////////////////

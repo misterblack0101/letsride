@@ -37,18 +37,29 @@ export default function HeroBanner({ heroTitle, heroSubtitle, heroImageUrl }: He
     return (
         <Link href="/products" className="block group cursor-pointer">
             <div className="relative w-full max-w-full rounded-2xl overflow-hidden shadow-lg bg-gray-900 group-hover:shadow-xl transition-shadow duration-300">
-                {/* Background Image with natural aspect ratio */}
-                <div className="relative">
-                    <Image
-                        src={heroImageUrl}
-                        alt="Hero Banner"
-                        width={1200}
-                        height={500}
-                        className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-300"
-                        priority
-                    />
-                    {/* Dark overlay for better text readability */}
-                    <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-colors duration-300" />
+                {/* Mobile: auto aspect ratio, Desktop: fixed half-height */}
+                <div className="relative w-full lg:h-56 xl:h-64">
+                    <div className="block lg:hidden">
+                        <Image
+                            src={heroImageUrl}
+                            alt="Hero Banner"
+                            width={1200}
+                            height={500}
+                            className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-300"
+                            priority
+                        />
+                        <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-colors duration-300" />
+                    </div>
+                    <div className="hidden lg:block h-full w-full">
+                        <Image
+                            src={heroImageUrl}
+                            alt="Hero Banner"
+                            fill
+                            className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
+                            priority
+                        />
+                        <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-colors duration-300" />
+                    </div>
                 </div>
 
                 {/* Content Overlay */}

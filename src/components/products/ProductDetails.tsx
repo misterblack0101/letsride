@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import { useState } from 'react';
 import type { Product } from '@/lib/models/Product';
+import ProductShareButton from './ProductShareButton';
 
 interface ProductDetailsProps {
   product: Product;
@@ -158,23 +159,35 @@ export default function ProductDetails({ product, addItem }: ProductDetailsProps
           {/* Info Section */}
           <div className={`${!hasImages ? 'max-w-2xl' : ''}`}>
             {/* Product Title and Brand */}
-            <div className="mb-4">
-              <h1 className="text-4xl font-bold text-gray-900 leading-tight">
-                {product.name}
-              </h1>
-              {/* Out of Stock Label */}
-              {typeof product.inventory === 'number' && product.inventory < 1 && (
-                <span className="inline-block bg-red-100 text-red-700 text-sm font-bold px-3 py-1 rounded ml-2 align-middle">Out of Stock</span>
-              )}
-              {/* Brand Name */}
-              {product.brand && (
-                <a
-                  href={`/products?brand=${encodeURIComponent(product.brand)}`}
-                  className="text-lg text-gray-600 hover:text-primary transition-colors underline cursor-pointer pl-2"
-                >
-                  by {product.brand}
-                </a>
-              )}
+            <div className="mb-4 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+              <div className="flex-1">
+                <div className="flex items-start gap-2">
+                  <h1 className="text-4xl font-bold text-gray-900 leading-tight">
+                    {product.name}
+                  </h1>
+                  <div className="pt-2">
+                    <ProductShareButton product={{
+                      name: product.name,
+                      shortDescription: product.shortDescription,
+                      details: product.details
+                    }} />
+                  </div>
+                </div>
+                {/* Out of Stock Label */}
+                {typeof product.inventory === 'number' && product.inventory < 1 && (
+                  <span className="inline-block bg-red-100 text-red-700 text-sm font-bold px-3 py-1 rounded ml-2 align-middle">Out of Stock</span>
+                )}
+                {/* Brand Name */}
+                {product.brand && (
+                  <a
+                    href={`/products?brand=${encodeURIComponent(product.brand)}`}
+                    className="text-lg text-gray-600 hover:text-primary transition-colors underline cursor-pointer pl-2"
+                  >
+                    by {product.brand}
+                  </a>
+                )}
+              </div>
+              {/* Share Button moved inline with product name above */}
             </div>
 
             {/* Rating and Tags */}
@@ -266,8 +279,8 @@ export default function ProductDetails({ product, addItem }: ProductDetailsProps
                 <div className="flex items-start gap-4">
                   <div className="bg-white p-3 rounded-lg text-2xl">🚚</div>
                   <div>
-                    <h4 className="text-lg font-medium text-gray-900 mb-1">Free Shipping</h4>
-                    <p className="text-gray-700 text-sm">On orders above ₹999. Delivery in 3-5 business days.</p>
+                    <h4 className="text-lg font-medium text-gray-900 mb-1 ">Free Shipping</h4>
+                    <p className="text-gray-700 text-sm font-currency">On orders above ₹4999. Delivery in 3-5 business days.</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-4">
