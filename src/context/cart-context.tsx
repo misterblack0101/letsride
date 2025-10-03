@@ -9,10 +9,18 @@ import { useToast } from "@/hooks/use-toast";
  * 
  * @interface CartItem
  */
-export type CartItem = Product & {
-  /** Number of units of this product in the cart. Must be positive integer. */
+/**
+ * Cart item stored in localStorage: only slug and quantity
+ */
+export type CartStorageItem = {
+  slug: string;
   quantity: number;
 };
+
+/**
+ * Cart item in context: full product data + quantity
+ */
+export type CartItem = Product & { quantity: number };
 
 /**
  * Cart context interface defining all cart operations and state.
@@ -80,22 +88,52 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
  */
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  // Store only slug/quantity in localStorage
   const { toast } = useToast();
 
   useEffect(() => {
-    try {
-      const storedCart = localStorage.getItem('cart');
-      if (storedCart) {
-        setCartItems(JSON.parse(storedCart));
+    async function loadCart() {
+      try {
+        const storedCart = localStorage.getItem('cart');
+        if (storedCart) {
+          const items: CartStorageItem[] = JSON.parse(storedCart);
+          if (!items.length) {
+            setCartItems([]);
+            return;
+          }
+          // Fetch all products in parallel using /api/cart
+          const response = await fetch('/api/cart', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ slugs: items.map(item => item.slug) }),
+          });
+
+          if (!response.ok) {
+            throw new Error('Failed to fetch cart data');
+          }
+
+          const products: Product[] = await response.json();
+          // Merge quantity
+          const res: CartItem[] = products.map((product, i) => ({
+            ...product,
+            quantity: items[i].quantity,
+          }));
+          setCartItems(res.filter(Boolean));
+        }
+      } catch (error) {
+        console.error("Failed to parse or fetch cart from localStorage", error);
       }
-    } catch (error) {
-      console.error("Failed to parse cart from localStorage", error);
     }
+    loadCart();
   }, []);
 
   useEffect(() => {
     try {
-      localStorage.setItem('cart', JSON.stringify(cartItems));
+      // Store only slug and quantity
+      const storageItems: CartStorageItem[] = cartItems.map(item => ({ slug: item.slug, quantity: item.quantity }));
+      localStorage.setItem('cart', JSON.stringify(storageItems));
     } catch (error) {
       console.error("Failed to save cart to localStorage", error);
     }
@@ -115,10 +153,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
    */
   const addItem = (item: Product, quantity = 1) => {
     setCartItems(prevItems => {
-      const existingItem = prevItems.find(i => i.id === item.id);
+      const existingItem = prevItems.find(i => i.slug === item.slug);
       if (existingItem) {
         return prevItems.map(i =>
-          i.id === item.id ? { ...i, quantity: i.quantity + quantity } : i
+          i.slug === item.slug ? { ...i, quantity: i.quantity + quantity } : i
         );
       }
       return [...prevItems, { ...item, quantity }];
@@ -134,8 +172,17 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
    * 
    * @param itemId - Product ID to remove from cart
    */
-  const removeItem = (itemId: string) => {
-    setCartItems(prevItems => prevItems.filter(item => item.id !== itemId));
+  const removeItem = (itemSlug: string) => {
+    console.log("Attempting to remove item with slug:", itemSlug);
+    setCartItems(prevItems => {
+      console.log("Current cart items:", prevItems);
+      const updatedItems = prevItems.filter(item => {
+        console.log("Comparing item slug:", item.slug, "with", itemSlug);
+        return item.slug !== itemSlug;
+      });
+      console.log("Updated cart items after removal:", updatedItems);
+      return updatedItems;
+    });
     toast({
       title: "Item removed",
       description: "The item has been removed from your cart.",
@@ -153,12 +200,12 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
    * @param itemId - Product ID to update
    * @param quantity - New quantity (item removed if <= 0)
    */
-  const updateQuantity = (itemId: string, quantity: number) => {
+  const updateQuantity = (itemSlug: string, quantity: number) => {
     if (quantity <= 0) {
-      removeItem(itemId);
+      removeItem(itemSlug);
     } else {
       setCartItems(prevItems =>
-        prevItems.map(item => (item.id === itemId ? { ...item, quantity } : item))
+        prevItems.map(item => (item.slug === itemSlug ? { ...item, quantity } : item))
       );
     }
   };
@@ -175,8 +222,9 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
    * Calculate total cart value.
    * **Formula**: sum of (item.price * item.quantity) for all cart items
    * **Note**: Uses `price` field, not `discountedPrice`
+   * **Implementation Note**: If item.price is undefined, treat as 0 for calculation.
    */
-  const cartTotal = cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
+  const cartTotal = cartItems.reduce((total, item) => total + (item.price ?? 0) * item.quantity, 0);
 
   /** 
    * Calculate total number of items in cart.

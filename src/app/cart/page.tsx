@@ -3,14 +3,46 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useCart } from '@/context/cart-context';
+import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Trash2, Plus, Minus, ShoppingCart, Bike } from 'lucide-react';
+import type { CartItem } from '@/context/cart-context';
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 
 export default function CartPage() {
   const { cartItems, removeItem, updateQuantity, cartTotal, itemCount } = useCart();
+  const [loading, setLoading] = useState(true);
+  const [refetchedItems, setRefetchedItems] = useState<typeof cartItems>(cartItems);
+
+  useEffect(() => {
+    setLoading(true);
+    // Simulate refetch (replace with actual fetch if needed)
+    setTimeout(() => {
+      setRefetchedItems(cartItems);
+      setLoading(false);
+    }, 1200);
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="py-20 flex flex-col items-center justify-center">
+        <div className="w-40 h-40">
+          <DotLottieReact
+            src="/lottie/cycling.lottie"
+            loop
+            autoplay
+            style={{
+              width: "100%",
+              height: "100%",
+            }}
+          />
+        </div>
+      </div>
+    );
+  }
 
   if (itemCount === 0) {
     return (
@@ -18,8 +50,8 @@ export default function CartPage() {
         <ShoppingCart className="mx-auto h-24 w-24 text-muted-foreground" />
         <h1 className="mt-8 text-3xl font-bold font-headline">Your Cart is Empty</h1>
         <p className="mt-4 text-muted-foreground">Looks like you haven't added anything to your cart yet.</p>
-        <Button asChild size="lg" className="mt-8" variant="accent">
-          <Link href="/">
+        <Button asChild size="lg" className="mt-8 bg-[#0ea5e9] hover:bg-[#0ea5e9]/80 text-white" variant="default">
+          <Link href="/products">
             <Bike className="mr-2" />
             Start Shopping
           </Link>
@@ -30,72 +62,114 @@ export default function CartPage() {
 
   return (
     <div>
-      <h1 className="text-4xl font-bold font-headline text-center mb-12">Your Shopping Cart</h1>
+      <h1 className="text-2xl md:text-4xl font-bold font-headline text-center mb-10">
+        Your Shopping Cart
+      </h1>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12 items-start">
         <div className="lg:col-span-2">
           <Card>
             <CardContent className="p-0">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-[100px] hidden md:table-cell">Image</TableHead>
-                    <TableHead>Product</TableHead>
-                    <TableHead className="text-center">Quantity</TableHead>
-                    <TableHead className="text-right">Price</TableHead>
-                    <TableHead className="w-[50px]"> </TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {cartItems.map(item => (
-                    <TableRow key={item.id}>
-                      <TableCell className="hidden md:table-cell">
-                        <Image
-                          src={item.image || item.images?.[0] || "/images/placeholder.jpg"}
-                          alt={item.name}
-                          width={80}
-                          height={80}
-                          className="rounded-md object-cover"
-                        />
-                      </TableCell>
-                      <TableCell>
+              {/* Desktop Table */}
+              <div className="hidden md:block">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="w-[100px]">Image</TableHead>
+                      <TableHead>Product</TableHead>
+                      <TableHead className="text-center">Quantity</TableHead>
+                      <TableHead className="text-right">Price</TableHead>
+                      <TableHead className="w-[50px]"></TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {cartItems.map(item => (
+                      <TableRow key={item.id}>
+                        <TableCell>
+                          <Image
+                            src={item.image || item.images?.[0] || "/images/placeholder.jpg"}
+                            alt={item.name}
+                            width={80}
+                            height={80}
+                            className="rounded-md object-cover"
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <div className="font-medium">{item.name}</div>
+                          <div className="text-sm text-muted-foreground">{item.brand}</div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center justify-center gap-2">
+                            <Button size="icon" className="h-8 w-8 bg-[#0ea5e9] text-white" onClick={() => updateQuantity(item.id, item.quantity - 1)}>
+                              <Minus className="h-4 w-4" />
+                            </Button>
+                            <span className="w-12 text-center font-medium text-lg">{item.quantity}</span>
+                            <Button size="icon" className="h-8 w-8 bg-[#0ea5e9] text-white" onClick={() => updateQuantity(item.id, item.quantity + 1)}>
+                              <Plus className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-right font-medium font-currency">
+                          ₹{((item.price ?? 0) * item.quantity).toLocaleString('en-IN')}
+                        </TableCell>
+                        <TableCell>
+                          <Button variant="ghost" size="icon" onClick={() => removeItem(item.slug)}>
+                            <Trash2 className="h-5 w-5 text-[#0ea5e9]" />
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+
+              {/* Mobile Card View */}
+              <div className="md:hidden space-y-4 p-4">
+                {cartItems.map(item => (
+                  <div
+                    key={item.id}
+                    className="flex flex-col gap-3 rounded-lg border p-4 shadow-sm"
+                  >
+                    <div className="flex items-center gap-3">
+                      <Image
+                        src={item.image || item.images?.[0] || "/images/placeholder.jpg"}
+                        alt={item.name}
+                        width={64}
+                        height={64}
+                        className="rounded-md object-cover"
+                      />
+                      <div className="flex-1">
                         <div className="font-medium">{item.name}</div>
                         <div className="text-sm text-muted-foreground">{item.brand}</div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center justify-center gap-2">
-                          <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => updateQuantity(item.id, item.quantity - 1)}>
-                            <Minus className="h-4 w-4" />
-                          </Button>
-                          <Input
-                            type="number"
-                            value={item.quantity}
-                            onChange={(e) => {
-                              const newQuantity = parseInt(e.target.value, 10);
-                              if (!isNaN(newQuantity) && newQuantity > 0) {
-                                updateQuantity(item.id, newQuantity);
-                              }
-                            }}
-                            className="w-16 h-8 text-center"
-                          />
-                          <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => updateQuantity(item.id, item.quantity + 1)}>
-                            <Plus className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-right font-medium font-currency">
-                        ₹{(item.price * item.quantity).toLocaleString('en-IN')}
-                      </TableCell>
-                      <TableCell>
-                        <Button variant="ghost" size="icon" onClick={() => removeItem(item.id)}>
-                          <Trash2 className="h-5 w-5 text-muted-foreground hover:text-destructive" />
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => removeItem(item.slug)}
+                      >
+                        <Trash2 className="h-5 w-5 text-[#0ea5e9]" />
+                      </Button>
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Button size="icon" className="h-8 w-8 bg-[#0ea5e9] text-white" onClick={() => updateQuantity(item.id, item.quantity - 1)}>
+                          <Minus className="h-4 w-4" />
                         </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                        <span className="w-8 text-center font-medium">{item.quantity}</span>
+                        <Button size="icon" className="h-8 w-8 bg-[#0ea5e9] text-white" onClick={() => updateQuantity(item.id, item.quantity + 1)}>
+                          <Plus className="h-4 w-4" />
+                        </Button>
+                      </div>
+                      <div className="font-bold font-currency">
+                        ₹{((item.price ?? 0) * item.quantity).toLocaleString('en-IN')}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </CardContent>
           </Card>
+
         </div>
         <div className="lg:col-span-1">
           <Card>
@@ -107,23 +181,44 @@ export default function CartPage() {
                 <span className="text-muted-foreground ">Subtotal</span>
                 <span className="font-medium font-currency">₹{cartTotal.toLocaleString('en-IN')}</span>
               </div>
-              <div className="flex justify-between">
+              {/* <div className="flex justify-between">
                 <span className="text-muted-foreground">Shipping</span>
                 <span className="font-medium">Free</span>
-              </div>
+              </div> */}
               <div className="flex justify-between text-lg font-bold border-t pt-4 mt-4 font-currency">
                 <span>Total</span>
                 <span>₹{cartTotal.toLocaleString('en-IN')}</span>
               </div>
             </CardContent>
             <CardFooter>
-              <Button size="lg" className="w-full" variant="accent">
-                Proceed to Checkout
-              </Button>
+              {cartItems.length > 0 && (
+                <a
+                  href={getWhatsappCheckoutUrl(cartItems, cartTotal)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full"
+                >
+                  <Button size="lg" className="w-full flex items-center justify-center gap-2 bg-[#25D366] hover:bg-[#25D366]/80 text-white font-bold" variant="default">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 32 32" fill="white">
+                      <title>whatsapp</title>
+                      <path d="M26.576 5.363c-2.69-2.69-6.406-4.354-10.511-4.354-8.209 0-14.865 6.655-14.865 14.865 0 2.732 0.737 5.291 2.022 7.491l-0.038-0.070-2.109 7.702 7.879-2.067c2.051 1.139 4.498 1.809 7.102 1.809h0.006c8.209-0.003 14.862-6.659 14.862-14.868 0-4.103-1.662-7.817-4.349-10.507l0 0zM16.062 28.228h-0.005c-0 0-0.001 0-0.001 0-2.319 0-4.489-0.64-6.342-1.753l0.056 0.031-0.451-0.267-4.675 1.227 1.247-4.559-0.294-0.467c-1.185-1.862-1.889-4.131-1.889-6.565 0-6.822 5.531-12.353 12.353-12.353s12.353 5.531 12.353 12.353c0 6.822-5.53 12.353-12.353 12.353h-0zM22.838 18.977c-0.371-0.186-2.197-1.083-2.537-1.208-0.341-0.124-0.589-0.185-0.837 0.187-0.246 0.371-0.958 1.207-1.175 1.455-0.216 0.249-0.434 0.279-0.805 0.094-1.15-0.466-2.138-1.087-2.997-1.852l0.010 0.009c-0.799-0.74-1.484-1.587-2.037-2.521l-0.028-0.052c-0.216-0.371-0.023-0.572 0.162-0.757 0.167-0.166 0.372-0.434 0.557-0.65 0.146-0.179 0.271-0.384 0.366-0.604l0.006-0.017c0.043-0.087 0.068-0.188 0.068-0.296 0-0.131-0.037-0.253-0.101-0.357l0.002 0.003c-0.094-0.186-0.836-2.014-1.145-2.758-0.302-0.724-0.609-0.625-0.836-0.637-0.216-0.010-0.464-0.012-0.712-0.012-0.395 0.010-0.746 0.188-0.988 0.463l-0.001 0.002c-0.802 0.761-1.3 1.834-1.3 3.023 0 0.026 0 0.053 0.001 0.079l-0-0.004c0.131 1.467 0.681 2.784 1.527 3.857l-0.012-0.015c1.604 2.379 3.742 4.282 6.251 5.564l0.094 0.043c0.548 0.248 1.25 0.513 1.968 0.74l0.149 0.041c0.442 0.14 0.951 0.221 1.479 0.221 0.303 0 0.601-0.027 0.889-0.078l-0.031 0.004c1.069-0.223 1.956-0.868 2.497-1.749l0.009-0.017c0.165-0.366 0.261-0.793 0.261-1.242 0-0.185-0.016-0.366-0.047-0.542l0.003 0.019c-0.092-0.155-0.34-0.247-0.712-0.434z"></path>
+                    </svg>
+                    Checkout with WhatsApp
+                  </Button>
+                </a>
+              )}
             </CardFooter>
           </Card>
         </div>
       </div>
     </div>
   );
+}
+
+// Helper to generate WhatsApp checkout URL
+function getWhatsappCheckoutUrl(cartItems: CartItem[], cartTotal: number): string {
+  const phone = '917972659651';
+  const itemsText = cartItems.map((item: CartItem) => `${item.name} x${item.quantity} (₹${item.price?.toLocaleString?.('en-IN') ?? item.price})`).join('%0A');
+  const message = `Hi, I want to order:%0A${itemsText}%0A%0ATotal: ₹${cartTotal.toLocaleString('en-IN')}`;
+  return `https://wa.me/${phone}?text=${message}`;
 }

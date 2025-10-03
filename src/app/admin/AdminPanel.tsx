@@ -46,10 +46,10 @@ export default function AdminPanel({ logoutCallback }: AdminPanelProps) {
     const [activeTab, setActiveTab] = useState<AdminTab>('products');
 
     return (
-        <div className="min-h-screen bg-background">
+        <div className="min-h-screen ">
             {/* Header */}
             <header className="bg-white border-b border-border shadow-sm">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"> 
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex items-center justify-between h-16">
                         {/* Logo and Title */}
                         <div className="flex items-center gap-4">
@@ -88,8 +88,8 @@ export default function AdminPanel({ logoutCallback }: AdminPanelProps) {
                         <button
                             onClick={() => setActiveTab('products')}
                             className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${activeTab === 'products'
-                                    ? 'border-primary text-primary'
-                                    : 'border-transparent text-muted-foreground hover:text-foreground hover:border-gray-300'
+                                ? 'border-primary text-primary'
+                                : 'border-transparent text-muted-foreground hover:text-foreground hover:border-gray-300'
                                 }`}
                         >
                             <div className="flex items-center gap-2">
@@ -100,8 +100,8 @@ export default function AdminPanel({ logoutCallback }: AdminPanelProps) {
                         <button
                             onClick={() => setActiveTab('brands')}
                             className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${activeTab === 'brands'
-                                    ? 'border-primary text-primary'
-                                    : 'border-transparent text-muted-foreground hover:text-foreground hover:border-gray-300'
+                                ? 'border-primary text-primary'
+                                : 'border-transparent text-muted-foreground hover:text-foreground hover:border-gray-300'
                                 }`}
                         >
                             <div className="flex items-center gap-2">

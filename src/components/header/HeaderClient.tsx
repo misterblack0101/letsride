@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { ShoppingCart } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 import { useCart } from '@/context/cart-context';
 import BrandLogo from '@/components/BrandLogo';
 import HeaderSearch from '@/components/header/HeaderSearch';
@@ -25,6 +26,9 @@ export default function HeaderClient({ categoriesData }: HeaderContentProps) {
 
   const isActive = (path: string) => pathname === path;
 
+  if (pathname.startsWith('/admin')) {
+    return null;
+  }
   return (
     <>
       {/* Mobile Header */}
@@ -43,20 +47,24 @@ export default function HeaderClient({ categoriesData }: HeaderContentProps) {
         <div className="flex items-center gap-4">
           <HeaderSearch isMobile={true} />
 
-          <div className="indicator">
+          <Link
+            href="/cart"
+            className="relative hover:text-blue-600 transition-transform hover:scale-110"
+          >
+            <ShoppingCart className="h-6 w-6" />
+
             {itemCount > 0 && (
-              <span className="indicator-item badge badge-sm bg-primary text-white font-bold">
+              <span
+                className="absolute -top-2 -right-2 bg-[#0ea5e9] text-white 
+                   w-6 h-6 flex items-center justify-center 
+                   rounded-full text-xs font-bold shadow-md"
+              >
                 {itemCount > 9 ? '9+' : itemCount}
               </span>
             )}
-            <Link
-              href="/cart"
-              className="hover:text-primary transition-transform hover:scale-110"
-            >
-              <ShoppingCart className="h-5 w-5" />
-            </Link>
-          </div>
+          </Link>
         </div>
+
       </header>
 
       {/* Desktop Header */}
@@ -86,19 +94,22 @@ export default function HeaderClient({ categoriesData }: HeaderContentProps) {
                 Store
               </Link>
 
-              <div className="indicator">
+              <Link
+                href="/cart"
+                className="relative hover:text-blue-600 transition-transform hover:scale-110"
+              >
+                <ShoppingCart className="h-6 w-6" />
+
                 {itemCount > 0 && (
-                  <span className="indicator-item badge badge-sm bg-primary text-white font-bold">
+                  <span
+                    className="absolute -top-1 -right-1 bg-[#0ea5e9] text-white 
+                 w-4 h-4 flex items-center justify-center 
+                 rounded-full text-[10px] font-bold shadow-md"
+                  >
                     {itemCount > 9 ? '9+' : itemCount}
                   </span>
                 )}
-                <Link
-                  href="/cart"
-                  className="hover:text-primary transition-transform hover:scale-110"
-                >
-                  <ShoppingCart className="h-5 w-5" />
-                </Link>
-              </div>
+              </Link>
             </div>
           </div>
         </div>
