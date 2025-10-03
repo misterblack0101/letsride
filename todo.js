@@ -10,13 +10,12 @@
 //////////////////////////////
 // misc
 // - secure firebase firestore, rtdb and storage rules
-// rules in firestore for algolia
-// - add rate limits 1 min 60 calls max
+// - rules in firestore for algolia
+// - add rate limits 1 min 60 calls max - vercel kv suggested
 // - add seo tags
 // - add meta description tags
 // - sitemap? 
 // - migrate product/id to product /name, and make name unique for client
-// - top rated products in 404 page / redirect 404 to homepage
 
 /////////////////////////////
 // nice to have

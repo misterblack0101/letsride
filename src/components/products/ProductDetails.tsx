@@ -1,12 +1,13 @@
-"use client";
-
 import Image from 'next/image';
 import { useState } from 'react';
-import { useCart } from '@/context/cart-context';
 import type { Product } from '@/lib/models/Product';
 
-export default function ProductDetails({ product }: { product: Product }) {
-  const { addItem } = useCart();
+interface ProductDetailsProps {
+  product: Product;
+  addItem?: (product: Product) => void;
+}
+
+export default function ProductDetails({ product, addItem }: ProductDetailsProps) {
 
   // Prepare images array - no placeholder, use actual product images only
   const images = product.images && product.images.length > 0 ? product.images : [];
@@ -232,12 +233,14 @@ export default function ProductDetails({ product }: { product: Product }) {
                   You save ₹{savings.toLocaleString('en-IN')}
                 </div>
               )}
-              <button
-                className="w-full bg-blue-500 hover:bg-blue-600 text-white py-3 px-4 rounded-lg text-base font-semibold transition-colors"
-                onClick={() => addItem(product)}
-              >
-                Add to Cart
-              </button>
+              {addItem && (
+                <button
+                  className="w-full bg-blue-500 hover:bg-blue-600 text-white py-3 px-4 rounded-lg text-base font-semibold transition-colors"
+                  onClick={() => addItem(product)}
+                >
+                  Add to Cart
+                </button>
+              )}
             </div>
 
             {/* Product Details */}

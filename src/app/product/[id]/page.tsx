@@ -1,4 +1,4 @@
-import ProductDetails from "@/components/products/ProductDetails";
+import ProductDetailsClient from "@/components/products/ProductDetailsClient";
 import { getProductById } from "@/lib/server/products.server";
 import { notFound } from "next/navigation";
 
@@ -14,5 +14,5 @@ export default async function ProductPage({ params }: { params: { id: string } }
     notFound();
   }
 
-  return <ProductDetails product={product} />;
+  return <ProductDetailsClient product={product} />;
 }

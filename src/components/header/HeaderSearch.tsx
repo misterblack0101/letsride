@@ -9,50 +9,7 @@ interface SearchComponentProps {
 }
 
 /**
- * HeaderSearch component providing responsive search functionality with different UX patterns for mobile and desktop.
- * 
- * **Mobile Experience:**
- * - Collapsed state: Circular search icon button to save header space
- * - Expanded state: Full-width overlay search bar with fixed positioning
- * - Auto-focus: Input field automatically focused when expanded
- * - Auto-collapse: Closes after search completion or when navigating away
- * - Single action close: X button clears text and closes expanded search
- * - Keyboard shortcuts: Enter to search, Escape to close
- * 
- * **Desktop Experience:**
- * - Always visible: Full search bar permanently displayed in header
- * - Circular design: Pill-shaped container with rounded edges
- * - Inline actions: Clear and search buttons integrated within the input
- * 
- * **Shared Features:**
- * - Route-aware clearing: Search field clears when navigating away from search pages
- * - Circular styling: Fully rounded borders (rounded-full) for modern appearance
- * - Smooth transitions: All state changes animated for better UX
- * - Search navigation: Routes to /search page with query parameters
- * - Input validation: Prevents empty searches
- * 
- * **Architecture:**
- * - No real-time search API calls during typing (cost-effective)
- * - Submit-only search behavior (Enter key or search button click)
- * - Client-side state management with React hooks
- * - Next.js router integration for navigation
- * - Responsive design with conditional rendering based on screen size
- * 
- * **Mobile State Management:**
- * - `isExpanded`: Controls collapsed/expanded state
- * - `searchValue`: Input text content
- * - Auto-collapse triggers: Search completion, navigation, manual close
- * 
- * @param isMobile - Whether to render mobile-optimized expandable version or desktop always-visible version
- * 
- * @example
- * ```tsx
- * // Desktop usage (always visible)
- * <HeaderSearch isMobile={false} />
- * 
- * // Mobile usage (expandable icon button)
- * <HeaderSearch isMobile={true} />
- * ```
+ * HeaderSearch - responsive search with an expandable mobile experience and always-visible desktop bar.
  */
 export default function HeaderSearch({ isMobile = false }: SearchComponentProps) {
     const [searchValue, setSearchValue] = useState('');
@@ -60,11 +17,11 @@ export default function HeaderSearch({ isMobile = false }: SearchComponentProps)
     const router = useRouter();
     const pathname = usePathname();
 
-    // Clear search field when navigating away from search page
+    // Collapse/clear when navigating away from search
     useEffect(() => {
         if (pathname && !pathname.startsWith('/search')) {
             setSearchValue('');
-            setIsExpanded(false); // Also collapse on navigation
+            setIsExpanded(false);
         }
     }, [pathname]);
 
@@ -72,11 +29,11 @@ export default function HeaderSearch({ isMobile = false }: SearchComponentProps)
         if (searchValue.trim()) {
             const searchUrl = `/search?q=${encodeURIComponent(searchValue.trim())}`;
             router.push(searchUrl);
-            setIsExpanded(false); // Collapse after search on mobile
+            setIsExpanded(false);
         }
     };
 
-    const handleKeyPress = (e: React.KeyboardEvent) => {
+    const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter') {
             e.preventDefault();
             handleSearch();
@@ -89,66 +46,63 @@ export default function HeaderSearch({ isMobile = false }: SearchComponentProps)
 
     const clearSearch = () => {
         setSearchValue('');
-        if (isMobile) {
-            setIsExpanded(false); // Close the expanded search on mobile
-        }
+        if (isMobile) setIsExpanded(false);
     };
 
     const toggleExpanded = () => {
-        setIsExpanded(!isExpanded);
-        // Focus input when expanding
+        setIsExpanded((s) => !s);
         if (!isExpanded) {
             setTimeout(() => {
-                const input = document.querySelector('input[placeholder="Search products..."]') as HTMLInputElement;
+                const input = document.querySelector('input[placeholder="Search products..."]') as HTMLInputElement | null;
                 if (input) input.focus();
-            }, 100);
+            }, 80);
         }
     };
 
     if (isMobile) {
         return (
             <div className="relative">
-                {/* Mobile Search - Icon Button that expands */}
                 {!isExpanded ? (
-                    // Collapsed state - just the search icon
                     <button
                         onClick={toggleExpanded}
-                        className="p-2 bg-white border border-border rounded-full shadow-sm hover:shadow-md transition-all duration-200 hover:bg-gray-50"
+                        className="p-1.5 bg-white border border-border rounded-full shadow-sm hover:shadow-md transition-all duration-200 hover:bg-gray-50"
+                        aria-label="Open search"
                     >
-                        <Search className="h-5 w-5 text-muted-foreground" />
+                        <Search className="h-4 w-4 text-muted-foreground" />
                     </button>
                 ) : (
-                    // Expanded state - full search input
-                    <div className="fixed inset-x-4 top-4 z-50">
-                        <div className="flex items-center bg-white border border-border rounded-full shadow-lg hover:shadow-xl transition-all duration-200 focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary">
-                            <input
-                                type="text"
-                                placeholder="Search products..."
-                                className="flex-1 px-4 py-3 text-sm bg-transparent border-0 focus:outline-none focus:ring-0 placeholder:text-muted-foreground rounded-full"
-                                style={{ fontSize: '16px' }} // Prevent zoom on iOS
-                                value={searchValue}
-                                onChange={(e) => setSearchValue(e.target.value)}
-                                onKeyDown={handleKeyPress}
-                                autoComplete="off"
-                                autoCorrect="off"
-                                autoCapitalize="off"
-                                spellCheck="false"
-                            />
-                            <button
-                                onClick={clearSearch}
-                                className="p-2 text-muted-foreground hover:text-destructive transition-colors"
-                            >
-                                <X className="h-4 w-4" />
-                            </button>
-                            <button
-                                onClick={handleSearch}
-                                disabled={!searchValue.trim()}
-                                className="p-2 m-1 bg-primary text-primary-foreground rounded-full hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                                <Search className="h-4 w-4" />
-                            </button>
+                    <>
+                        {/* Backdrop to dim content and close on tap */}
+                        <div className="fixed inset-0 z-40 bg-black/20" onClick={() => setIsExpanded(false)} />
+                        <div className="fixed inset-x-3 top-6 z-50">
+                            <div className="flex items-center bg-white border border-border rounded-2xl shadow-lg transition-all duration-200 focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary px-3 py-2">
+                                <input
+                                    type="text"
+                                    placeholder="Search products..."
+                                    className="flex-1 px-3 py-2 text-sm bg-transparent border-0 focus:outline-none focus:ring-0 placeholder:text-muted-foreground rounded-md"
+                                    style={{ fontSize: '16px' }}
+                                    value={searchValue}
+                                    onChange={(e) => setSearchValue(e.target.value)}
+                                    onKeyDown={handleKeyPress}
+                                    autoComplete="off"
+                                    autoCorrect="off"
+                                    autoCapitalize="off"
+                                    spellCheck={false}
+                                />
+                                <button onClick={clearSearch} className="p-2 text-muted-foreground hover:text-destructive transition-colors" aria-label="Clear search">
+                                    <X className="h-4 w-4" />
+                                </button>
+                                <button
+                                    onClick={handleSearch}
+                                    disabled={!searchValue.trim()}
+                                    className="p-2 ml-1 bg-primary text-primary-foreground rounded-full hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                    aria-label="Submit search"
+                                >
+                                    <Search className="h-4 w-4" />
+                                </button>
+                            </div>
                         </div>
-                    </div>
+                    </>
                 )}
             </div>
         );
@@ -168,20 +122,17 @@ export default function HeaderSearch({ isMobile = false }: SearchComponentProps)
                     autoComplete="off"
                     autoCorrect="off"
                     autoCapitalize="off"
-                    spellCheck="false"
+                    spellCheck={false}
                 />
                 {searchValue && (
-                    <button
-                        onClick={clearSearch}
-                        className="p-2 text-muted-foreground hover:text-destructive transition-colors"
-                    >
+                    <button onClick={clearSearch} className="p-2 text-muted-foreground hover:text-destructive transition-colors">
                         <X className="h-4 w-4" />
                     </button>
                 )}
                 <button
                     onClick={handleSearch}
                     disabled={!searchValue.trim()}
-                    className="p-2.5 m-1 bg-primary text-primary-foreground rounded-full hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="p-2.5 m-1 bg-primary text-primary-foreground rounded-full hover:bg-primary/90 transition-colors disabled:cursor-not-allowed"
                 >
                     <Search className="h-4 w-4" />
                 </button>
