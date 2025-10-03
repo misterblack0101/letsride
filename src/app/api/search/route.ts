@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { searchProducts } from '@/lib/services/search';
 import { headers } from 'next/headers';
+import { getProductSlug } from '@/lib/utils/slugify';
 
 // Simple in-memory rate limiting (use Redis in production for multi-instance apps)
 const RATE_LIMIT = 100; // requests per minute
@@ -90,7 +91,8 @@ export async function GET(request: NextRequest) {
             rating: product.rating,
             imageUrl: product.image || product.images?.[0] || '/images/placeholder.jpg',
             category: product.category,
-            subCategory: product.subCategory
+            subCategory: product.subCategory,
+            slug: getProductSlug(product.name),
         }));
 
         // Response caching for products  

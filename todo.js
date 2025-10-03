@@ -16,6 +16,7 @@
 // - add meta description tags
 // - sitemap? 
 // - migrate product/id to product /name, and make name unique for client
+// - share button on product details page in web and mweb
 
 /////////////////////////////
 // nice to have

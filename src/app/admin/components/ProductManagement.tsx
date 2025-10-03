@@ -8,6 +8,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Package, Plus, Search, X, Loader2 } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
+import { getProductSlug } from '@/lib/utils/slugify';
 
 // Interface for lightweight search results from API
 interface LightweightSearchResult {
@@ -40,7 +41,8 @@ function convertToProducts(lightweightResults: LightweightSearchResult[]): Produ
         isRecommended: false,
         shortDescription: '',
         details: '',
-        tags: []
+        tags: [],
+        slug: getProductSlug(result.name),
     }));
 }
 

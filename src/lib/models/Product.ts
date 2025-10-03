@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { getProductSlug } from '../utils/slugify';
 
 const baseBrandLogoUrl = 'https://firebasestorage.googleapis.com/v0/b/letsridecycles.firebasestorage.app/o/brandLogos';
 
@@ -46,6 +47,7 @@ export const ProductSchema = z.object({
   images: z.array(z.string()).optional(),
   inventory: z.number().default(1),
   isRecommended: z.boolean().default(false),
+  slug: z.string().optional(),
 }).transform(product => {
   const discountedPrice = product.price != null
     ? product.price
@@ -59,6 +61,7 @@ export const ProductSchema = z.object({
       ? `${baseBrandLogoUrl}%2F${product.brand.toLowerCase().replace(/\s+/g, '-')}.png?alt=media`
       : `${baseBrandLogoUrl}%2Fdefault.png?alt=media`,
     discountedPrice,
+    slug: product.slug || getProductSlug(product.name),
   };
 });
 

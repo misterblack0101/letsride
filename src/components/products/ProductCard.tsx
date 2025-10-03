@@ -20,7 +20,7 @@ export default function ProductCard({ product, viewMode = 'grid', hidePricing = 
 
   if (viewMode === 'list') {
     return (
-      <Link href={`/product/${product.id}`} className="block group w-full">
+      <Link href={`/product/${product.slug}`} className="block group w-full">
         <div className={`bg-base-100 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.01] border border-base-200 hover:border-primary/30 rounded-xl overflow-hidden flex w-full ${isMobile ? 'h-24' : 'h-40'}`}>
           {/* Image - Square aspect ratio, responsive sizing */}
           <figure className={`${isMobile ? 'w-24 h-24' : 'w-40 h-40'} relative overflow-hidden flex-shrink-0`}>
@@ -135,7 +135,7 @@ export default function ProductCard({ product, viewMode = 'grid', hidePricing = 
   }
 
   return (
-    <Link href={`/product/${product.id}`} className="block group">
+    <Link href={`/product/${product.slug}`} className="block group">
       <div className="card bg-base-100 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] h-full border border-base-200 hover:border-primary/30 overflow-hidden rounded-xl">
         <figure className="aspect-square relative overflow-hidden">
           <Image

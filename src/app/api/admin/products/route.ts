@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { adminDb } from '@/lib/firebase/admin';
 import { ProductSchema, type Product } from '@/lib/models/Product';
+import { getProductSlug } from '@/lib/utils/slugify';
 import { z } from 'zod';
 import { CollectionReference } from 'firebase-admin/firestore';
 import { createQueryBuilder } from '@/lib/server/firestore-query-builder';
@@ -174,14 +175,26 @@ export async function POST(req: NextRequest) {
         // Validate product data (without id since it will be auto-generated)
         const validatedProduct = CreateProductSchema.parse(body);
 
+        // Slug generation and validation
+        const slug = getProductSlug(validatedProduct.name);
+        if (!slug || !slug.replace(/-/g, '').match(/[a-z0-9]/)) {
+            return NextResponse.json({ error: 'Product name must contain letters or numbers.' }, { status: 400 });
+        }
+        // Check uniqueness
+        const existing = await adminDb.collection('products').where('slug', '==', slug).limit(1).get();
+        if (!existing.empty) {
+            return NextResponse.json({ error: 'Product name must be unique.' }, { status: 400 });
+        }
+
         // Add to Firestore
         const docRef = await adminDb.collection('products').add({
             ...validatedProduct,
+            slug,
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
         });
 
-        const newProduct = { ...validatedProduct, id: docRef.id };
+        const newProduct = { ...validatedProduct, slug, id: docRef.id };
 
         return NextResponse.json({
             message: 'Product created successfully',
@@ -219,8 +232,19 @@ export async function PUT(req: NextRequest) {
             return NextResponse.json({ error: 'Product ID is required' }, { status: 400 });
         }
 
+        // Slug generation and validation
+        const slug = getProductSlug(updateData.name);
+        if (!slug || !slug.replace(/-/g, '').match(/[a-z0-9]/)) {
+            return NextResponse.json({ error: 'Product name must contain letters or numbers.' }, { status: 400 });
+        }
+        // Check uniqueness (exclude current product)
+        const existing = await adminDb.collection('products').where('slug', '==', slug).limit(1).get();
+        if (!existing.empty && existing.docs[0].id !== id) {
+            return NextResponse.json({ error: 'Product name must be unique.' }, { status: 400 });
+        }
+
         // Validate product data
-        const validatedProduct = ProductSchema.parse({ id, ...updateData });
+        const validatedProduct = ProductSchema.parse({ id, slug, ...updateData });
 
         // Update in Firestore
         await adminDb.collection('products').doc(id).update({

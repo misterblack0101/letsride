@@ -599,3 +599,23 @@ export const fetchHomepageHeroData = cache(async (): Promise<HomepageHeroData> =
         }
     });
 });
+
+
+/**
+ * Fetches a single product by its slug (URL-safe name).
+ * @param slug - The slugified product name
+ * @returns Promise resolving to the product or null if not found
+ */
+export async function getProductBySlug(slug: string): Promise<Product | null> {
+    return retryOperation(async () => {
+        const snapshot = await db.collection('products').where('slug', '==', slug).limit(1).get();
+        if (snapshot.empty) return null;
+        const raw = { ...snapshot.docs[0].data(), id: snapshot.docs[0].id };
+        const parsed = ProductSchema.safeParse(raw);
+        if (!parsed.success) {
+            console.error('Invalid product schema:', parsed.error.format());
+            return null;
+        }
+        return parsed.data;
+    });
+}

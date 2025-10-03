@@ -3,6 +3,7 @@ import { ArrowLeft } from 'lucide-react';
 import type { Metadata } from 'next';
 import type { Product } from '@/lib/models/Product';
 import ProductCard from '@/components/products/ProductCard';
+import { getProductSlug } from '@/lib/utils/slugify';
 
 interface SearchPageProps {
     searchParams: Promise<{ q?: string }>;
@@ -43,7 +44,8 @@ function convertToProducts(lightweightResults: LightweightSearchResult[]): Produ
         isRecommended: false,
         shortDescription: '',
         details: '',
-        tags: []
+        tags: [],
+        slug: getProductSlug(result.name),
     }));
 }
 
