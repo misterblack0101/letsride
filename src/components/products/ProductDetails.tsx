@@ -19,6 +19,8 @@ export default function ProductDetails({ product, addItem }: ProductDetailsProps
 
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [imageLoading, setImageLoading] = useState(true);
+  const [isZoomed, setIsZoomed] = useState(false);
+  const [zoomPosition, setZoomPosition] = useState({ x: 0, y: 0 });
 
   // Initialize thumbnail loading state for all images as true
   const [thumbnailLoading, setThumbnailLoading] = useState<{ [key: number]: boolean }>(() => {
@@ -33,6 +35,24 @@ export default function ProductDetails({ product, addItem }: ProductDetailsProps
   const savings = product.roundedDiscountPercentage && product.actualPrice
     ? product.actualPrice - (product.price || product.actualPrice * (1 - product.roundedDiscountPercentage / 100))
     : 0;
+
+  const handleImageClick = () => {
+    setIsZoomed(true);
+  };
+
+  const handleZoomClose = () => {
+    setIsZoomed(false);
+  };
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!isZoomed) return;
+
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+
+    setZoomPosition({ x, y });
+  };
 
   return (
     <>
@@ -102,7 +122,10 @@ export default function ProductDetails({ product, addItem }: ProductDetailsProps
                 )}
                 {/* Main Image Container */}
                 <div className="w-full max-w-xs lg:max-w-md mx-auto">
-                  <div className="relative aspect-square overflow-hidden rounded-xl bg-gray-50">
+                  <div
+                    className="relative aspect-square overflow-hidden rounded-xl bg-gray-50 cursor-pointer group flex items-center justify-center"
+                    onClick={handleImageClick}
+                  >
                     {imageLoading && (
                       <div className="absolute inset-0 bg-gradient-to-r from-gray-100 via-gray-200 to-gray-100 animate-pulse">
                         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent animate-shimmer"></div>
@@ -112,11 +135,21 @@ export default function ProductDetails({ product, addItem }: ProductDetailsProps
                       src={images[selectedImageIndex]}
                       alt={product.name}
                       fill
-                      className={`object-cover transition-opacity duration-300 ${imageLoading ? 'opacity-0' : 'opacity-100'}`}
+                      className={`object-contain transition-opacity duration-300 ${imageLoading ? 'opacity-0' : 'opacity-100'}`}
                       sizes="(max-width: 480px) 90vw, (max-width: 768px) 60vw, 50vw"
                       priority
                       onLoad={() => setImageLoading(false)}
                     />
+                    {/* Zoom Icon Overlay */}
+                    {!imageLoading && (
+                      <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-300 flex items-center justify-center">
+                        <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white rounded-full p-3 shadow-lg">
+                          <svg className="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7" />
+                          </svg>
+                        </div>
+                      </div>
+                    )}
                   </div>
                   {/* Thumbnails - bottom on mobile only, less margin below */}
                   {hasMultipleImages && (
@@ -310,6 +343,76 @@ export default function ProductDetails({ product, addItem }: ProductDetailsProps
           </div>
         </div>
       </div>
+
+      {/* Zoom Modal */}
+      {isZoomed && (
+        <div
+          className="fixed inset-0 z-50 bg-black bg-opacity-90 flex items-center justify-center p-4"
+          onClick={handleZoomClose}
+        >
+          <button
+            className="absolute top-4 right-4 text-white bg-black bg-opacity-50 rounded-full p-2 hover:bg-opacity-70 transition-all z-10"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleZoomClose();
+            }}
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+
+          <div
+            className="relative flex items-center justify-center gap-8 pointer-events-none"
+          >
+            {/* Main Image with Natural Aspect Ratio */}
+            <div
+              className="relative cursor-crosshair pointer-events-auto"
+              style={{ maxWidth: '50vw', maxHeight: '80vh' }}
+              onMouseMove={handleMouseMove}
+              onMouseLeave={() => setZoomPosition({ x: 50, y: 50 })}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <img
+                src={images[selectedImageIndex]}
+                alt={product.name}
+                className="max-w-full max-h-[80vh] w-auto h-auto object-contain rounded-lg"
+              />
+              {/* Hover indicator overlay */}
+              <div
+                className="absolute border-2 border-white pointer-events-none"
+                style={{
+                  width: '100px',
+                  height: '100px',
+                  left: `calc(${zoomPosition.x}% - 50px)`,
+                  top: `calc(${zoomPosition.y}% - 50px)`,
+                  boxShadow: '0 0 0 9999px rgba(0, 0, 0, 0.3)'
+                }}
+              />
+            </div>
+
+            {/* Zoomed Preview Window */}
+            <div
+              className="relative w-80 h-80 bg-white rounded-lg overflow-hidden shadow-2xl border-4 border-white pointer-events-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div
+                className="absolute inset-0"
+                style={{
+                  backgroundImage: `url(${images[selectedImageIndex]})`,
+                  backgroundSize: '300%',
+                  backgroundPosition: `${zoomPosition.x}% ${zoomPosition.y}%`,
+                  backgroundRepeat: 'no-repeat'
+                }}
+              />
+            </div>
+          </div>
+
+          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-white text-sm bg-black bg-opacity-50 px-4 py-2 rounded-full pointer-events-none">
+            Move cursor over image to zoom • Click outside to close
+          </div>
+        </div>
+      )}
     </>
   );
 }
