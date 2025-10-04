@@ -51,12 +51,8 @@ function convertToProducts(lightweightResults: LightweightSearchResult[]): Produ
 
 async function searchProductsViaAPI(query: string, limit: number = 50): Promise<Product[]> {
     try {
-        const baseUrl = process.env.NODE_ENV === 'production'
-            ? 'https://your-domain.com' // Replace with your actual domain
-            : 'http://localhost:9002';
-
         const response = await fetch(
-            `${baseUrl}/api/search?q=${encodeURIComponent(query)}&limit=${limit}`,
+            `/api/search?q=${encodeURIComponent(query)}&limit=${limit}`,
             {
                 next: { revalidate: 300 } // Cache for 5 minutes on server side too
             }

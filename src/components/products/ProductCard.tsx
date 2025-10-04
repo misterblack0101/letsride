@@ -229,7 +229,7 @@ export default function ProductCard({ product, viewMode = 'grid', hidePricing = 
 
           {/* Product Title */}
           <h2
-            className="text-sm sm:text-base leading-tight hover:text-primary transition-colors duration-300 font-semibold break-words line-clamp-2"
+            className="text-sm sm:text-base leading-tight hover:text-primary transition-colors duration-300 font-semibold break-words line-clamp-2 min-h-[2.4rem] sm:min-h-[3.2rem]"
             style={{ wordBreak: 'break-word' }}
           >
             {product.name}
