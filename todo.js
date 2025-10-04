@@ -2,7 +2,6 @@
 // misc
 // - secure firebase firestore, rtdb and storage rules
 // - rules in firestore for algolia
-// - fix cart icon mweb large number
 
 // once data is added
 // - add seo tags

@@ -9,6 +9,8 @@ interface ProductDetailsProps {
 }
 
 export default function ProductDetails({ product, addItem }: ProductDetailsProps) {
+  const [added, setAdded] = useState(false);
+  const router = typeof window !== 'undefined' ? require('next/navigation').useRouter() : null;
 
   // Prepare images array - no placeholder, use actual product images only
   const images = product.images && product.images.length > 0 ? product.images : [];
@@ -248,10 +250,26 @@ export default function ProductDetails({ product, addItem }: ProductDetailsProps
               )}
               {addItem && (
                 <button
-                  className="w-full bg-blue-500 hover:bg-blue-600 text-white py-3 px-4 rounded-lg text-base font-semibold transition-colors"
-                  onClick={() => addItem(product)}
+                  className={`w-full py-3 px-4 rounded-lg text-base font-semibold transition-colors flex items-center justify-center ${added ? 'bg-green-500 text-white' : 'bg-blue-500 hover:bg-blue-600 text-white'}`}
+                  disabled={added}
+                  onClick={() => {
+                    addItem(product);
+                    setAdded(true);
+                    setTimeout(() => {
+                      if (router) router.push('/cart');
+                    }, 1000);
+                  }}
                 >
-                  Add to Cart
+                  {added ? (
+                    <span className="flex items-center gap-2 animate-fade-in">
+                      <svg className="w-5 h-5 text-white animate-bounce" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                      </svg>
+                      Added to Cart
+                    </span>
+                  ) : (
+                    'Add to Cart'
+                  )}
                 </button>
               )}
             </div>

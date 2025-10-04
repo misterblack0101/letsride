@@ -99,11 +99,11 @@ export default function CartPage() {
                         </TableCell>
                         <TableCell>
                           <div className="flex items-center justify-center gap-2">
-                            <Button size="icon" className="h-8 w-8 bg-[#0ea5e9] text-white" onClick={() => updateQuantity(item.id, item.quantity - 1)}>
+                            <Button size="icon" className="h-8 w-8 bg-[#0ea5e9] text-white" onClick={() => updateQuantity(item.slug, item.quantity - 1)}>
                               <Minus className="h-4 w-4" />
                             </Button>
                             <span className="w-12 text-center font-medium text-lg">{item.quantity}</span>
-                            <Button size="icon" className="h-8 w-8 bg-[#0ea5e9] text-white" onClick={() => updateQuantity(item.id, item.quantity + 1)}>
+                            <Button size="icon" className="h-8 w-8 bg-[#0ea5e9] text-white" onClick={() => updateQuantity(item.slug, item.quantity + 1)}>
                               <Plus className="h-4 w-4" />
                             </Button>
                           </div>
@@ -152,11 +152,11 @@ export default function CartPage() {
 
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <Button size="icon" className="h-8 w-8 bg-[#0ea5e9] text-white" onClick={() => updateQuantity(item.id, item.quantity - 1)}>
+                        <Button size="icon" className="h-8 w-8 bg-[#0ea5e9] text-white" onClick={() => updateQuantity(item.slug, item.quantity - 1)}>
                           <Minus className="h-4 w-4" />
                         </Button>
                         <span className="w-8 text-center font-medium">{item.quantity}</span>
-                        <Button size="icon" className="h-8 w-8 bg-[#0ea5e9] text-white" onClick={() => updateQuantity(item.id, item.quantity + 1)}>
+                        <Button size="icon" className="h-8 w-8 bg-[#0ea5e9] text-white" onClick={() => updateQuantity(item.slug, item.quantity + 1)}>
                           <Plus className="h-4 w-4" />
                         </Button>
                       </div>
@@ -216,9 +216,31 @@ export default function CartPage() {
 }
 
 // Helper to generate WhatsApp checkout URL
+/**
+ * Generates a WhatsApp checkout URL with cart details.
+ *
+ * **Implementation Notes:**
+ * - Formats each cart item as a bullet point.
+ * - Makes the total amount bold using WhatsApp's asterisk syntax.
+ *
+ * @param cartItems - Array of CartItem objects in the cart
+ * @param cartTotal - Total price of the cart
+ *
+ * @returns WhatsApp URL string with pre-filled message
+ *
+ * @example
+ * const url = getWhatsappCheckoutUrl(cartItems, cartTotal);
+ * // Opens WhatsApp with formatted order summary
+ */
 function getWhatsappCheckoutUrl(cartItems: CartItem[], cartTotal: number): string {
   const phone = '917972659651';
-  const itemsText = cartItems.map((item: CartItem) => `${item.name} x${item.quantity} (₹${item.price?.toLocaleString?.('en-IN') ?? item.price})`).join('%0A');
-  const message = `Hi, I want to order:%0A${itemsText}%0A%0ATotal: ₹${cartTotal.toLocaleString('en-IN')}`;
+  const itemsText = cartItems
+    .map((item: CartItem) =>
+      `• ${item.name} x${item.quantity} (₹${item.price?.toLocaleString?.('en-IN') ?? item.price})`
+    )
+    .join('%0A');
+  // WhatsApp bold: wrap with asterisks
+  const totalText = `*Total: ₹${cartTotal.toLocaleString('en-IN')}*`;
+  const message = `Hi, I want to order:%0A${itemsText}%0A%0A${totalText}`;
   return `https://wa.me/${phone}?text=${message}`;
 }

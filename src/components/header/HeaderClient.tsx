@@ -55,9 +55,7 @@ export default function HeaderClient({ categoriesData }: HeaderContentProps) {
 
             {itemCount > 0 && (
               <span
-                className="absolute -top-2 -right-2 bg-[#0ea5e9] text-white 
-                   w-6 h-6 flex items-center justify-center 
-                   rounded-full text-xs font-bold shadow-md"
+                className="absolute -top-1.5 -right-1.5 bg-[#0ea5e9] text-white w-4 h-4 flex items-center justify-center rounded-full text-[10px] font-bold shadow-md"
               >
                 {itemCount > 9 ? '9+' : itemCount}
               </span>

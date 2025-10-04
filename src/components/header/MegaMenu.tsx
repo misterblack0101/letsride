@@ -10,6 +10,7 @@ interface MegaMenuProps {
 
 export default function MegaMenu({ data, brandsBySubcategory }: MegaMenuProps) {
     const [openCategory, setOpenCategory] = useState<string | null>(null);
+    const [clickedCategory, setClickedCategory] = useState<string | null>(null);
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     const handleMouseEnter = (category: string) => {
@@ -33,10 +34,18 @@ export default function MegaMenu({ data, brandsBySubcategory }: MegaMenuProps) {
                         onMouseEnter={() => handleMouseEnter(category)}
                         onMouseLeave={handleMouseLeave}
                     >
-                        <button className="font-medium hover:text-primary transition-colors">
+                        <Link
+                            href={`/products/${encodeURIComponent(category)}`}
+                            className={`font-medium transition-colors flex items-center relative rounded ${clickedCategory === category ? 'bg-primary/10 text-primary' : ''}`}
+                            style={{ WebkitTapHighlightColor: 'transparent' }}
+                            onClick={() => {
+                                setClickedCategory(category);
+                                setTimeout(() => setClickedCategory(null), 200);
+                            }}
+                        >
                             {category}
                             <svg
-                                className="inline-block ml-1 w-4 h-4 text-gray-500 transition-transform duration-200"
+                                className={`inline-block ml-1 w-4 h-4 text-gray-500 group-hover:text-primary group-focus:text-primary transition-colors ${clickedCategory === category ? 'text-primary' : ''}`}
                                 style={{ transform: openCategory === category ? 'rotate(180deg)' : 'rotate(0deg)' }}
                                 fill="none"
                                 stroke="currentColor"
@@ -46,7 +55,7 @@ export default function MegaMenu({ data, brandsBySubcategory }: MegaMenuProps) {
                             >
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
                             </svg>
-                        </button>
+                        </Link>
 
                         {/* Dropdown */}
                         <div
@@ -57,7 +66,8 @@ export default function MegaMenu({ data, brandsBySubcategory }: MegaMenuProps) {
                                 <Link
                                     key={subcat}
                                     href={`/products/${encodeURIComponent(category)}/${encodeURIComponent(subcat)}`}
-                                    className="block px-4 py-2 text-sm hover:bg-gray-100"
+                                    className="block px-4 py-2 text-sm transition-colors focus:bg-primary/10 focus:text-primary active:bg-primary/20 hover:bg-primary/10 hover:text-primary"
+                                    style={{ WebkitTapHighlightColor: 'transparent' }}
                                 >
                                     {subcat}
                                 </Link>

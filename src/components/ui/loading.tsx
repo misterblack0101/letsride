@@ -157,7 +157,7 @@ export function ProductGridSkeleton({ viewMode = 'grid' }: ProductGridSkeletonPr
                                         <div className="h-5 bg-gray-200 rounded w-16"></div>
                                         <div className="h-3 bg-gray-200 rounded w-12"></div>
                                     </div>
-                                    <div className="w-6 h-6 bg-gray-200 rounded-full"></div>
+                                    {/* <div className="w-6 h-6 bg-gray-200 rounded-full"></div> */}
                                 </div>
                             </div>
                         </div>

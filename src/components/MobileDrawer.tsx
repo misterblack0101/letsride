@@ -50,7 +50,8 @@ export default function MobileDrawer({ subcategories }: MobileDrawerProps) {
 						<div key={category} className="border-t pt-2 mt-2">
 							<button
 								onClick={() => toggleCategory(category)}
-								className="w-full flex items-center justify-between text-base font-medium py-2 px-2 rounded hover:bg-accent transition-colors text-left"
+								className="w-full flex items-center justify-between text-base font-medium py-2 px-2 rounded transition-colors text-left"
+								style={{ WebkitTapHighlightColor: 'transparent' }}
 							>
 								<span>{category}</span>
 								{expandedCategory === category ? (
@@ -67,7 +68,8 @@ export default function MobileDrawer({ subcategories }: MobileDrawerProps) {
 										<Link
 											key={subcat}
 											href={`/products/${encodeURIComponent(category)}/${encodeURIComponent(subcat)}`}
-											className="block text-sm py-2 px-2 rounded hover:bg-accent transition-colors text-left"
+											className="block text-sm py-2 px-2 rounded transition-colors text-left focus:bg-primary/10 focus:text-primary active:bg-primary/20 hover:bg-primary/10 hover:text-primary"
+											style={{ WebkitTapHighlightColor: 'transparent' }}
 											onClick={() => setOpen(false)}
 										>
 											{subcat}

@@ -281,11 +281,12 @@ export default function ServerProductFilters({
                                 <div key={category}>
                                     <a
                                         href={`/products/${encodeURIComponent(category)}`}
-                                        className="flex items-center justify-between w-full px-3 py-2 text-sm rounded-md hover:bg-gray-100 hover:text-primary transition-colors cursor-pointer group"
+                                        className="flex items-center justify-between w-full px-3 py-2 text-sm rounded-md transition-colors cursor-pointer group focus:bg-primary/10 focus:text-primary active:bg-primary/20 hover:bg-primary/10 hover:text-primary"
+                                        style={{ WebkitTapHighlightColor: 'transparent' }}
                                     >
                                         <span className="capitalize">{category}</span>
                                         <svg
-                                            className="w-4 h-4 text-gray-400 group-hover:text-primary transition-colors"
+                                            className="w-4 h-4 text-gray-400 group-hover:text-primary group-focus:text-primary transition-colors"
                                             fill="none"
                                             stroke="currentColor"
                                             viewBox="0 0 24 24"
@@ -311,11 +312,12 @@ export default function ServerProductFilters({
                                 <div key={subcat}>
                                     <a
                                         href={`/products/${encodeURIComponent(currentCategory)}/${encodeURIComponent(subcat)}`}
-                                        className="flex items-center justify-between w-full px-3 py-2 text-sm rounded-md hover:bg-gray-100 hover:text-primary transition-colors cursor-pointer group"
+                                        className="flex items-center justify-between w-full px-3 py-2 text-sm rounded-md transition-colors cursor-pointer group focus:bg-primary/10 focus:text-primary active:bg-primary/20 hover:bg-primary/10 hover:text-primary"
+                                        style={{ WebkitTapHighlightColor: 'transparent' }}
                                     >
                                         <span>{subcat}</span>
                                         <svg
-                                            className="w-4 h-4 text-gray-400 group-hover:text-primary transition-colors"
+                                            className="w-4 h-4 text-gray-400 group-hover:text-primary group-focus:text-primary transition-colors"
                                             fill="none"
                                             stroke="currentColor"
                                             viewBox="0 0 24 24"

@@ -94,15 +94,29 @@ export default function ProductCard({ product, viewMode = 'grid', hidePricing = 
               </div>
 
               {/* Product Title */}
-              <h2 className="text-base font-semibold hover:text-primary transition-colors duration-300 leading-tight line-clamp-1">
+              <h2
+                className={`font-semibold hover:text-primary transition-colors duration-300 leading-tight${isMobile ? ' text-sm line-clamp-2 py-0.5' : ' text-xl line-clamp-1 py-1'}`}
+                style={isMobile ? { wordBreak: 'break-word', paddingTop: '2px', paddingBottom: '2px' } : {}}
+              >
                 {product.name}
               </h2>
 
-              {/* Short Description */}
-              {product.shortDescription && (
-                <p className="text-base-content/70 text-xs leading-relaxed line-clamp-1">
-                  {product.shortDescription}
+              {/* Mobile: Show price instead of description */}
+              {isMobile ? (
+                <p className="text-base-content font-bold text-sm leading-relaxed line-clamp-1 font-currency">
+                  ₹{product.discountedPrice.toLocaleString('en-IN')}
+                  {product.discountPercentage && product.actualPrice && (
+                    <span className="text-base-content/60 line-through text-xs font-currency ml-2">
+                      ₹{product.actualPrice.toLocaleString('en-IN')}
+                    </span>
+                  )}
                 </p>
+              ) : (
+                product.shortDescription && (
+                  <p className="text-base-content/70 text-s leading-relaxed line-clamp-1">
+                    {product.shortDescription}
+                  </p>
+                )
               )}
               {/* Out of Stock Label */}
               {typeof product.inventory === 'number' && product.inventory < 1 && (
@@ -123,9 +137,6 @@ export default function ProductCard({ product, viewMode = 'grid', hidePricing = 
                     </span>
                   )}
                 </div>
-                <button className="btn btn-circle btn-xs bg-base-200 hover:bg-base-300 border-base-300 hover:border-base-400 shadow-sm transform hover:scale-105 transition-all duration-200">
-                  <Plus className="w-3 h-3 text-base-content" />
-                </button>
               </div>
             )}
           </div>
@@ -164,12 +175,12 @@ export default function ProductCard({ product, viewMode = 'grid', hidePricing = 
           <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
         </figure>
 
-        <div className="card-body p-1.5 sm:p-2 space-y-1">
+        <div className={`card-body p-1.5 sm:p-2 space-y-1 justify-between flex flex-col`}>
           {/* Brand and Rating */}
           <div className="flex items-center justify-between">
             {/* Brand */}
             {product.brand && (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 min-w-0">
                 <div className="w-4 h-4 bg-base-200 rounded flex items-center justify-center flex-shrink-0">
                   {brandLogoLoaded ? (
                     <Image
@@ -192,31 +203,42 @@ export default function ProductCard({ product, viewMode = 'grid', hidePricing = 
               </div>
             )}
 
-            {/* Rating */}
-            <div className="flex items-center gap-1">
-              <div className="flex items-center gap-0.5">
-                {Array.from({ length: 5 }, (_, i) => (
-                  <Star
-                    key={`grid-star-${product.id}-${i}`}
-                    className={`w-2.5 h-2.5 ${i < Math.floor(product.rating) ? 'text-amber-400 fill-amber-400' : 'text-base-300'}`}
-                  />
-                ))}
+            {/* Rating (mobile grid: single star + number) */}
+            {isMobile ? (
+              <div className="flex items-center gap-1 flex-shrink-0">
+                <Star className="w-3 h-3 text-amber-400 fill-amber-400" />
+                <span className="text-xs font-semibold text-base-content whitespace-nowrap">{product.rating}</span>
               </div>
-              <span className="text-xs font-semibold text-base-content">
-                {product.rating}
-              </span>
-            </div>
+            ) : (
+              <div className="flex items-center gap-1 flex-wrap min-w-0" style={{ flexShrink: 0 }}>
+                <div className="flex items-center gap-0.5 flex-nowrap">
+                  {Array.from({ length: 5 }, (_, i) => (
+                    <Star
+                      key={`grid-star-${product.id}-${i}`}
+                      className={`w-2.5 h-2.5 ${i < Math.floor(product.rating) ? 'text-amber-400 fill-amber-400' : 'text-base-300'}`}
+                      style={{ minWidth: '1rem' }}
+                    />
+                  ))}
+                </div>
+                <span className="text-xs font-semibold text-base-content whitespace-nowrap">
+                  {product.rating}
+                </span>
+              </div>
+            )}
           </div>
 
           {/* Product Title */}
-          <h2 className="text-sm sm:text-base leading-tight hover:text-primary transition-colors duration-300 font-semibold overflow-hidden text-ellipsis whitespace-nowrap">
+          <h2
+            className="text-sm sm:text-base leading-tight hover:text-primary transition-colors duration-300 font-semibold break-words line-clamp-2"
+            style={{ wordBreak: 'break-word' }}
+          >
             {product.name}
           </h2>
 
 
           {/* Pricing */}
           {!hidePricing && (
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-1.5 flex-wrap">
               <span className="text-xs sm:text-sm font-bold text-base-content font-currency">
                 ₹{product.discountedPrice.toLocaleString('en-IN')}
               </span>
