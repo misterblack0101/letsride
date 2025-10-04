@@ -43,6 +43,9 @@ function convertToProducts(lightweightResults: LightweightSearchResult[]): Produ
         details: '',
         tags: [],
         slug: getProductSlug(result.name),
+        roundedDiscountPercentage: result.discountedPrice != null
+            ? Math.round(((result.price - (result.discountedPrice || result.price)) / result.price) * 100)
+            : null,
     }));
 }
 

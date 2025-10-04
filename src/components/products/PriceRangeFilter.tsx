@@ -16,7 +16,7 @@ interface PriceRangeFilterProps {
 }
 
 const MIN_PRICE = 0;
-const MAX_PRICE = 1000000;
+const MAX_PRICE = 500000;
 const STEP = 1000;
 
 export default function PriceRangeFilter({
@@ -213,7 +213,7 @@ export default function PriceRangeFilter({
                             onChange={handleMaxPriceChange}
                             onBlur={applyTextInputs}
                             onKeyDown={(e) => e.key === 'Enter' && applyTextInputs()}
-                            placeholder="1000000"
+                            placeholder="500000"
                             min={MIN_PRICE}
                             max={MAX_PRICE}
                             step={STEP}

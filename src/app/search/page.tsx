@@ -4,6 +4,7 @@ import type { Metadata } from 'next';
 import type { Product } from '@/lib/models/Product';
 import ProductCard from '@/components/products/ProductCard';
 import { getProductSlug } from '@/lib/utils/slugify';
+import { searchProducts } from '@/lib/services/search';
 
 interface SearchPageProps {
     searchParams: Promise<{ q?: string }>;
@@ -34,6 +35,10 @@ function convertToProducts(lightweightResults: LightweightSearchResult[]): Produ
         subCategory: result.subCategory,
         price: result.price,
         discountedPrice: result.discountedPrice || result.price,
+        // roundedDiscountPercentage expected by Product type/schema; compute if possible
+        roundedDiscountPercentage: result.discountedPrice != null
+            ? Math.round(((result.price - (result.discountedPrice || result.price)) / result.price) * 100)
+            : null,
         actualPrice: result.price,
         rating: result.rating,
         images: result.imageUrl ? [result.imageUrl] : ['/images/placeholder.jpg'],
@@ -51,25 +56,36 @@ function convertToProducts(lightweightResults: LightweightSearchResult[]): Produ
 
 async function searchProductsViaAPI(query: string, limit: number = 50): Promise<Product[]> {
     try {
-        const response = await fetch(
-            `/api/search?q=${encodeURIComponent(query)}&limit=${limit}`,
-            {
-                next: { revalidate: 300 } // Cache for 5 minutes on server side too
-            }
-        );
+        // Use server-side search function directly to avoid server fetch of internal API routes
+        const results = await searchProducts(query, limit);
+        if (!results || results.length === 0) return [];
 
-        if (!response.ok) {
-            console.error('Search API error:', response.status, response.statusText);
-            return [];
-        }
+        // Normalize results so downstream components always have slug, images, brandLogo, etc.
+        return results.map((p) => {
+            const images = (p.images || []).filter(Boolean).filter((img) => typeof img === 'string' && img.trim() !== '');
+            const imageUrl = (p.image && p.image.trim() !== '' ? p.image : images.length > 0 ? images[0] : '/images/placeholder.jpg');
 
-        const data = await response.json();
-        const lightweightResults: LightweightSearchResult[] = data.products || [];
+            const roundedDiscountPercentage = p.roundedDiscountPercentage != null
+                ? p.roundedDiscountPercentage
+                : (p.discountPercentage != null ? Math.round(p.discountPercentage) : null);
 
-        // Convert to full Product format for ProductCard
-        return convertToProducts(lightweightResults);
+            const baseBrandLogoUrl = 'https://firebasestorage.googleapis.com/v0/b/letsridecycles.firebasestorage.app/o/brandLogos';
+            const brandLogo = p.brand
+                ? `${baseBrandLogoUrl}%2F${p.brand.toLowerCase().replace(/\s+/g, '-')}.png?alt=media`
+                : `${baseBrandLogoUrl}%2Fdefault.png?alt=media`;
+
+            return {
+                ...p,
+                images: images.length > 0 ? images : [imageUrl],
+                image: imageUrl,
+                slug: p.slug || getProductSlug(p.name || ''),
+                roundedDiscountPercentage,
+                brandLogo,
+                discountedPrice: p.discountedPrice != null ? p.discountedPrice : (p.price != null ? p.price : p.actualPrice),
+            } as Product;
+        });
     } catch (error) {
-        console.error('Failed to fetch search results:', error);
+        console.error('Search service error:', error);
         return [];
     }
 }

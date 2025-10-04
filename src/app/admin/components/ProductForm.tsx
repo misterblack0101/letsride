@@ -203,6 +203,18 @@ export default function ProductForm({ product, onSuccess, onCancel }: ProductFor
         }
 
         setFormData(prev => {
+            // Helper to round numbers to 2 decimal places
+            const round2 = (n: number) => Math.round(n * 100) / 100;
+
+            // Normalize inputs for price and discount to at most 2 decimal places
+            if (field === 'price' && typeof value === 'number') {
+                value = round2(value);
+            }
+
+            if (field === 'discountPercentage' && typeof value === 'number') {
+                value = round2(value);
+            }
+
             const updated = { ...prev, [field]: value };
 
             // Reset dependent fields when category or subcategory changes
@@ -217,19 +229,19 @@ export default function ProductForm({ product, onSuccess, onCancel }: ProductFor
 
             // Auto-calculate discount/price when one changes
             if (field === 'price' && value && updated.actualPrice) {
-                // Calculate discount percentage from selling price
+                // Calculate discount percentage from selling price (round to 2 decimals)
                 const discount = ((updated.actualPrice - value) / updated.actualPrice) * 100;
-                updated.discountPercentage = discount > 0 ? Math.round(discount * 100) / 100 : 0;
+                updated.discountPercentage = discount > 0 ? round2(discount) : 0;
             } else if (field === 'discountPercentage' && value !== null && updated.actualPrice) {
-                // Calculate selling price from discount percentage
-                updated.price = updated.actualPrice * (1 - value / 100);
+                // Calculate selling price from discount percentage (round to 2 decimals)
+                updated.price = round2(updated.actualPrice * (1 - value / 100));
             } else if (field === 'actualPrice' && value) {
                 // Recalculate based on existing discount or price
                 if (updated.discountPercentage && updated.discountPercentage > 0) {
-                    updated.price = value * (1 - updated.discountPercentage / 100);
+                    updated.price = round2(value * (1 - updated.discountPercentage / 100));
                 } else if (updated.price && updated.price > 0) {
                     const discount = ((value - updated.price) / value) * 100;
-                    updated.discountPercentage = discount > 0 ? Math.round(discount * 100) / 100 : 0;
+                    updated.discountPercentage = discount > 0 ? round2(discount) : 0;
                 }
             }
 
@@ -910,7 +922,7 @@ export default function ProductForm({ product, onSuccess, onCancel }: ProductFor
                                 placeholder="0"
                                 min="0"
                                 max="100"
-                                step="0.1"
+                                step="0.01"
                             />
                         </div>
                     </div>

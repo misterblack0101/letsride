@@ -32,11 +32,11 @@ export default function ProductCard({ product, viewMode = 'grid', hidePricing = 
               className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
             />
             {/* Discount Badge & Out of Stock stacked (image) - only on mobile */}
-            {(product.discountPercentage || (typeof product.inventory === 'number' && product.inventory < 1 && isMobile)) && (
+            {(product.roundedDiscountPercentage || (typeof product.inventory === 'number' && product.inventory < 1 && isMobile)) && (
               <div className="absolute top-1 left-1 flex flex-col gap-1 z-10">
-                {product.discountPercentage && (
+                {product.roundedDiscountPercentage && (
                   <div className="bg-red-500 text-white w-12 h-4 flex items-center justify-center rounded text-xs font-bold shadow-md">
-                    {product.discountPercentage}% OFF
+                    {product.roundedDiscountPercentage}% OFF
                   </div>
                 )}
                 {typeof product.inventory === 'number' && product.inventory < 1 && isMobile && (
@@ -105,7 +105,7 @@ export default function ProductCard({ product, viewMode = 'grid', hidePricing = 
               {isMobile ? (
                 <p className="text-base-content font-bold text-sm leading-relaxed line-clamp-1 font-currency">
                   ₹{product.discountedPrice.toLocaleString('en-IN')}
-                  {product.discountPercentage && product.actualPrice && (
+                  {product.roundedDiscountPercentage && product.actualPrice && (
                     <span className="text-base-content/60 line-through text-xs font-currency ml-2">
                       ₹{product.actualPrice.toLocaleString('en-IN')}
                     </span>
@@ -131,7 +131,7 @@ export default function ProductCard({ product, viewMode = 'grid', hidePricing = 
                   <span className="text-lg font-bold text-base-content font-currency">
                     ₹{product.discountedPrice.toLocaleString('en-IN')}
                   </span>
-                  {product.discountPercentage && product.actualPrice && (
+                  {product.roundedDiscountPercentage && product.actualPrice && (
                     <span className="text-base-content/60 line-through text-xs font-currency">
                       ₹{product.actualPrice.toLocaleString('en-IN')}
                     </span>
@@ -158,11 +158,11 @@ export default function ProductCard({ product, viewMode = 'grid', hidePricing = 
           />
           {/* Discount Badge */}
           {/* Discount Badge & Out of Stock stacked (Grid View) */}
-          {(product.discountPercentage || (typeof product.inventory === 'number' && product.inventory < 1)) && (
+          {(product.roundedDiscountPercentage || (typeof product.inventory === 'number' && product.inventory < 1)) && (
             <div className="absolute top-3 left-3 flex flex-col gap-1 z-10">
-              {product.discountPercentage && (
+              {product.roundedDiscountPercentage && (
                 <div className="bg-red-500 text-white px-3 py-1 rounded-lg text-xs font-bold shadow-lg">
-                  {product.discountPercentage}% OFF
+                  {product.roundedDiscountPercentage}% OFF
                 </div>
               )}
               {typeof product.inventory === 'number' && product.inventory < 1 && (
@@ -242,7 +242,7 @@ export default function ProductCard({ product, viewMode = 'grid', hidePricing = 
               <span className="text-xs sm:text-sm font-bold text-base-content font-currency">
                 ₹{product.discountedPrice.toLocaleString('en-IN')}
               </span>
-              {product.discountPercentage && product.actualPrice && (
+              {product.roundedDiscountPercentage && product.actualPrice && (
                 <span className="text-base-content/50 line-through text-[10px] sm:text-xs font-currency">
                   ₹{product.actualPrice.toLocaleString('en-IN')}
                 </span>

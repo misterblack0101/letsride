@@ -30,8 +30,8 @@ export default function ProductDetails({ product, addItem }: ProductDetailsProps
   });
 
   // Calculate savings if there's a discount - Updated for new price structure
-  const savings = product.discountPercentage && product.actualPrice
-    ? product.actualPrice - (product.price || product.actualPrice * (1 - product.discountPercentage / 100))
+  const savings = product.roundedDiscountPercentage && product.actualPrice
+    ? product.actualPrice - (product.price || product.actualPrice * (1 - product.roundedDiscountPercentage / 100))
     : 0;
 
   return (
@@ -84,7 +84,7 @@ export default function ProductDetails({ product, addItem }: ProductDetailsProps
                         }}
                       >
                         {thumbnailLoading[index] && (
-                          <div className="absolute inset-0 bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 animate-pulse">
+                          <div className="absolute inset-0 bg-gradient-to-r from-gray-100 via-gray-200 to-gray-100 animate-pulse">
                             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent animate-shimmer"></div>
                           </div>
                         )}
@@ -95,7 +95,6 @@ export default function ProductDetails({ product, addItem }: ProductDetailsProps
                           className={`object-cover transition-opacity duration-300 ${thumbnailLoading[index] ? 'opacity-0' : 'opacity-100'}`}
                           sizes="80px"
                           onLoad={() => setThumbnailLoading(prev => ({ ...prev, [index]: false }))}
-                          onLoadingComplete={() => setThumbnailLoading(prev => ({ ...prev, [index]: false }))}
                         />
                       </div>
                     ))}
@@ -105,7 +104,7 @@ export default function ProductDetails({ product, addItem }: ProductDetailsProps
                 <div className="w-full max-w-xs lg:max-w-md mx-auto">
                   <div className="relative aspect-square overflow-hidden rounded-xl bg-gray-50">
                     {imageLoading && (
-                      <div className="absolute inset-0 bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 animate-pulse">
+                      <div className="absolute inset-0 bg-gradient-to-r from-gray-100 via-gray-200 to-gray-100 animate-pulse">
                         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent animate-shimmer"></div>
                       </div>
                     )}
@@ -117,7 +116,6 @@ export default function ProductDetails({ product, addItem }: ProductDetailsProps
                       sizes="(max-width: 480px) 90vw, (max-width: 768px) 60vw, 50vw"
                       priority
                       onLoad={() => setImageLoading(false)}
-                      onLoadingComplete={() => setImageLoading(false)}
                     />
                   </div>
                   {/* Thumbnails - bottom on mobile only, less margin below */}
@@ -136,7 +134,7 @@ export default function ProductDetails({ product, addItem }: ProductDetailsProps
                           }}
                         >
                           {thumbnailLoading[index] && (
-                            <div className="absolute inset-0 bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 animate-pulse">
+                            <div className="absolute inset-0 bg-gradient-to-r from-gray-100 via-gray-200 to-gray-100 animate-pulse">
                               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent animate-shimmer"></div>
                             </div>
                           )}
@@ -147,7 +145,6 @@ export default function ProductDetails({ product, addItem }: ProductDetailsProps
                             className={`object-cover transition-opacity duration-300 ${thumbnailLoading[index] ? 'opacity-0' : 'opacity-100'}`}
                             sizes="(max-width: 480px) 14vw, (max-width: 768px) 10vw, 80px"
                             onLoad={() => setThumbnailLoading(prev => ({ ...prev, [index]: false }))}
-                            onLoadingComplete={() => setThumbnailLoading(prev => ({ ...prev, [index]: false }))}
                           />
                         </div>
                       ))}
@@ -227,9 +224,9 @@ export default function ProductDetails({ product, addItem }: ProductDetailsProps
             {/* Price Section */}
             <div className="bg-gray-50 p-6 rounded-xl mb-6">
               {/* Discount Badge */}
-              {product.discountPercentage && (
+              {product.roundedDiscountPercentage && (
                 <div className="inline-block bg-red-500 text-white px-2 py-1 rounded font-semibold text-xs mb-3">
-                  {product.discountPercentage}% OFF
+                  {product.roundedDiscountPercentage}% OFF
                 </div>
               )}
 
@@ -237,7 +234,7 @@ export default function ProductDetails({ product, addItem }: ProductDetailsProps
                 <span className="text-3xl font-bold text-gray-900 font-currency">
                   ₹{product.discountedPrice.toLocaleString('en-IN')}
                 </span>
-                {product.discountPercentage && product.actualPrice && (
+                {product.roundedDiscountPercentage && product.actualPrice && (
                   <span className="text-lg text-gray-500 line-through font-currency">
                     ₹{product.actualPrice.toLocaleString('en-IN')}
                   </span>

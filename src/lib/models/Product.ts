@@ -49,10 +49,11 @@ export const ProductSchema = z.object({
   isRecommended: z.boolean().default(false),
   slug: z.string().optional(),
 }).transform(product => {
+  const roundedDiscountPercentage = product.discountPercentage != null ? Math.floor(product.discountPercentage) : null;
   const discountedPrice = product.price != null
     ? product.price
-    : (product.discountPercentage != null
-      ? product.actualPrice * (1 - product.discountPercentage / 100)
+    : (roundedDiscountPercentage != null
+      ? product.actualPrice * (1 - roundedDiscountPercentage / 100)
       : product.actualPrice);
 
   return {
@@ -61,6 +62,7 @@ export const ProductSchema = z.object({
       ? `${baseBrandLogoUrl}%2F${product.brand.toLowerCase().replace(/\s+/g, '-')}.png?alt=media`
       : `${baseBrandLogoUrl}%2Fdefault.png?alt=media`,
     discountedPrice,
+    roundedDiscountPercentage,
     slug: product.slug || getProductSlug(product.name),
   };
 });

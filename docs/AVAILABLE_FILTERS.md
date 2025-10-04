@@ -145,7 +145,7 @@ export interface ProductFilterOptions {
 /products?category=Bikes&brand=Trek&brand=Giant&sort=price_low
 
 # Price range with specific view mode
-/products?minPrice=1000&maxPrice=10000&view=list&sort=rating
+/products?minPrice=1000&maxPrice=500000&view=list&sort=rating
 
 # Apparels with specific sizes
 /products?category=Apparels&size=M&size=L&size=XL
